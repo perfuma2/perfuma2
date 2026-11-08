@@ -349,7 +349,8 @@ setTimeout(function() {
       <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; margin-bottom:10px; width:100%;">
         <button class="btn-purple" onclick="unificarStockDuplicado()" style="font-size:9.5px; padding:7px 4px; white-space:nowrap;">🧹 UNIFICAR</button>
         <button class="btn-danger" onclick="resetearStockCero()" style="font-size:9.5px; padding:7px 4px; white-space:nowrap;">0️⃣ STOCK 0</button>
-        <button class="btn-primary" onclick="exportarInventarioExcel()" style="background:var(--info); color:#fff; font-size:9.5px; padding:7px 4px; white-space:nowrap;">☁️ EXCEL</button>
+        <button class="btn-primary" onclick="document.getElementById('input-importar-excel-prov').click()" style="background:var(--info); color:#fff; font-size:9.5px; padding:7px 4px; white-space:nowrap;">☁️ EXCEL</button>
+        <input type="file" id="input-importar-excel-prov" accept=".xlsx, .xls, .csv" style="display:none;" onchange="importarExcelProveedor(this)">
         <button class="btn-primary" onclick="abrirModalPerfume()" style="font-size:9.5px; padding:7px 4px; white-space:nowrap;">+ NUEVO</button>
       </div>
       <div class="table-responsive">
@@ -631,7 +632,7 @@ setTimeout(function() {
   </div>
 </div>
 
-<!-- MODAL PERFUME -->
+<!-- MODAL PERFUME (Con Lupa Google + Botón Galería + Margen Individual) -->
 <div id="modal-perfume" class="modal-overlay">
   <div class="modal-box">
     <button class="btn-close-modal" onclick="document.getElementById('modal-perfume').style.display='none'">✖</button>
@@ -639,12 +640,27 @@ setTimeout(function() {
     <input type="hidden" id="p-id-edit">
     <div class="form-grid">
       <div class="form-group"><label>Marca / Inspiración</label><input type="text" id="p-marca" class="user-input" placeholder="Ej: Lattafa"></div>
-      <div class="form-group"><label>Nombre del Perfume</label><input type="text" id="p-nombre" class="user-input" placeholder="Ej: Khamrah EDP"></div>
+      <div class="form-group"><label>Nombre del Perfume</label><input type="text" id="p-nombre" class="user-input" placeholder="Ej: Khamrah EDP" oninput="actualizarEnlaceBusquedaGoogle()"></div>
       <div class="form-group"><label>Stock (Unidades Selladas)</label><input type="number" id="p-stock" class="user-input" value="1"></div>
       <div class="form-group"><label>Capacidad Botella (ML)</label><input type="number" id="p-ml" class="user-input" value="100"></div>
       <div class="form-group"><label>Costo Unitario ($)</label><input type="number" step="0.01" id="p-costo" class="user-input" value="15.00" oninput="calcularPrecioDesdeCostoModal()"></div>
+      
+      <!-- Apartado de Margen Individual -->
+      <div class="form-group"><label>Margen Individual (%)</label><input type="number" id="p-margen-ind" class="user-input" value="75" oninput="calcularPrecioDesdeCostoModal()"></div>
+      
       <div class="form-group"><label>Precio Venta ($)</label><input type="number" step="0.01" id="p-precio" class="user-input" value="26.25"></div>
-      <div class="form-group"><label>URL Imagen (Opcional)</label><input type="text" id="p-imagen" class="user-input" placeholder="https://..."></div>
+      
+      <!-- URL Imagen con Lupa y Botón de Galería (+) -->
+      <div class="form-group">
+        <label>URL Imagen o Foto</label>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <input type="text" id="p-imagen" class="user-input" placeholder="https://..." style="flex:1;">
+          <a id="btn-lupa-google" href="https://www.google.com/search?tbm=isch&q=perfume" target="_blank" class="btn-secondary" style="padding:9px 12px; text-decoration:none;" title="Buscar en Google Imágenes">🔍</a>
+          <button type="button" class="btn-secondary" onclick="document.getElementById('input-galeria-foto').click()" style="padding:9px 12px;" title="Subir foto de la galería">📁+</button>
+          <input type="file" id="input-galeria-foto" accept="image/*" style="display:none;" onchange="subirFotoGaleriaModal(this)">
+        </div>
+      </div>
+
       <div class="form-group"><label>Notas Aromáticas</label><input type="text" id="p-notas" class="user-input" placeholder="Ej: Dulce, Vainilla"></div>
     </div>
     <button class="btn-primary" style="width:100%; padding:13px;" onclick="guardarPerfumeModal()">💾 GUARDAR PERFUME</button>
@@ -839,37 +855,144 @@ function renderInventario() {
 function aplicarMargenGlobal() {
   const m = parseFloat(document.getElementById('input-margen-global').value) || 0;
   margenGlobal = m;
-  inventario.forEach(p => { const c = parseFloat(p.costo) || 0; if (c > 0 && !p.esCombo) p.precio = parseFloat((c * (1 + m / 100)).toFixed(2)); });
+  inventario.forEach(p => { const c = parseFloat(p.costo) || 0; if (c > 0 && !p.esCombo) p.precio = parseFloat((c * (1 + (p.margenInd !== undefined ? p.margenInd : m) / 100)).toFixed(2)); });
   renderTodo(); guardarCambiosEnNube(true);
 }
+
+/* IMPORTAR EXCEL PROVEEDOR INTELIGENTE */
+function importarExcelProveedor(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheet = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheet];
+      const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      let categoriaActual = 'PERFUME';
+      let countImportados = 0;
+
+      json.forEach(row => {
+        if (!row || row.length === 0) return;
+        const col0 = String(row[0] || '').trim();
+        const col1 = row[1];
+
+        if (col0 && (!col1 || col1 === 'PRECIOS' || isNaN(col1))) {
+          if (col0.toUpperCase().includes('TESTER') || col0.toUpperCase().includes('PERFUME')) {
+            categoriaActual = col0.toUpperCase();
+          }
+          return;
+        }
+
+        if (col0 && col1 !== undefined && !isNaN(col1)) {
+          const costoVal = parseFloat(col1) || 0;
+          if (costoVal > 0) {
+            const precioVenta = parseFloat((costoVal * (1 + margenGlobal / 100)).toFixed(2));
+            inventario.push({
+              marca: categoriaActual.includes('TESTER') ? 'TESTER' : 'GENERAL',
+              nombre: col0,
+              stock: 1,
+              ml: 100,
+              costo: costoVal,
+              precio: precioVenta,
+              margenInd: margenGlobal,
+              imagen: '',
+              notas: categoriaActual
+            });
+            countImportados++;
+          }
+        }
+      });
+
+      renderTodo();
+      guardarCambiosEnNube(false);
+      alert(`✅ Se han importado y organizado ${countImportados} productos del Excel del proveedor con éxito.`);
+      input.value = '';
+    } catch (err) {
+      alert("❌ Error al leer el archivo Excel del proveedor.");
+      input.value = '';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
 function abrirModalPerfume() {
-  document.getElementById('p-id-edit').value = ''; document.getElementById('p-marca').value = ''; document.getElementById('p-nombre').value = '';
-  document.getElementById('p-stock').value = 1; document.getElementById('p-ml').value = 100; document.getElementById('p-costo').value = 15;
-  document.getElementById('p-precio').value = 26.25; document.getElementById('p-imagen').value = ''; document.getElementById('p-notas').value = '';
+  document.getElementById('p-id-edit').value = ''; 
+  document.getElementById('p-marca').value = ''; 
+  document.getElementById('p-nombre').value = '';
+  document.getElementById('p-stock').value = 1; 
+  document.getElementById('p-ml').value = 100; 
+  document.getElementById('p-costo').value = 15;
+  document.getElementById('p-margen-ind').value = margenGlobal;
+  document.getElementById('p-precio').value = 26.25; 
+  document.getElementById('p-imagen').value = ''; 
+  document.getElementById('p-notas').value = '';
+  actualizarEnlaceBusquedaGoogle();
   document.getElementById('modal-perfume').style.display = 'flex';
 }
+
 function editarPerfume(idx) {
   const p = inventario[idx]; if (!p) return;
-  document.getElementById('p-id-edit').value = idx; document.getElementById('p-marca').value = p.marca || ''; document.getElementById('p-nombre').value = p.nombre || '';
-  document.getElementById('p-stock').value = p.stock || 0; document.getElementById('p-ml').value = p.ml || 100; document.getElementById('p-costo').value = p.costo || 0;
-  document.getElementById('p-precio').value = p.precio || 0; document.getElementById('p-imagen').value = p.imagen || ''; document.getElementById('p-notas').value = p.notas || '';
+  document.getElementById('p-id-edit').value = idx; 
+  document.getElementById('p-marca').value = p.marca || ''; 
+  document.getElementById('p-nombre').value = p.nombre || '';
+  document.getElementById('p-stock').value = p.stock || 0; 
+  document.getElementById('p-ml').value = p.ml || 100; 
+  document.getElementById('p-costo').value = p.costo || 0;
+  document.getElementById('p-margen-ind').value = p.margenInd !== undefined ? p.margenInd : margenGlobal;
+  document.getElementById('p-precio').value = p.precio || 0; 
+  document.getElementById('p-imagen').value = p.imagen || ''; 
+  document.getElementById('p-notas').value = p.notas || '';
+  actualizarEnlaceBusquedaGoogle();
   document.getElementById('modal-perfume').style.display = 'flex';
 }
+
+function actualizarEnlaceBusquedaGoogle() {
+  const nombre = document.getElementById('p-nombre').value.trim() || document.getElementById('p-marca').value.trim() || 'perfume';
+  const lupa = document.getElementById('btn-lupa-google');
+  if (lupa) {
+    lupa.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(nombre)}`;
+  }
+}
+
+function subirFotoGaleriaModal(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('p-imagen').value = e.target.result;
+    alert("📁 Foto cargada con éxito.");
+  };
+  reader.readAsDataURL(file);
+}
+
 function calcularPrecioDesdeCostoModal() {
   const c = parseFloat(document.getElementById('p-costo').value) || 0;
-  document.getElementById('p-precio').value = (c * (1 + margenGlobal / 100)).toFixed(2);
+  const m = parseFloat(document.getElementById('p-margen-ind').value) || margenGlobal;
+  document.getElementById('p-precio').value = (c * (1 + m / 100)).toFixed(2);
+  actualizarEnlaceBusquedaGoogle();
 }
+
 function guardarPerfumeModal() {
   const idx = document.getElementById('p-id-edit').value;
   const nuevo = {
-    marca: document.getElementById('p-marca').value.trim(), nombre: document.getElementById('p-nombre').value.trim(),
-    stock: parseInt(document.getElementById('p-stock').value) || 0, ml: parseInt(document.getElementById('p-ml').value) || 100,
-    costo: parseFloat(document.getElementById('p-costo').value) || 0, precio: parseFloat(document.getElementById('p-precio').value) || 0,
-    imagen: document.getElementById('p-imagen').value.trim(), notas: document.getElementById('p-notas').value.trim()
+    marca: document.getElementById('p-marca').value.trim(), 
+    nombre: document.getElementById('p-nombre').value.trim(),
+    stock: parseInt(document.getElementById('p-stock').value) || 0, 
+    ml: parseInt(document.getElementById('p-ml').value) || 100,
+    costo: parseFloat(document.getElementById('p-costo').value) || 0, 
+    margenInd: parseFloat(document.getElementById('p-margen-ind').value) || margenGlobal,
+    precio: parseFloat(document.getElementById('p-precio').value) || 0,
+    imagen: document.getElementById('p-imagen').value.trim(), 
+    notas: document.getElementById('p-notas').value.trim()
   };
   if (idx !== '') inventario[parseInt(idx)] = { ...inventario[parseInt(idx)], ...nuevo }; else inventario.push(nuevo);
   document.getElementById('modal-perfume').style.display = 'none'; renderTodo(); guardarCambiosEnNube(false);
 }
+
 function eliminarPerfume(idx) { if (confirm("🗑️ ¿Eliminar este perfume?")) { inventario.splice(idx, 1); renderTodo(); guardarCambiosEnNube(false); } }
 function destaparBotella(idx) {
   const p = inventario[idx]; if (!p || (parseInt(p.stock) || 0) <= 0) return alert("⚠️ Sin stock sellado.");
