@@ -800,9 +800,7 @@ async function obtenerTasasAutomaticas(mostrarMsg) {
     if (ofi?.promedio) tasaBCV = parseFloat(ofi.promedio.toFixed(2));
     if (par?.promedio) tasaUSDT = parseFloat(par.promedio.toFixed(2));
     renderTodo(); guardarCambiosEnNube(false);
-    if (mostrarMsg) alert(`✅ Tasas actualizadas:
-BCV: ${tasaBCV} Bs
-USDT: ${tasaUSDT} Bs`);
+    if (mostrarMsg) alert(`✅ Tasas actualizadas:\nBCV: ${tasaBCV} Bs\nUSDT: ${tasaUSDT} Bs`);
   } catch (e) { if (mostrarMsg) alert("⚠️ Edita la tasa manualmente."); }
 }
 
@@ -1134,16 +1132,12 @@ function registrarVentaDecant() {
 
 function obtenerPagoMovilTresLineas() {
   const b = document.getElementById('cfg-pm-banco')?.value || 'BDV (0102)', c = document.getElementById('cfg-pm-ci')?.value || 'V-24162167', t = document.getElementById('cfg-pm-tel')?.value || '04120551688';
-  return `${c.replace(/\D/g, '') || '24162167'}
-${(b.match(/\d{4}/) || ['0102'])[0]}
-${t.replace(/\D/g, '') || '04120551688'}`;
+  return `${c.replace(/\D/g, '') || '24162167'}\n${(b.match(/\d{4}/) || ['0102'])[0]}\n${t.replace(/\D/g, '') || '04120551688'}`;
 }
 
 function copiarPagoMovilTresLineas() {
   const txt = obtenerPagoMovilTresLineas();
-  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:
-
-" + txt));
+  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:\n\n" + txt));
 }
 
 function actualizarTarjeta3D() {
@@ -1192,21 +1186,10 @@ function enviarCobroTextoYCuentaAparte() {
   const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tel = (document.getElementById('ia-cli-tel')?.value || '').replace(/\D/g, ''), tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva(), tres = obtenerPagoMovilTresLineas();
   
   // Mensaje 1: Detalle comercial
-  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨
-
-Hola *${cli}*, un saludo cordial.
-Detalle correspondiente a: *${tipo}*
-${nota ? `📌 *Concepto:* ${nota}
-` : ''}
-💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
-📊 *Tasa del día:* ${tasa.toFixed(2)} Bs
-
-_Por favor realiza tu transferencia y envíanos el comprobante por este medio. ¡Muchas gracias!_`;
+  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nDetalle correspondiente a: *${tipo}*\n${nota ? `📌 *Concepto:* ${nota}\n` : ''}\n💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n📊 *Tasa del día:* ${tasa.toFixed(2)} Bs\n\n_Por favor realiza tu transferencia y envíanos el comprobante por este medio. ¡Muchas gracias!_`;
   
   // Mensaje 2: Cuenta separada en 3 líneas limpias
-  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*
-
-${tres}`;
+  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*\n\n${tres}`;
 
   navigator.clipboard.writeText(tres).catch(() => {});
   
@@ -1224,14 +1207,7 @@ async function compartirTarjeta3D() {
   const tres = obtenerPagoMovilTresLineas();
   try { await navigator.clipboard.writeText(tres); } catch (e) {}
   const card = document.getElementById('tarjeta-cobro-3d'), cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva();
-  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨
-
-Hola *${cli}*, un saludo cordial.
-Concepto: *${tipo}*
-💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
-
-📲 *Datos Bancarios (Pago Móvil):*
-${tres}`;
+  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nConcepto: *${tipo}*\n💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n\n📲 *Datos Bancarios (Pago Móvil):*\n${tres}`;
   const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#070b14' });
   canvas.toBlob(async blob => {
     const file = new File([blob], `Tarjeta_Cobro_${cli.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
@@ -1289,19 +1265,7 @@ function enviarPedidoWeb() {
   const nom = document.getElementById('cat-cli-nombre').value.trim() || 'Cliente Web', tel = document.getElementById('cat-cli-tel').value.trim() || 'Sin teléfono', dir = document.getElementById('cat-cli-dir').value.trim() || 'Por coordinar', total = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0), tasa = obtenerTasaActiva();
   pedidosWeb.unshift({ fecha: new Date().toLocaleString('es-VE'), cliente: nom, telefono: tel, direccion: dir, items: carritoPublico, total });
   guardarCambiosEnNube(false);
-  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*
-
-👤 *Cliente:* ${nom}
-📱 *Teléfono:* ${tel}
-📍 *Dirección:* ${dir}
-
-*Artículos Solicitados:*
-${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('
-')}
-
-💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})
-
-_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
+  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*\n\n👤 *Cliente:* ${nom}\n📱 *Teléfono:* ${tel}\n📍 *Dirección:* ${dir}\n\n*Artículos Solicitados:*\n${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n')}\n\n💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n\n_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
   carritoPublico = []; document.getElementById('modal-carrito-pub').style.display = 'none'; actualizarBarraCarritoPublico();
   window.open(`https://wa.me/${numeroWATienda}?text=${encodeURIComponent(msg)}`, '_blank');
 }
@@ -1343,8 +1307,7 @@ function renderGastos() {
   tb.innerHTML = gastos.map((g, idx) => `<tr><td>${g.fecha}</td><td>${g.concepto}</td><td>$${(parseFloat(g.monto)||0).toFixed(2)}</td><td><button class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="gastos.splice(${idx},1);renderTodo();guardarCambiosEnNube(false);">🗑️</button></td></tr>`).join('');
 }
 
-function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:
-" + u)); }
+function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u)); }
 function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
 function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); }
 
