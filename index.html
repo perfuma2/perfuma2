@@ -19,7 +19,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
   *, *::before, *::after { box-sizing: border-box !important; }
   :root { 
@@ -39,12 +38,8 @@
   [data-theme="light"] .user-input { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
   [data-theme="light"] .card-panel, [data-theme="light"] .kpi-card { background: #ffffff !important; border-color: #e2e8f0 !important; }
   [data-theme="light"] td { border-bottom: 1.5px solid #cbd5e1 !important; color: #0f172a !important; }
-  [data-theme="light"] th { background: #e6f7f7 !important; color: #0f766e !important; border-bottom: 2px solid #99f6e4 !important; }
-  [data-theme="light"] .tasa-input { color: #0f172a !important; font-weight: 900 !important; }
-  [data-theme="light"] .caja-totales { background: #f0fdfa !important; border-color: #99f6e4 !important; }
-  body { margin: 0; padding: 10px; background: var(--bg-main); color: var(--text-main); font-size: 13px; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
-
-  #loader-pantalla { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #111a2e 0%, #070b14 100%); z-index: 9999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+  [data-theme="
+   #loader-pantalla { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #111a2e 0%, #070b14 100%); z-index: 9999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
   .loader-text-glow { color: #00f2d6; margin-top: 20px; font-weight: 900; letter-spacing: 3px; font-size: 24px; }
   .loader-spinner { margin-top: 15px; width: 44px; height: 44px; border: 4px solid #223254; border-top: 4px solid #00f2d6; border-radius: 50%; animation: spin 0.9s linear infinite; }
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -78,57 +73,10 @@
   .tab-btn.active { background: rgba(15,118,110,0.12); color: var(--accent); border-color: var(--accent); }
   .tab-content { display: none; } .tab-content.active { display: block; }
   .badge-alerta { position: absolute; top: -6px; right: -6px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 50px; display: none; }
-  
-  .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
-  .kpi-card { background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; }
-  .kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 900; margin-bottom: 6px; }
-  .kpi-value { font-size: 20px; font-weight: 900; margin-bottom: 2px; }
-  .kpi-sub { font-size: 11px; color: var(--text-muted); font-weight: 700; }
-  
-  .card-panel { background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 14px; width: 100%; max-width: 100%; overflow: hidden; }
-  .card-title { font-size: 15px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
-  
-  .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px; width: 100%; }
-  .form-group { width: 100%; max-width: 100%; }
-  .form-group label { display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 900; margin-bottom: 4px; }
-  .user-input { width: 100%; max-width: 100%; min-width: 0; background: var(--bg-input); border: 1.5px solid var(--border-color); color: var(--text-main); padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; outline: none; }
-  
-  .table-responsive { width: 100%; overflow-x: auto; max-height: 520px; overflow-y: auto; border-radius: 12px; border: 1.5px solid var(--border-color); background: var(--bg-card); }
-  table { width: 100%; border-collapse: collapse; text-align: left; }
-  th, td { display: table-cell !important; vertical-align: middle !important; padding: 10px 8px; border-bottom: 1.5px solid var(--border-color); font-size: 11.5px; line-height: 1.25; }
-  th { position: sticky; top: 0; z-index: 10; font-size: 10.5px; text-transform: uppercase; font-weight: 900; }
-  
-  .carrito-caja { background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 12px; width: 100%; }
-  .carrito-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border-color); font-size: 12px; font-weight: 700; gap: 8px; }
-  .caja-totales { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
-  
-  .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7,11,20,0.82); z-index: 9999; justify-content: center; align-items: center; padding: 14px; backdrop-filter: blur(6px); overflow-y: auto; }
-  .modal-box { position: relative; background: var(--bg-card); border: 2px solid var(--accent); border-radius: 16px; padding: 20px; width: 100%; max-width: 440px; margin: auto; }
-  .btn-close-modal { position: absolute; top: 10px; right: 10px; background: var(--bg-input); border: none; color: var(--text-main); font-size: 16px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-weight: 900; }
-
-  /* CATÁLOGO PÚBLICO */
-  #app-catalogo { display: none; padding-bottom: 95px; }
-  .cat-hero { text-align: center; padding: 14px 10px 10px 10px; background: linear-gradient(180deg, rgba(15,118,110,0.08) 0%, var(--bg-main) 100%); border-bottom: 1.5px solid var(--border-color); }
-  .cat-tasa-badge { background: rgba(15,118,110,0.12); border: 1.5px solid var(--accent); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; display: inline-block; }
-  .cat-filters { display: flex; gap: 8px; overflow-x: auto; padding: 10px 4px; margin-bottom: 8px; scrollbar-width: none; }
-  .cat-filters::-webkit-scrollbar { display: none; }
-  .cat-filter-btn { background: var(--bg-card); border: 1.5px solid var(--border-color); color: var(--text-muted); padding: 8px 14px; border-radius: 25px; font-size: 11.5px; font-weight: 800; white-space: nowrap; }
-  .cat-filter-btn.active { background: var(--accent); color: #ffffff; border-color: var(--accent); font-weight: 900; }
-  .cat-search-input { width: 100%; background: var(--bg-card); border: 1.5px solid var(--border-color); color: var(--text-main); padding: 11px 14px; border-radius: 14px; font-size: 13.5px; outline: none; }
-  .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 2px; }
-  @media(min-width: 900px) { .cat-grid { grid-template-columns: repeat(4, 1fr); } }
-  .cat-item { background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); }
-  .cat-item-img { width: 100%; aspect-ratio: 1; background: var(--bg-input); border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; border: 1px solid var(--border-color); overflow: hidden; }
-  .cat-item-img img { width: 100%; height: 100%; object-fit: cover; }
-  .cat-item-name { font-size: 12px; font-weight: 900; color: var(--text-main); margin: 4px 0; line-height: 1.25; }
-  .cat-item-format { font-size: 10.5px; color: var(--warning); font-weight: 800; margin-bottom: 6px; }
-  .cat-item-btn { width: 100%; background: linear-gradient(135deg, #0d9488, #0f766e) !important; border: 1.5px solid #5eead4 !important; color: #ffffff !important; padding: 10px; border-radius: 10px; font-weight: 900; font-size: 12px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(13,148,136,0.25); }
-  .cat-item-btn.added { background: linear-gradient(135deg, #059669, #10b981) !important; color: #ffffff !important; }
-  .cat-cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-card); border-top: 2px solid var(--accent); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 -6px 25px rgba(0,0,0,0.15); cursor: pointer; }
-  .cat-cart-total { color: var(--accent) !important; font-size: 20px; font-weight: 900; }
-  .cat-cart-btn { background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: #ffffff; padding: 11px 20px; border-radius: 25px; font-weight: 900; font-size: 13px; }
 </style>
 </head>
+<body>
+
 <div id="voucher-factura-canvas" style="position: absolute; left: -9999px; top: 0; width: 420px; background: #ffffff; color: #0f172a; padding: 24px; font-family: system-ui, sans-serif; border-radius: 12px; border: 1px solid #cbd5e1;">
   <div style="text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 14px; margin-bottom: 14px;">
     <h2 style="margin: 0; font-size: 20px; font-weight: 900; letter-spacing: 1px;">PERFUMA2</h2>
@@ -155,42 +103,8 @@
 
 <datalist id="lista-productos-stock"></datalist>
 
-<div id="loader-pantalla">
-  <div class="logo-3d-wrapper">
-    <div class="logo-3d-circle" style="width: 120px; height: 120px;">
-      <img src="logo.jpg.jpg" alt="Logo" onerror="this.style.display='none';">
-    </div>
-  </div>
-  <h2 class="loader-text-glow">PERFUMA2</h2>
-  <p style="color:#94a3b8; font-size:12px; font-weight:700; margin-top:4px;">Iniciando Sistema...</p>
-  <div class="loader-spinner"></div>
-</div>
-
-<script>
-function safeGetStorage(key, fallback) {
-  try { return localStorage.getItem(key) || fallback; } catch(e) { return fallback; }
-}
-function safeSetStorage(key, val) {
-  try { localStorage.setItem(key, val); } catch(e) {}
-}
-function safeGetSession(key, fallback) {
-  try { return sessionStorage.getItem(key) || fallback; } catch(e) { return fallback; }
-}
-function safeSetSession(key, val) {
-  try { sessionStorage.setItem(key, val); } catch(e) {}
-}
-
-setTimeout(function() {
-  var l = document.getElementById('loader-pantalla');
-  if (l && l.style.display !== 'none') {
-    l.style.opacity = '0';
-    setTimeout(function() { l.style.display = 'none'; }, 400);
-  }
-}, 800);
-</script>
-
 <!-- PANEL ADMINISTRATIVO -->
-<div id="app-admin" style="display:none;">
+<div id="app-admin" style="display:block;">
   <div class="header-bar">
     <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
       <div style="display:flex; align-items:center; gap:10px;">
@@ -225,9 +139,7 @@ setTimeout(function() {
       </div>
       <button class="btn-primary" onclick="obtenerTasasAutomaticas(true)" style="background:var(--info); color:#fff; font-size:11px; padding:0 14px; flex-shrink:0; border-radius:12px;">🔄 TASA</button>
     </div>
-  </div>
-
-  <!-- PESTAÑAS -->
+  </  <!-- PESTAÑAS -->
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="cambiarTab('dashboard', this)">📊 DASHBOARD</button>
     <button class="tab-btn" onclick="cambiarTab('pedidos', this)">🔔 PEDIDOS WEB <span class="badge-alerta" id="badge-pedidos">0</span></button>
@@ -240,8 +152,8 @@ setTimeout(function() {
     <button class="tab-btn" onclick="cambiarTab('gastos', this)">📉 GASTOS</button>
     <button class="tab-btn" onclick="cambiarTab('ia', this)" style="color:var(--info); border-color:rgba(2,132,199,0.4);">🤖 ASISTENTE IA</button>
   </div>
-
-  <!-- 1. DASHBOARD -->
+  </div>
+   <!-- 1. DASHBOARD -->
   <div id="tab-dashboard" class="tab-content active">
     <div class="card-panel" style="border-color:var(--info); background:rgba(2,132,199,0.04);">
       <h4 style="margin:0 0 4px 0; color:var(--info); font-weight:900; font-size:14px;">🏦 Herramientas de Base de Datos & Cierre</h4>
@@ -274,8 +186,7 @@ setTimeout(function() {
       <div class="kpi-card"><div class="kpi-title">CAPITAL EN STOCK (COSTO)</div><div class="kpi-value" id="kpi-capital-stock" style="color:var(--purple);">$0.00</div><div class="kpi-sub" id="kpi-proyeccion-venta">Proyección Venta: $0.00</div></div>
     </div>
   </div>
-
-  <!-- 2. BUZÓN DE PEDIDOS WEB -->
+   <!-- 2. BUZÓN DE PEDIDOS WEB -->
   <div id="tab-pedidos" class="tab-content">
     <div class="card-panel" style="border-color:var(--danger);">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -288,8 +199,7 @@ setTimeout(function() {
       <div id="contenedor-pedidos-web" style="display:flex; flex-direction:column; gap:10px;"></div>
     </div>
   </div>
-
-  <!-- 3. INVENTARIO & STOCK -->
+   <!-- 3. INVENTARIO & STOCK -->
   <div id="tab-inventario" class="tab-content">
     <div class="card-panel" style="padding:12px;">
       <h3 class="card-title" style="margin:0 0 8px 0; font-size:15px;">🧴 Inventario & Stock</h3>
@@ -323,8 +233,7 @@ setTimeout(function() {
       </div>
     </div>
   </div>
-
-  <!-- 4. VENTAS DETAL -->
+   <!-- 4. VENTAS DETAL -->
   <div id="tab-ventas" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🛒 Registrar Venta Detal</h3>
@@ -374,7 +283,7 @@ setTimeout(function() {
       </div>
     </div>
   </div>
-    <!-- 5. VENTA AL MAYOR -->
+   <!-- 5. VENTA AL MAYOR -->
   <div id="tab-mayor" class="tab-content">
     <div class="card-panel" style="border-color:var(--warning);">
       <h3 class="card-title" style="color:var(--warning);">📦 Presupuesto y Venta al Mayor</h3>
@@ -418,8 +327,7 @@ setTimeout(function() {
       </div>
     </div>
   </div>
-
-  <!-- 6. COMBOS -->
+   <!-- 6. COMBOS -->
   <div id="tab-combos" class="tab-content">
     <div class="card-panel" style="border-color:#ff007f;">
       <h3 class="card-title" style="color:#ff007f;">🎁 Creador de Combos Especiales</h3>
@@ -446,8 +354,7 @@ setTimeout(function() {
       <button class="btn-primary" onclick="guardarComboEnInventario()" style="width:100%; padding:14px; background:#ff007f; color:#fff; font-weight:900;">💾 GUARDAR COMBO EN INVENTARIO</button>
     </div>
   </div>
-
-  <!-- 7. DECANTS -->
+   <!-- 7. DECANTS -->
   <div id="tab-decants" class="tab-content">
     <div class="card-panel" style="border-color:var(--warning);">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -490,8 +397,7 @@ setTimeout(function() {
       <button class="btn-warning" onclick="registrarVentaDecant()" style="width:100%; padding:14px; font-size:13.5px; font-weight:900;">💾 REGISTRAR VENTA DECANTS & RECIBO</button>
     </div>
   </div>
-
-  <!-- 8. CRM CLIENTES -->
+   <!-- 8. CRM CLIENTES -->
   <div id="tab-clientes" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">👥 CRM Clientes & Deudas</h3>
@@ -504,8 +410,7 @@ setTimeout(function() {
       </div>
     </div>
   </div>
-
-  <!-- 9. GASTOS -->
+   <!-- 9. GASTOS -->
   <div id="tab-gastos" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">📉 Gastos Operativos</h3>
@@ -522,8 +427,7 @@ setTimeout(function() {
       </div>
     </div>
   </div>
-
-  <!-- 10. ASISTENTE IA & TARJETA 3D -->
+   <!-- 10. ASISTENTE IA & TARJETA 3D -->
   <div id="tab-ia" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🤖 Asistente IA & Redactor Comercial</h3>
@@ -608,7 +512,7 @@ setTimeout(function() {
     </div>
   </div>
 </div>
-<!-- MODAL PERFUME -->
+ <!-- MODAL PERFUME -->
 <div id="modal-perfume" class="modal-overlay">
   <div class="modal-box">
     <button class="btn-close-modal" onclick="document.getElementById('modal-perfume').style.display='none'">✖</button>
@@ -687,6 +591,28 @@ function obtenerNombreLimpio(p) {
   if (m && n && !m.toLowerCase().includes(n.toLowerCase())) return m + ' ' + n;
   return m || n || 'Perfume';
 }
+</script>
+ <script>
+function safeGetStorage(key, fallback) {
+  try { return localStorage.getItem(key) || fallback; } catch(e) { return fallback; }
+}
+function safeSetStorage(key, val) {
+  try { localStorage.setItem(key, val); } catch(e) {}
+}
+function safeGetSession(key, fallback) {
+  try { sessionStorage.setItem(key, val); } catch(e) {}
+}
+function safeSetSession(key, val) {
+  try { sessionStorage.setItem(key, val); } catch(e) {}
+}
+
+setTimeout(function() {
+  var l = document.getElementById('loader-pantalla');
+  if (l && l.style.display !== 'none') {
+    l.style.opacity = '0';
+    setTimeout(function() { l.style.display = 'none'; }, 400);
+  }
+}, 800);
 
 function actualizarReloj() {
   const el = document.getElementById('reloj-sistema');
@@ -706,26 +632,6 @@ function alternarTemaLuz() {
 
 function forzarActualizacionApp() {
   if (confirm("🔔 ¿Actualizar y recargar la página ahora?")) window.location.reload(true);
-}
-
-function verificarBloqueoSeguridad() {
-  safeSetSession('perfuma2_auth', 'ok');
-  const savedTheme = safeGetStorage('perfuma2_theme', 'light') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  document.querySelectorAll('.btn-theme-toggle').forEach(b => b.innerHTML = savedTheme === 'light' ? '☀️ DÍA' : '🌙 NOCHE');
-  actualizarReloj();
-  const btnS = document.getElementById('btn-sonido-toggle');
-  if (btnS) btnS.innerHTML = sonidoActivo ? '🔔 SONIDO: ON' : '🔕 SONIDO: OFF';
-  cargarDatosDesdeNube();
-  
-  const loader = document.getElementById('loader-pantalla');
-  if (loader) loader.style.display = 'none';
-  
-  if (isCatalogoPublico) {
-    document.getElementById('app-catalogo').style.display = 'block';
-  } else {
-    document.getElementById('app-admin').style.display = 'block';
-  }
 }
 
 function cambiarTab(id, btn) {
@@ -789,13 +695,12 @@ function renderTodo() {
   if (usdtIn) usdtIn.value = tasaUSDT.toFixed(2);
   document.getElementById('box-tasa-bcv')?.classList.toggle('activa', tipoTasaActiva === 'bcv');
   document.getElementById('box-tasa-usdt')?.classList.toggle('activa', tipoTasaActiva === 'usdt');
-  const catTasa = document.getElementById('cat-tasa-display');
-  if (catTasa) catTasa.textContent = `Tasa: ${obtenerTasaActiva().toFixed(2)} Bs`;
   const dl = document.getElementById('lista-productos-stock');
   if (dl) dl.innerHTML = inventario.map(p => `<option value="${obtenerNombreLimpio(p)}">Stock: ${p.stock || 0} | $${(parseFloat(p.precio)||0).toFixed(2)}</option>`).join('');
-  renderDashboard(); renderPedidosWeb(); renderInventario(); renderHistorialVentas(); renderSelectFrascosDecant(); renderCRM(); renderGastos(); actualizarTarjeta3D(); renderCatalogoPublico();
+  renderDashboard(); renderPedidosWeb(); renderInventario(); renderHistorialVentas(); renderSelectFrascosDecant(); renderCRM(); renderGastos(); actualizarTarjeta3D();
 }
-
+ </script>
+ <script>
 function renderDashboard() {
   const tasa = obtenerTasaActiva();
   const totalV = ventas.reduce((a, v) => a + (parseFloat(v.total) || 0), 0);
@@ -814,133 +719,19 @@ function renderDashboard() {
   setTxt('kpi-proyeccion-venta', 'Proyección Venta: $' + proy.toFixed(2));
 }
 
-function renderInventario() {
-  const tbody = document.getElementById('tbody-inventario');
-  if (!tbody) return;
-  const q = (document.getElementById('buscar-inv')?.value || '').toLowerCase();
-  const orden = document.getElementById('orden-stock')?.value || 'mayor';
-  const tasa = obtenerTasaActiva();
-  let lista = inventario.map((p, idx) => ({ ...p, _idx: idx })).filter(p => `${p.marca || ''} ${p.nombre || ''} ${p.notas || ''}`.toLowerCase().includes(q));
-  if (orden === 'mayor') lista.sort((a, b) => (parseInt(b.stock) || 0) - (parseInt(a.stock) || 0));
-  else if (orden === 'menor') lista.sort((a, b) => (parseInt(a.stock) || 0) - (parseInt(b.stock) || 0));
-  else lista.sort((a, b) => obtenerNombreLimpio(a).localeCompare(obtenerNombreLimpio(b)));
-
-  tbody.innerHTML = lista.map(p => {
-    const costo = parseFloat(p.costo) || 0, precio = parseFloat(p.precio) || 0, stock = parseInt(p.stock) || 0;
-    return `<tr>
-      <td><div style="font-weight:900;">${obtenerNombreLimpio(p)}</div><div style="font-size:10px; color:var(--text-muted);">${p.notas || 'Sin notas'}</div></td>
-      <td style="text-align:center; font-weight:900; color:${stock > 0 ? 'var(--warning)' : 'var(--text-muted)'};">${stock}${p.mlAbierto ? ` <span style="color:var(--info);">(${p.mlAbierto}ml)</span>` : ''}</td>
-      <td>$${costo.toFixed(2)}</td>
-      <td style="font-weight:900; color:var(--accent);">$${precio.toFixed(2)}</td>
-      <td>Bs. ${(precio * tasa).toFixed(2)}</td>
-      <td style="text-align:center;"><div style="display:inline-flex; gap:4px;">
-        <button type="button" class="btn-secondary" style="padding:5px 7px; font-size:11px;" onclick="destaparBotella(${p._idx})">💧</button>
-        <button type="button" class="btn-secondary" style="padding:5px 7px; font-size:11px;" onclick="editarPerfume(${p._idx})">✏️</button>
-        <button type="button" class="btn-danger" style="padding:5px 7px; font-size:11px;" onclick="eliminarPerfume(${p._idx})">🗑️</button>
-      </div></td>
-    </tr>`;
-  }).join('');
-}
-
-function aplicarMargenGlobal() {
-  const m = parseFloat(document.getElementById('input-margen-global').value) || 0;
-  margenGlobal = m;
-  inventario.forEach(p => { const c = parseFloat(p.costo) || 0; if (c > 0 && !p.esCombo) p.precio = parseFloat((c * (1 + (p.margenInd !== undefined ? p.margenInd : m) / 100)).toFixed(2)); });
-  renderTodo(); guardarCambiosEnNube(true);
-}
-
-function importarExcelProveedor(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheet = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheet];
-      const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-      let categoriaActual = 'PERFUME', countImportados = 0;
-      json.forEach(row => {
-        if (!row || row.length === 0) return;
-        const col0 = String(row[0] || '').trim(), col1 = row[1];
-        if (col0 && (!col1 || col1 === 'PRECIOS' || isNaN(col1))) {
-          if (col0.toUpperCase().includes('TESTER') || col0.toUpperCase().includes('PERFUME')) categoriaActual = col0.toUpperCase();
-          return;
-        }
-        if (col0 && col1 !== undefined && !isNaN(col1)) {
-          const costoVal = parseFloat(col1) || 0;
-          if (costoVal > 0) {
-            const precioVenta = parseFloat((costoVal * (1 + margenGlobal / 100)).toFixed(2));
-            inventario.push({ marca: categoriaActual.includes('TESTER') ? 'TESTER' : 'GENERAL', nombre: col0, stock: 1, ml: 100, costo: costoVal, precio: precioVenta, margenInd: margenGlobal, imagen: '', notas: categoriaActual });
-            countImportados++;
-          }
-        }
-      });
-      renderTodo(); guardarCambiosEnNube(false);
-      alert(`✅ Se han importado y organizado ${countImportados} productos del Excel con éxito.`);
-      input.value = '';
-    } catch (err) { alert("❌ Error al leer el archivo Excel."); input.value = ''; }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function abrirModalPerfume() {
-  document.getElementById('p-id-edit').value = ''; document.getElementById('p-marca').value = ''; document.getElementById('p-nombre').value = '';
-  document.getElementById('p-stock').value = 1; document.getElementById('p-ml').value = 100; document.getElementById('p-costo').value = 15;
-  document.getElementById('p-margen-ind').value = margenGlobal; document.getElementById('p-precio').value = 26.25; 
-  document.getElementById('p-imagen').value = ''; document.getElementById('p-notas').value = '';
-  actualizarEnlaceBusquedaGoogle(); document.getElementById('modal-perfume').style.display = 'flex';
-}
-
-function editarPerfume(idx) {
-  const p = inventario[idx]; if (!p) return;
-  document.getElementById('p-id-edit').value = idx; document.getElementById('p-marca').value = p.marca || ''; document.getElementById('p-nombre').value = p.nombre || '';
-  document.getElementById('p-stock').value = p.stock || 0; document.getElementById('p-ml').value = p.ml || 100; document.getElementById('p-costo').value = p.costo || 0;
-  document.getElementById('p-margen-ind').value = p.margenInd !== undefined ? p.margenInd : margenGlobal;
-  document.getElementById('p-precio').value = p.precio || 0; document.getElementById('p-imagen').value = p.imagen || ''; document.getElementById('p-notas').value = p.notas || '';
-  actualizarEnlaceBusquedaGoogle(); document.getElementById('modal-perfume').style.display = 'flex';
-}
-
-function actualizarEnlaceBusquedaGoogle() {
-  const nombre = document.getElementById('p-nombre').value.trim() || document.getElementById('p-marca').value.trim() || 'perfume';
-  const lupa = document.getElementById('btn-lupa-google');
-  if (lupa) lupa.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(nombre)}`;
-}
-
-function subirFotoGaleriaModal(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) { document.getElementById('p-imagen').value = e.target.result; alert("📁 Foto cargada con éxito."); };
-  reader.readAsDataURL(file);
-}
-
-function calcularPrecioDesdeCostoModal() {
-  const c = parseFloat(document.getElementById('p-costo').value) || 0;
-  const m = parseFloat(document.getElementById('p-margen-ind').value) || margenGlobal;
-  document.getElementById('p-precio').value = (c * (1 + m / 100)).toFixed(2);
-  actualizarEnlaceBusquedaGoogle();
-}
-
-function guardarPerfumeModal() {
-  const idx = document.getElementById('p-id-edit').value;
-  const nuevo = {
-    marca: document.getElementById('p-marca').value.trim(), nombre: document.getElementById('p-nombre').value.trim(),
-    stock: parseInt(document.getElementById('p-stock').value) || 0, ml: parseInt(document.getElementById('p-ml').value) || 100,
-    costo: parseFloat(document.getElementById('p-costo').value) || 0, margenInd: parseFloat(document.getElementById('p-margen-ind').value) || margenGlobal,
-    precio: parseFloat(document.getElementById('p-precio').value) || 0, imagen: document.getElementById('p-imagen').value.trim(), notas: document.getElementById('p-notas').value.trim()
-  };
-  if (idx !== '') inventario[parseInt(idx)] = { ...inventario[parseInt(idx)], ...nuevo }; else inventario.push(nuevo);
-  document.getElementById('modal-perfume').style.display = 'none'; renderTodo(); guardarCambiosEnNube(false);
-}
-
-function eliminarPerfume(idx) { if (confirm("🗑️ ¿Eliminar este perfume?")) { inventario.splice(idx, 1); renderTodo(); guardarCambiosEnNube(false); } }
-function destaparBotella(idx) {
-  const p = inventario[idx]; if (!p || (parseInt(p.stock) || 0) <= 0) return alert("⚠️ Sin stock sellado.");
-  p.stock = (parseInt(p.stock) || 0) - 1; p.mlAbierto = (parseInt(p.mlAbierto) || 0) + (parseInt(p.ml) || 100);
-  renderTodo(); guardarCambiosEnNube(false); alert(`💧 Botella destapada (${p.mlAbierto} ml disponibles).`);
-}
-
+function renderPedidosWeb() {
+  const cont = document.getElementById('contenedor-pedidos-web');
+  const badge = document.getElementById('badge-pedidos');
+  if (!cont) return;
+  if (badge) { badge.textContent = pedidosWeb.length; badge.style.display = pedidosWeb.length > 0 ? 'inline-block' : 'none'; }
+  if (pedidosWeb.length === 0) {
+    cont.innerHTML = '<div style="color:var(--text-muted); font-style:italic; font-size:12px; text-align:center; padding:15px;">No hay pedidos web pendientes.</div>';
+    return;
+  }
+  cont.innerHTML = pedidosWeb.map((p, idx) => `
+    <div style="background:var(--bg-input); border:1.5px solid var(--border-color); border-radius:12px; padding:12px;">
+      <div style="display:flex; justify-content:space-between; align-
+  <script>
 function toggleDeliveryPanel(tipo) {
   let idChk = tipo === 'mayor' ? 'm-usa-delivery' : (tipo === 'decant' ? 'dec-usa-delivery' : 'v-usa-delivery');
   let idPanel = tipo === 'mayor' ? 'm-delivery-panel' : (tipo === 'decant' ? 'dec-delivery-panel' : 'v-delivery-panel');
@@ -949,7 +740,8 @@ function toggleDeliveryPanel(tipo) {
 }
 
 function agregarItemAlCarrito(tipo) {
-  const isMayor = tipo === 'mayor';  const inputProd = document.getElementById(isMayor ? 'm-producto-input' : 'v-producto-input');
+  const isMayor = tipo === 'mayor';
+  const inputProd = document.getElementById(isMayor ? 'm-producto-input' : 'v-producto-input');
   const cant = parseInt(document.getElementById(isMayor ? 'm-cantidad-item' : 'v-cantidad-item').value) || 1;
   const texto = (inputProd.value || '').trim().toLowerCase();
   if (!texto) return alert("Selecciona un perfume.");
@@ -1149,7 +941,8 @@ function registrarVentaDecant() {
   ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'decant', cliente: cli, productos: carritoDecants.map(d => `${d.cantidad}x ${d.nombre}`).join(', '), total, ganancia: sub * 0.5, abonado: total, restante: 0 });
   carritoDecants = []; document.getElementById('dec-items-carrito-lista').innerHTML = 'Carrito de decants vacío.'; renderTodo(); guardarCambiosEnNube(false); reproducirAlertaSonora("exito"); alert("✅ Venta de Decants registrada.");
 }
-
+</script>
+ <script>
 function obtenerPagoMovilTresLineas() {
   const b = document.getElementById('cfg-pm-banco')?.value || 'BDV (0102)', c = document.getElementById('cfg-pm-ci')?.value || 'V-24162167', t = document.getElementById('cfg-pm-tel')?.value || '04120551688';
   return `${c.replace(/\D/g, '') || '24162167'}\n${(b.match(/\d{4}/) || ['0102'])[0]}\n${t.replace(/\D/g, '') || '04120551688'}`;
@@ -1186,7 +979,8 @@ function enviarConsultaIA() {
   }, 600);
 }
 
- const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tel = (document.getElementById('ia-cli-tel')?.value || '').replace(/\D/g, ''), tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva(), tres = obtenerPagoMovilTresLineas();
+function enviarCobroTextoYCuentaAparte() {
+  const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tel = (document.getElementById('ia-cli-tel')?.value || '').replace(/\D/g, ''), tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva(), tres = obtenerPagoMovilTresLineas();
   const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nDetalle: *${tipo}*\n${nota ? `📌 *Concepto:* ${nota}\n` : ''}\n💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n📊 *Tasa:* ${tasa.toFixed(2)} Bs\n\n_Por favor realiza tu transferencia y envíanos el comprobante._`;
   const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*\n\n${tres}`;
   navigator.clipboard.writeText(tres).catch(() => {});
@@ -1232,7 +1026,11 @@ function renderGastos() {
   tb.innerHTML = gastos.map((g, idx) => `<tr><td>${g.fecha}</td><td>${g.concepto}</td><td>$${(parseFloat(g.monto)||0).toFixed(2)}</td><td><button class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="gastos.splice(${idx},1);renderTodo();guardarCambiosEnNube(false);">🗑️</button></td></tr>`).join('');
 }
 
-function copiarLinkCatalogo() {function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
+function copiarLinkCatalogo() {
+  const u = window.location.origin + window.location.pathname + '?catalogo=true';
+  navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u));
+}
+function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
 function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); }
 
 function guardarCuentasPago() {
@@ -1261,6 +1059,6 @@ window.onload = function() {
 </script>
 </body>
 </html>
-  const u = window.location.origin + window.location.pathname + '?catalogo=true';
-  navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u));
- }
+
+    
+  
