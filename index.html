@@ -362,27 +362,16 @@ setTimeout(function() {
     </div>
   </div>
 
-  <!-- 4. VENTAS DETAL (Multidivisa USDT / Bs & Cambio Automático) -->
+  <!-- 4. VENTAS DETAL (Estilo anterior solicitado con envío directo de recibo por WhatsApp) -->
   <div id="tab-ventas" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🛒 Registrar Venta Detal</h3>
       <div class="form-grid">
         <div class="form-group"><label>CLIENTE</label><input type="text" id="v-cliente" class="user-input" placeholder="Nombre"></div>
         <div class="form-group"><label>TELÉFONO CLIENTE</label><input type="text" id="v-telefono" class="user-input" placeholder="WhatsApp"></div>
-        <div class="form-group"><label>MEDIO DE PAGO</label><select id="v-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil (Bs)</option><option value="Zelle">Zelle ($)</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+        <div class="form-group"><label>MEDIO DE PAGO</label><select id="v-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
         <div class="form-group"><label>DIRECCIÓN / ZONA</label><input type="text" id="v-direccion" class="user-input" placeholder="Ej: Urb. El Centro"></div>
       </div>
-      
-      <!-- Apartado Multidivisa de Cobro y Vuelto -->
-      <div style="background:rgba(0,242,214,0.04); border:1.5px solid var(--accent); padding:12px; border-radius:12px; margin-bottom:12px;">
-        <div style="font-weight:900; font-size:11.5px; color:var(--accent); margin-bottom:8px;">💱 CÁLCULO DE PAGO Y VUELTO (USDT / BS)</div>
-        <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px;">
-          <div class="form-group"><label>PAGO RECIBIDO EN ($ / USDT)</label><input type="number" step="0.5" id="v-recibido-usd" class="user-input" value="0" oninput="calcularVueltoDetal()"></div>
-          <div class="form-group"><label>PAGO RECIBIDO EN (BS)</label><input type="number" step="1" id="v-recibido-bs" class="user-input" value="0" oninput="calcularVueltoDetal()"></div>
-        </div>
-        <div style="margin-top:8px; font-weight:900; font-size:13px; color:var(--warning);" id="v-vuelto-calculado">Vuelto / Cambio a entregar: $0.00 (Bs. 0.00)</div>
-      </div>
-
       <div style="margin:10px 0; padding:10px 12px; border-radius:10px; border:1.5px dashed var(--info); background:rgba(2,132,199,0.05);">
         <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--info); font-weight:800; margin:0; font-size:12px;">
           <input type="checkbox" id="v-usa-delivery" onchange="toggleDeliveryPanel('detal')" style="width:17px; height:17px;"> 🛵 ¿Enviar pedido con un Motorizado?
@@ -395,7 +384,7 @@ setTimeout(function() {
       </div>
       <div style="background:var(--bg-input); padding:10px; border-radius:12px; margin-bottom:12px; border:1.5px solid var(--border-color);">
         <div style="display:grid; grid-template-columns:minmax(0, 1fr) 44px auto; gap:6px; align-items:center; width:100%;">
-          <input type="text" id="v-producto-input" class="user-input" list="lista-productos-stock" placeholder="Buscar perfume en stock...">
+          <input type="text" id="v-producto-input" class="user-input" list="lista-productos-stock" placeholder="Buscar perfume en stock (Sellados)...">
           <input type="number" id="v-cantidad-item" class="user-input" value="1" min="1" max="99" style="text-align:center; padding:8px 2px;">
           <button class="btn-primary" type="button" onclick="agregarItemAlCarrito('detal')" style="padding:9px 12px; white-space:nowrap;">+ AÑADIR</button>
         </div>
@@ -404,13 +393,14 @@ setTimeout(function() {
       <div class="form-grid">
         <div class="form-group"><label>PLAN FINANCIAMIENTO</label><select id="v-plan" class="user-input" onchange="recalcularTotalesVenta('detal')"><option value="Contado">Contado</option><option value="Crédito / Abono">Crédito / Abono</option></select></div>
         <div class="form-group"><label>PLAZO ENTRE CUOTAS</label><select id="v-plazo" class="user-input"><option value="Cada 10 Días">Cada 10 Días</option><option value="Quincenal (15 Días)">Quincenal (15 Días)</option><option value="Semanal (7 Días)">Semanal (7 Días)</option></select></div>
-        <div class="form-group"><label>MONTO INICIAL / ABONADO ($ USD)</label><input type="number" step="0.01" id="v-abono" class="user-input" value="0" oninput="recalcularTotalesVenta('detal')"></div>
+        <div class="form-group"><label>MONEDA DEL ABONO</label><select id="v-moneda-abono" class="user-input"><option value="USD">Dólares ($ USD)</option><option value="BS">Bolívares (Bs)</option></select></div>
+        <div class="form-group"><label>MONTO INICIAL / ABONADO</label><input type="number" step="0.01" id="v-abono" class="user-input" value="0" oninput="recalcularTotalesVenta('detal')"><div id="v-abono-conv" style="font-size:10px; color:var(--accent); margin-top:3px;">Equivale a: Bs. 0.00</div></div>
       </div>
       <div class="caja-totales">
         <div id="v-resumen-abono" style="color:var(--accent); font-weight:900; font-size:15px;">Total: $0.00 | Abonado: $0.00</div>
         <div id="v-resumen-restante" style="color:var(--warning); font-weight:900; font-size:15px;">Saldo Restante: $0.00</div>
       </div>
-      <button class="btn-primary" onclick="registrarVenta('detal')" style="width:100%; padding:14px; font-size:13.5px; font-weight:900;">💾 REGISTRAR VENTA DETAL & RECIBO</button>
+      <button class="btn-primary" onclick="registrarVentaDetalConFacturaWA()" style="width:100%; padding:14px; font-size:13.5px; font-weight:900;">💾 REGISTRAR VENTA DETAL & RECIBO</button>
     </div>
     <div class="card-panel">
       <h4 class="card-title">📋 Historial de Ventas (Detal)</h4>
@@ -572,10 +562,26 @@ setTimeout(function() {
     </div>
   </div>
 
-  <!-- 10. ASISTENTE IA & TARJETA 3D (Envío Dual WhatsApp Separado) -->
+  <!-- 10. ASISTENTE IA, CHAT & TARJETA 3D -->
   <div id="tab-ia" class="tab-content">
     <div class="card-panel">
-      <h3 class="card-title">🎨 Generador de Cobros con Tarjeta 3D</h3>
+      <h3 class="card-title">🤖 Asistente IA & Redactor Comercial</h3>
+      <p style="font-size:11.5px; color:var(--text-muted); margin-top:0;">Escribe cualquier consulta, instrucción de redacción o análisis de inventario para el asistente:</p>
+      
+      <!-- Cuadro de Chat con IA -->
+      <div style="background:var(--bg-input); border:1.5px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:12px; height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;" id="ia-chat-box">
+        <div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">
+          🤖 <strong>Asistente PERFUMA2:</strong> ¡Hola Oyam! Estoy listo. Escribe abajo lo que necesites redactar (mensajes de cobro, descripciones de perfumes o análisis de stock).
+        </div>
+      </div>
+      <div style="display:flex; gap:6px; margin-bottom:16px;">
+        <input type="text" id="ia-prompt-input" class="user-input" placeholder="Escribe aquí tu consulta o instrucción..." style="flex:1;" onkeydown="if(event.key==='Enter') enviarConsultaIA()">
+        <button class="btn-primary" onclick="enviarConsultaIA()" style="padding:10px 16px;">💬 ENVIAR</button>
+      </div>
+    </div>
+
+    <div class="card-panel">
+      <h3 class="card-title">🎨 Generador de Cobros con Tarjeta 3D (Envío Dual WhatsApp)</h3>
       <div class="form-grid">
         <div class="form-group"><label>CLIENTE</label><input type="text" id="ia-cli-nombre" class="user-input" placeholder="Nombre del cliente" oninput="actualizarTarjeta3D()"></div>
         <div class="form-group"><label>TELÉFONO CLIENTE</label><input type="text" id="ia-cli-tel" class="user-input" placeholder="WhatsApp (Ej: 0412...)" oninput="actualizarTarjeta3D()"></div>
@@ -800,7 +806,9 @@ async function obtenerTasasAutomaticas(mostrarMsg) {
     if (ofi?.promedio) tasaBCV = parseFloat(ofi.promedio.toFixed(2));
     if (par?.promedio) tasaUSDT = parseFloat(par.promedio.toFixed(2));
     renderTodo(); guardarCambiosEnNube(false);
-    if (mostrarMsg) alert(`✅ Tasas actualizadas:\nBCV: ${tasaBCV} Bs\nUSDT: ${tasaUSDT} Bs`);
+    if (mostrarMsg) alert(`✅ Tasas actualizadas:
+BCV: ${tasaBCV} Bs
+USDT: ${tasaUSDT} Bs`);
   } catch (e) { if (mostrarMsg) alert("⚠️ Edita la tasa manualmente."); }
 }
 
@@ -1038,54 +1046,130 @@ function renderCarritoVentas(tipo) {
 }
 function quitarItemCarrito(tipo, idx) { (tipo === 'mayor' ? carritoMayor : carritoDetal).splice(idx, 1); renderCarritoVentas(tipo); }
 
-function calcularVueltoDetal() {
-  const lista = carritoDetal;
-  const totalVenta = lista.reduce((a, i) => a + (i.precio * i.cantidad), 0) + (document.getElementById('v-usa-delivery')?.checked ? (parseFloat(document.getElementById('v-delivery')?.value) || 0) : 0);
-  const recUsd = parseFloat(document.getElementById('v-recibido-usd')?.value) || 0;
-  const recBs = parseFloat(document.getElementById('v-recibido-bs')?.value) || 0;
-  const tasa = obtenerTasaActiva();
-  
-  const totalRecibidoEnUsd = recUsd + (recBs / tasa);
-  const vueltoUsd = totalRecibidoEnUsd - totalVenta;
-  const elVuelto = document.getElementById('v-vuelto-calculado');
-  if (elVuelto) {
-    if (vueltoUsd >= 0) {
-      elVuelto.textContent = `Vuelto / Cambio a entregar: $${vueltoUsd.toFixed(2)} (Bs. ${(vueltoUsd * tasa).toFixed(2)})`;
-      elVuelto.style.color = 'var(--success)';
-    } else {
-      elVuelto.textContent = `Falta por pagar: $${Math.abs(vueltoUsd).toFixed(2)} (Bs. ${(Math.abs(vueltoUsd) * tasa).toFixed(2)})`;
-      elVuelto.style.color = 'var(--warning)';
-    }
-  }
-}
-
 function recalcularTotalesVenta(tipo) {
   const isMayor = tipo === 'mayor', lista = isMayor ? carritoMayor : carritoDetal;
   const total = lista.reduce((a, i) => a + (i.precio * i.cantidad), 0) + (parseFloat(document.getElementById(isMayor ? 'm-delivery' : 'v-delivery')?.value) || 0);
-  if (isMayor) document.getElementById('m-resumen-total').textContent = `Total al Mayor: $${total.toFixed(2)}`;
-  else {
+  const tasa = obtenerTasaActiva();
+  if (isMayor) {
+    document.getElementById('m-resumen-total').textContent = `Total al Mayor: $${total.toFixed(2)}`;
+  } else {
     const plan = document.getElementById('v-plan')?.value || 'Contado';
-    const abonado = plan === 'Contado' ? total : (parseFloat(document.getElementById('v-abono')?.value) || 0);
-    document.getElementById('v-resumen-abono').textContent = `Total: $${total.toFixed(2)} | Abonado: $${abonado.toFixed(2)}`;
-    document.getElementById('v-resumen-restante').textContent = `Saldo Restante: $${Math.max(0, total - abonado).toFixed(2)}`;
-    calcularVueltoDetal();
+    const abonoVal = parseFloat(document.getElementById('v-abono')?.value) || 0;
+    const monedaAbono = document.getElementById('v-moneda-abono')?.value || 'USD';
+    
+    let abonoUsd = abonoVal;
+    if (monedaAbono === 'BS') {
+      abonoUsd = abonoVal / tasa;
+      const convEl = document.getElementById('v-abono-conv');
+      if (convEl) convEl.textContent = `Equivale a: $${abonoUsd.toFixed(2)} USD`;
+    } else {
+      const convEl = document.getElementById('v-abono-conv');
+      if (convEl) convEl.textContent = `Equivale a: Bs. ${(abonoVal * tasa).toFixed(2)}`;
+    }
+    
+    const abonado = plan === 'Contado' ? total : abonoUsd;
+    const restante = Math.max(0, total - abonado);
+    const numPerf = lista.reduce((a, i) => a + i.cantidad, 0);
+    
+    document.getElementById('v-resumen-abono').innerHTML = `Total: $${total.toFixed(2)} | Abonado: $${abonado.toFixed(2)}<br><small>${numPerf} perfumes</small>`;
+    document.getElementById('v-resumen-restante').textContent = `Saldo Restante: $${restante.toFixed(2)}`;
+  }
+}
+
+/* REGISTRAR VENTA DETAL Y ENVIAR RECIBO POR WHATSAPP COMO ANTES */
+function registrarVentaDetalConFacturaWA() {
+  if (carritoDetal.length === 0) return alert("⚠️ Carrito de ventas vacío.");
+  const cli = document.getElementById('v-cliente').value.trim() || 'Cliente General';
+  const tel = (document.getElementById('v-telefono').value || '').replace(/\D/g, '');
+  const met = document.getElementById('v-metodo').value;
+  const dir = document.getElementById('v-direccion').value.trim();
+  const sub = carritoDetal.reduce((a, i) => a + (i.precio * i.cantidad), 0);
+  const costoT = carritoDetal.reduce((a, i) => a + (i.costo * i.cantidad), 0);
+  const delivery = document.getElementById('v-usa-delivery')?.checked ? (parseFloat(document.getElementById('v-delivery')?.value) || 0) : 0;
+  const total = sub + delivery;
+  const plan = document.getElementById('v-plan')?.value || 'Contado';
+  const abonoVal = parseFloat(document.getElementById('v-abono')?.value) || 0;
+  const monedaAbono = document.getElementById('v-moneda-abono')?.value || 'USD';
+  const tasa = obtenerTasaActiva();
+  
+  let abonoUsd = abonoVal;
+  if (monedaAbono === 'BS') abonoUsd = abonoVal / tasa;
+  const abonado = plan === 'Contado' ? total : abonoUsd;
+  const restante = Math.max(0, total - abonado);
+
+  // Descontar stock
+  carritoDetal.forEach(item => { 
+    const p = inventario.find(x => obtenerNombreLimpio(x) === item.nombre); 
+    if (p) p.stock = Math.max(0, (parseInt(p.stock) || 0) - item.cantidad); 
+  });
+
+  ventas.unshift({ 
+    fecha: new Date().toLocaleString('es-VE'), 
+    tipo: 'detal', 
+    cliente: cli, 
+    telefono: tel, 
+    metodo: met, 
+    productos: carritoDetal.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), 
+    total, 
+    ganancia: sub - costoT, 
+    abonado, 
+    restante 
+  });
+
+  // Generar factura / recibo de texto para WhatsApp
+  const reciboTxt = `✨ *FACTURA / RECIBO - PERFUMA2* ✨
+
+👤 *Cliente:* ${cli}
+📱 *Teléfono:* ${tel || 'N/A'}
+${dir ? `📍 *Dirección:* ${dir}
+` : ''}📦 *Detalle del Pedido:*
+${carritoDetal.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('
+')}
+${delivery > 0 ? `🛵 *Delivery:* $${delivery.toFixed(2)}
+` : ''}
+💰 *Total a Pagar:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})
+💳 *Método de Pago:* ${met}
+${plan === 'Crédito / Abono' ? `📊 *Plan:* Crédito / Abono
+💵 *Abonado:* $${abonado.toFixed(2)}
+⏳ *Saldo Restante:* $${restante.toFixed(2)}
+` : ''}
+📊 *Tasa del día:* ${tasa.toFixed(2)} Bs
+
+_¡Gracias por tu compra en PERFUMA2! Tu fragancia ideal._`;
+
+  navigator.clipboard.writeText(reciboTxt).catch(() => {});
+  
+  carritoDetal = [];
+  renderCarritoVentas('detal');
+  renderTodo();
+  guardarCambiosEnNube(false);
+
+  alert("✅ Venta registrada con éxito y recibo copiado al portapapeles.");
+  
+  if (tel) {
+    window.open(`https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(reciboTxt)}`, '_blank');
+  } else {
+    window.open(`https://wa.me/?text=${encodeURIComponent(reciboTxt)}`, '_blank');
   }
 }
 
 function registrarVenta(tipo) {
-  const isMayor = tipo === 'mayor', lista = isMayor ? carritoMayor : carritoDetal;
+  if (tipo === 'detal') {
+    registrarVentaDetalConFacturaWA();
+    return;
+  }
+  const lista = carritoMayor;
   if (lista.length === 0) return alert("⚠️ Carrito vacío.");
-  const cli = document.getElementById(isMayor ? 'm-cliente' : 'v-cliente').value.trim() || 'Cliente General';
-  const tel = document.getElementById(isMayor ? 'm-telefono' : 'v-telefono').value.trim();
-  const met = document.getElementById(isMayor ? 'm-metodo' : 'v-metodo').value;
+  const cli = document.getElementById('m-cliente').value.trim() || 'Cliente Mayorista';
+  const tel = document.getElementById('m-telefono').value.trim();
+  const met = document.getElementById('m-metodo').value;
   const sub = lista.reduce((a, i) => a + (i.precio * i.cantidad), 0), costoT = lista.reduce((a, i) => a + (i.costo * i.cantidad), 0);
-  const total = sub + (parseFloat(document.getElementById(isMayor ? 'm-delivery' : 'v-delivery')?.value) || 0);
-  const plan = isMayor ? 'Contado' : (document.getElementById('v-plan')?.value || 'Contado');
-  const abonado = plan === 'Contado' ? total : (parseFloat(document.getElementById('v-abono')?.value) || 0);
+  const total = sub + (parseFloat(document.getElementById('m-delivery')?.value) || 0);
+  
   lista.forEach(item => { const p = inventario.find(x => obtenerNombreLimpio(x) === item.nombre); if (p) p.stock = Math.max(0, (parseInt(p.stock) || 0) - item.cantidad); });
-  ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo, cliente: cli, telefono: tel, metodo: met, productos: lista.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), total, ganancia: sub - costoT, abonado, restante: Math.max(0, total - abonado) });
-  if (isMayor) carritoMayor = []; else carritoDetal = [];
-  renderCarritoVentas(tipo); renderTodo(); guardarCambiosEnNube(false); alert("✅ Venta registrada.");
+  ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'mayor', cliente: cli, telefono: tel, metodo: met, productos: lista.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), total, ganancia: sub - costoT, abonado: total, restante: 0 });
+  carritoMayor = [];
+  renderCarritoVentas('mayor'); renderTodo(); guardarCambiosEnNube(false); alert("✅ Venta al mayor registrada.");
 }
 
 function renderHistorialVentas() {
@@ -1132,12 +1216,16 @@ function registrarVentaDecant() {
 
 function obtenerPagoMovilTresLineas() {
   const b = document.getElementById('cfg-pm-banco')?.value || 'BDV (0102)', c = document.getElementById('cfg-pm-ci')?.value || 'V-24162167', t = document.getElementById('cfg-pm-tel')?.value || '04120551688';
-  return `${c.replace(/\D/g, '') || '24162167'}\n${(b.match(/\d{4}/) || ['0102'])[0]}\n${t.replace(/\D/g, '') || '04120551688'}`;
+  return `${c.replace(/\D/g, '') || '24162167'}
+${(b.match(/\d{4}/) || ['0102'])[0]}
+${t.replace(/\D/g, '') || '04120551688'}`;
 }
 
 function copiarPagoMovilTresLineas() {
   const txt = obtenerPagoMovilTresLineas();
-  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:\n\n" + txt));
+  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:
+
+" + txt));
 }
 
 function actualizarTarjeta3D() {
@@ -1153,20 +1241,49 @@ function actualizarTarjeta3D() {
   document.getElementById('t3d-metodos-lista').innerHTML = h;
 }
 
+/* CHAT CON ASISTENTE IA */
+function enviarConsultaIA() {
+  const input = document.getElementById('ia-prompt-input');
+  const chatBox = document.getElementById('ia-chat-box');
+  if (!input || !input.value.trim()) return;
+  const txt = input.value.trim();
+  
+  // Mostrar mensaje usuario
+  chatBox.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; font-size:12px; align-self:flex-end; max-width:85%;">👤 <strong>Tú:</strong> ${txt}</div>`;
+  input.value = '';
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  // Respuesta inteligente simulada
+  setTimeout(() => {
+    let respuesta = "🤖 Analizando tu solicitud en PERFUMA2...";
+    const t = txt.toLowerCase();
+    if (t.includes('deuda') || t.includes('cobro')) {
+      respuesta = "💡 *Sugerencia de Cobro:* 'Hola estimado/a, le escribimos de PERFUMA2 para recordarle su saldo pendiente. ¡Contáctenos para coordinar su pago y seguir disfrutando de sus fragancias!'";
+    } else if (t.includes('estado') || t.includes('whatsapp') || t.includes('promo')) {
+      respuesta = "✨ *Idea para Estado:* '🔥 ¡Llegaron fragancias exclusivas a PERFUMA2! Escríbenos al DM o al WhatsApp para asegurar tu decant o botella sellada antes de que se agoten. 🧴💨'";
+    } else if (t.includes('stock') || t.includes('inventario') || t.includes('ventas')) {
+      const totalP = inventario.reduce((a, p) => a + (parseInt(p.stock) || 0), 0);
+      respuesta = `📊 *Resumen de Inventario:* Tienes ${inventario.length} referencias registradas con un total de ${totalP} unidades selladas en stock. ¡Todo marcha excelente!`;
+    } else {
+      respuesta = `🤖 Entendido, Oyam. Para "${txt}", te recomiendo mantener organizada la rotación de tus frascos abiertos y verificar la tasa de cambio USDT del día.`;
+    }
+    
+    chatBox.innerHTML += `<div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">🤖 <strong>Asistente:</strong> ${respuesta}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }, 600);
+}
+
 /* FACTURAR DESDE EL BUZÓN DE PEDIDOS WEB (1 CLIC) */
 function facturarPedidoWeb(idx) {
   const p = pedidosWeb[idx];
   if (!p) return;
   
-  // Cambiar a la pestaña de ventas detal
   cambiarTab('ventas', document.querySelector('.tab-btn[onclick*="ventas"]'));
   
-  // Rellenar datos del cliente
   document.getElementById('v-cliente').value = p.cliente || '';
   document.getElementById('v-telefono').value = p.telefono || '';
   document.getElementById('v-direccion').value = p.direccion || '';
   
-  // Cargar artículos al carrito detal
   carritoDetal = (p.items || []).map(i => {
     const prod = inventario.find(x => obtenerNombreLimpio(x).toLowerCase() === i.nombre.toLowerCase());
     return {
@@ -1178,18 +1295,27 @@ function facturarPedidoWeb(idx) {
   });
   
   renderCarritoVentas('detal');
-  alert(`⚡ Pedido de ${p.cliente} cargado en Ventas Detal. ¡Solo revisa y pulsa Registrar Venta!`);
+  alert(`⚡ Pedido de ${p.cliente} cargado en Ventas Detal. ¡Solo revisa y pulsa Registrar Venta & Recibo!`);
 }
 
 /* ENVÍO DUAL WHATSAPP EN 2 MENSAJES SEPARADOS */
 function enviarCobroTextoYCuentaAparte() {
   const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tel = (document.getElementById('ia-cli-tel')?.value || '').replace(/\D/g, ''), tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva(), tres = obtenerPagoMovilTresLineas();
   
-  // Mensaje 1: Detalle comercial
-  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nDetalle correspondiente a: *${tipo}*\n${nota ? `📌 *Concepto:* ${nota}\n` : ''}\n💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n📊 *Tasa del día:* ${tasa.toFixed(2)} Bs\n\n_Por favor realiza tu transferencia y envíanos el comprobante por este medio. ¡Muchas gracias!_`;
+  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨
+
+Hola *${cli}*, un saludo cordial.
+Detalle correspondiente a: *${tipo}*
+${nota ? `📌 *Concepto:* ${nota}
+` : ''}
+💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
+📊 *Tasa del día:* ${tasa.toFixed(2)} Bs
+
+_Por favor realiza tu transferencia y envíanos el comprobante por este medio. ¡Muchas gracias!_`;
   
-  // Mensaje 2: Cuenta separada en 3 líneas limpias
-  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*\n\n${tres}`;
+  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*
+
+${tres}`;
 
   navigator.clipboard.writeText(tres).catch(() => {});
   
@@ -1207,7 +1333,14 @@ async function compartirTarjeta3D() {
   const tres = obtenerPagoMovilTresLineas();
   try { await navigator.clipboard.writeText(tres); } catch (e) {}
   const card = document.getElementById('tarjeta-cobro-3d'), cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva();
-  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nConcepto: *${tipo}*\n💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n\n📲 *Datos Bancarios (Pago Móvil):*\n${tres}`;
+  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨
+
+Hola *${cli}*, un saludo cordial.
+Concepto: *${tipo}*
+💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
+
+📲 *Datos Bancarios (Pago Móvil):*
+${tres}`;
   const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#070b14' });
   canvas.toBlob(async blob => {
     const file = new File([blob], `Tarjeta_Cobro_${cli.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
@@ -1265,7 +1398,19 @@ function enviarPedidoWeb() {
   const nom = document.getElementById('cat-cli-nombre').value.trim() || 'Cliente Web', tel = document.getElementById('cat-cli-tel').value.trim() || 'Sin teléfono', dir = document.getElementById('cat-cli-dir').value.trim() || 'Por coordinar', total = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0), tasa = obtenerTasaActiva();
   pedidosWeb.unshift({ fecha: new Date().toLocaleString('es-VE'), cliente: nom, telefono: tel, direccion: dir, items: carritoPublico, total });
   guardarCambiosEnNube(false);
-  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*\n\n👤 *Cliente:* ${nom}\n📱 *Teléfono:* ${tel}\n📍 *Dirección:* ${dir}\n\n*Artículos Solicitados:*\n${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n')}\n\n💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n\n_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
+  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*
+
+👤 *Cliente:* ${nom}
+📱 *Teléfono:* ${tel}
+📍 *Dirección:* ${dir}
+
+*Artículos Solicitados:*
+${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('
+')}
+
+💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})
+
+_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
   carritoPublico = []; document.getElementById('modal-carrito-pub').style.display = 'none'; actualizarBarraCarritoPublico();
   window.open(`https://wa.me/${numeroWATienda}?text=${encodeURIComponent(msg)}`, '_blank');
 }
@@ -1307,7 +1452,8 @@ function renderGastos() {
   tb.innerHTML = gastos.map((g, idx) => `<tr><td>${g.fecha}</td><td>${g.concepto}</td><td>$${(parseFloat(g.monto)||0).toFixed(2)}</td><td><button class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="gastos.splice(${idx},1);renderTodo();guardarCambiosEnNube(false);">🗑️</button></td></tr>`).join('');
 }
 
-function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u)); }
+function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:
+" + u)); }
 function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
 function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); }
 
@@ -1318,7 +1464,7 @@ function guardarCuentasPago() {
   }).then(() => alert("✅ Métodos guardados."));
 }
 
-function cargarCuentasPagoEnInputs(c) {
+function cargarCuentasPagoInpuntu(c) {
   if (!c) return;
   if (c.pmBanco) document.getElementById('cfg-pm-banco').value = c.pmBanco;
   if (c.pmCi) document.getElementById('cfg-pm-ci').value = c.pmCi;
