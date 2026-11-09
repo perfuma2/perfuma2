@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PERFUMA2 - Gestión de Perfumería</title>
+<title>PERFUMA2 - Gestión de Perfumería Profesional</title>
 
 <link rel="icon" type="image/jpeg" href="logo.jpg.jpg">
 <link rel="apple-touch-icon" href="logo.jpg.jpg">
@@ -313,7 +313,7 @@ setTimeout(function() {
     </div>
   </div>
 
-  <!-- 2. PEDIDOS WEB -->
+  <!-- 2. BUZÓN DE PEDIDOS WEB (Con Botón de 1 Clic para Facturar) -->
   <div id="tab-pedidos" class="tab-content">
     <div class="card-panel" style="border-color:var(--danger);">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -362,16 +362,27 @@ setTimeout(function() {
     </div>
   </div>
 
-  <!-- 4. VENTAS DETAL -->
+  <!-- 4. VENTAS DETAL (Multidivisa USDT / Bs & Cambio Automático) -->
   <div id="tab-ventas" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🛒 Registrar Venta Detal</h3>
       <div class="form-grid">
         <div class="form-group"><label>CLIENTE</label><input type="text" id="v-cliente" class="user-input" placeholder="Nombre"></div>
         <div class="form-group"><label>TELÉFONO CLIENTE</label><input type="text" id="v-telefono" class="user-input" placeholder="WhatsApp"></div>
-        <div class="form-group"><label>MEDIO DE PAGO</label><select id="v-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+        <div class="form-group"><label>MEDIO DE PAGO</label><select id="v-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil (Bs)</option><option value="Zelle">Zelle ($)</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
         <div class="form-group"><label>DIRECCIÓN / ZONA</label><input type="text" id="v-direccion" class="user-input" placeholder="Ej: Urb. El Centro"></div>
       </div>
+      
+      <!-- Apartado Multidivisa de Cobro y Vuelto -->
+      <div style="background:rgba(0,242,214,0.04); border:1.5px solid var(--accent); padding:12px; border-radius:12px; margin-bottom:12px;">
+        <div style="font-weight:900; font-size:11.5px; color:var(--accent); margin-bottom:8px;">💱 CÁLCULO DE PAGO Y VUELTO (USDT / BS)</div>
+        <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px;">
+          <div class="form-group"><label>PAGO RECIBIDO EN ($ / USDT)</label><input type="number" step="0.5" id="v-recibido-usd" class="user-input" value="0" oninput="calcularVueltoDetal()"></div>
+          <div class="form-group"><label>PAGO RECIBIDO EN (BS)</label><input type="number" step="1" id="v-recibido-bs" class="user-input" value="0" oninput="calcularVueltoDetal()"></div>
+        </div>
+        <div style="margin-top:8px; font-weight:900; font-size:13px; color:var(--warning);" id="v-vuelto-calculado">Vuelto / Cambio a entregar: $0.00 (Bs. 0.00)</div>
+      </div>
+
       <div style="margin:10px 0; padding:10px 12px; border-radius:10px; border:1.5px dashed var(--info); background:rgba(2,132,199,0.05);">
         <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--info); font-weight:800; margin:0; font-size:12px;">
           <input type="checkbox" id="v-usa-delivery" onchange="toggleDeliveryPanel('detal')" style="width:17px; height:17px;"> 🛵 ¿Enviar pedido con un Motorizado?
@@ -412,7 +423,7 @@ setTimeout(function() {
     </div>
   </div>
 
-  <!-- 5. VENTA AL MAYOR -->
+  <!-- 5. VENTA AL MAYOR (Con Selección Múltiple) -->
   <div id="tab-mayor" class="tab-content">
     <div class="card-panel" style="border-color:var(--warning);">
       <h3 class="card-title" style="color:var(--warning);">📦 Presupuesto y Venta al Mayor</h3>
@@ -435,7 +446,7 @@ setTimeout(function() {
       </div>
       <div style="background:var(--bg-input); padding:10px; border-radius:12px; margin-bottom:12px; border:1.5px solid var(--border-color);">
         <div style="display:grid; grid-template-columns:minmax(0, 1fr) 44px auto; gap:6px; align-items:center; width:100%;">
-          <input type="text" id="m-producto-input" class="user-input" list="lista-productos-stock" placeholder="Buscar perfume...">
+          <input type="text" id="m-producto-input" class="user-input" list="lista-productos-stock" placeholder="Buscar perfume para añadir al mayor...">
           <input type="number" id="m-cantidad-item" class="user-input" value="6" min="1" max="99" style="text-align:center; padding:8px 2px;">
           <button class="btn-warning" type="button" onclick="agregarItemAlCarrito('mayor')" style="padding:9px 12px; white-space:nowrap;">+ AÑADIR</button>
         </div>
@@ -561,7 +572,7 @@ setTimeout(function() {
     </div>
   </div>
 
-  <!-- 10. ASISTENTE IA & TARJETA 3D -->
+  <!-- 10. ASISTENTE IA & TARJETA 3D (Envío Dual WhatsApp Separado) -->
   <div id="tab-ia" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🎨 Generador de Cobros con Tarjeta 3D</h3>
@@ -611,7 +622,7 @@ setTimeout(function() {
       </div>
 
       <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
-        <button class="btn-primary" style="background:var(--info); color:#fff; width:100%; padding:12px;" onclick="enviarCobroTextoYCuentaAparte()">💬 ENVIAR DETALLE + CUENTA APARTE (3 LÍNEAS)</button>
+        <button class="btn-primary" style="background:var(--info); color:#fff; width:100%; padding:12px;" onclick="enviarCobroTextoYCuentaAparte()">💬 ENVIAR DETALLE + CUENTA SEPARADA (2 MENSAJES)</button>
         <button class="btn-secondary" style="border-color:var(--warning); color:var(--warning); width:100%; padding:12px;" onclick="copiarPagoMovilTresLineas()">📋 COPIAR SOLO LA CUENTA (3 LÍNEAS PAGO MÓVIL)</button>
         <button class="btn-primary" style="background:var(--success); color:#fff; width:100%; padding:12px;" onclick="compartirTarjeta3D()">🖼️ ENVIAR IMAGEN Y COPIAR 3 LÍNEAS</button>
       </div>
@@ -789,7 +800,9 @@ async function obtenerTasasAutomaticas(mostrarMsg) {
     if (ofi?.promedio) tasaBCV = parseFloat(ofi.promedio.toFixed(2));
     if (par?.promedio) tasaUSDT = parseFloat(par.promedio.toFixed(2));
     renderTodo(); guardarCambiosEnNube(false);
-    if (mostrarMsg) alert(`✅ Tasas actualizadas:\nBCV: ${tasaBCV} Bs\nUSDT: ${tasaUSDT} Bs`);
+    if (mostrarMsg) alert(`✅ Tasas actualizadas:
+BCV: ${tasaBCV} Bs
+USDT: ${tasaUSDT} Bs`);
   } catch (e) { if (mostrarMsg) alert("⚠️ Edita la tasa manualmente."); }
 }
 
@@ -859,7 +872,7 @@ function aplicarMargenGlobal() {
   renderTodo(); guardarCambiosEnNube(true);
 }
 
-/* IMPORTAR EXCEL PROVEEDOR INTELIGENTE */
+/* IMPORTAR EXCEL PROVEEDOR */
 function importarExcelProveedor(input) {
   const file = input.files[0];
   if (!file) return;
@@ -1026,6 +1039,28 @@ function renderCarritoVentas(tipo) {
   recalcularTotalesVenta(tipo);
 }
 function quitarItemCarrito(tipo, idx) { (tipo === 'mayor' ? carritoMayor : carritoDetal).splice(idx, 1); renderCarritoVentas(tipo); }
+
+function calcularVueltoDetal() {
+  const lista = carritoDetal;
+  const totalVenta = lista.reduce((a, i) => a + (i.precio * i.cantidad), 0) + (document.getElementById('v-usa-delivery')?.checked ? (parseFloat(document.getElementById('v-delivery')?.value) || 0) : 0);
+  const recUsd = parseFloat(document.getElementById('v-recibido-usd')?.value) || 0;
+  const recBs = parseFloat(document.getElementById('v-recibido-bs')?.value) || 0;
+  const tasa = obtenerTasaActiva();
+  
+  const totalRecibidoEnUsd = recUsd + (recBs / tasa);
+  const vueltoUsd = totalRecibidoEnUsd - totalVenta;
+  const elVuelto = document.getElementById('v-vuelto-calculado');
+  if (elVuelto) {
+    if (vueltoUsd >= 0) {
+      elVuelto.textContent = `Vuelto / Cambio a entregar: $${vueltoUsd.toFixed(2)} (Bs. ${(vueltoUsd * tasa).toFixed(2)})`;
+      elVuelto.style.color = 'var(--success)';
+    } else {
+      elVuelto.textContent = `Falta por pagar: $${Math.abs(vueltoUsd).toFixed(2)} (Bs. ${(Math.abs(vueltoUsd) * tasa).toFixed(2)})`;
+      elVuelto.style.color = 'var(--warning)';
+    }
+  }
+}
+
 function recalcularTotalesVenta(tipo) {
   const isMayor = tipo === 'mayor', lista = isMayor ? carritoMayor : carritoDetal;
   const total = lista.reduce((a, i) => a + (i.precio * i.cantidad), 0) + (parseFloat(document.getElementById(isMayor ? 'm-delivery' : 'v-delivery')?.value) || 0);
@@ -1035,8 +1070,10 @@ function recalcularTotalesVenta(tipo) {
     const abonado = plan === 'Contado' ? total : (parseFloat(document.getElementById('v-abono')?.value) || 0);
     document.getElementById('v-resumen-abono').textContent = `Total: $${total.toFixed(2)} | Abonado: $${abonado.toFixed(2)}`;
     document.getElementById('v-resumen-restante').textContent = `Saldo Restante: $${Math.max(0, total - abonado).toFixed(2)}`;
+    calcularVueltoDetal();
   }
 }
+
 function registrarVenta(tipo) {
   const isMayor = tipo === 'mayor', lista = isMayor ? carritoMayor : carritoDetal;
   if (lista.length === 0) return alert("⚠️ Carrito vacío.");
@@ -1052,23 +1089,27 @@ function registrarVenta(tipo) {
   if (isMayor) carritoMayor = []; else carritoDetal = [];
   renderCarritoVentas(tipo); renderTodo(); guardarCambiosEnNube(false); alert("✅ Venta registrada.");
 }
+
 function renderHistorialVentas() {
   const tasa = obtenerTasaActiva();
   const tbD = document.getElementById('tbody-ventas-detal'), tbM = document.getElementById('tbody-ventas-mayor');
   if (tbD) tbD.innerHTML = ventas.filter(v => v.tipo !== 'mayor').map((v, idx) => `<tr><td>${v.fecha || ''}</td><td><strong>${v.cliente}</strong></td><td>${v.productos}</td><td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small>Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td><td><button class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="ventas.splice(${idx},1);renderTodo();guardarCambiosEnNube(false);">🗑️</button></td></tr>`).join('');
   if (tbM) tbM.innerHTML = ventas.filter(v => v.tipo === 'mayor').map(v => `<tr><td>${v.fecha || ''}</td><td><strong>${v.cliente}</strong></td><td>${v.productos}</td><td>$${(parseFloat(v.total)||0).toFixed(2)}</td></tr>`).join('');
 }
+
 function renderSelectFrascosDecant() {
   const sel = document.getElementById('dec-frasco-select'); if (!sel) return;
   const ab = inventario.map((p, idx) => ({ ...p, _idx: idx })).filter(p => (parseInt(p.mlAbierto) || 0) > 0);
   sel.innerHTML = `<option value="">-- Elige un frasco abierto (${ab.length}) --</option>` + ab.map(p => `<option value="${p._idx}">${obtenerNombreLimpio(p)} (${p.mlAbierto} ml)</option>`).join('');
 }
+
 function calcularPrecioSugeridoDecant() {
   const idx = document.getElementById('dec-frasco-select').value; if (idx === '') return;
   const p = inventario[parseInt(idx)]; if (!p) return;
   const ml = parseInt(document.getElementById('dec-ml').value) || 10, vial = parseFloat(document.getElementById('dec-costo-vial').value) || 0.8;
   document.getElementById('dec-precio-venta').value = ((((parseFloat(p.costo) || 0) / (parseInt(p.ml) || 100)) * ml + vial) * 2).toFixed(2);
 }
+
 function agregarDecantAlCarrito() {
   const idx = document.getElementById('dec-frasco-select').value; if (idx === '') return alert("Elige un frasco.");
   const p = inventario[parseInt(idx)], ml = parseInt(document.getElementById('dec-ml').value) || 10, cant = parseInt(document.getElementById('dec-cant').value) || 1, precio = parseFloat(document.getElementById('dec-precio-venta').value) || 0;
@@ -1076,10 +1117,12 @@ function agregarDecantAlCarrito() {
   document.getElementById('dec-items-carrito-lista').innerHTML = carritoDecants.map(d => `<div class="carrito-item"><span>${d.cantidad}x ${d.nombre}</span><span>$${(d.precio * d.cantidad).toFixed(2)}</span></div>`).join('');
   recalcularTotalesVentaDecant();
 }
+
 function recalcularTotalesVentaDecant() {
   const sub = carritoDecants.reduce((a, d) => a + (d.precio * d.cantidad), 0) + (parseFloat(document.getElementById('dec-delivery')?.value) || 0);
   document.getElementById('dec-resumen-total').textContent = `Total Decants: $${sub.toFixed(2)}`;
 }
+
 function registrarVentaDecant() {
   if (carritoDecants.length === 0) return alert("⚠️ Carrito vacío.");
   const cli = document.getElementById('dec-cliente').value.trim() || 'Cliente Decant';
@@ -1088,14 +1131,21 @@ function registrarVentaDecant() {
   ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'decant', cliente: cli, productos: carritoDecants.map(d => `${d.cantidad}x ${d.nombre}`).join(', '), total, ganancia: sub * 0.5, abonado: total, restante: 0 });
   carritoDecants = []; document.getElementById('dec-items-carrito-lista').innerHTML = 'Carrito de decants vacío.'; renderTodo(); guardarCambiosEnNube(false); alert("✅ Venta de Decants registrada.");
 }
+
 function obtenerPagoMovilTresLineas() {
   const b = document.getElementById('cfg-pm-banco')?.value || 'BDV (0102)', c = document.getElementById('cfg-pm-ci')?.value || 'V-24162167', t = document.getElementById('cfg-pm-tel')?.value || '04120551688';
-  return `${c.replace(/\D/g, '') || '24162167'}\n${(b.match(/\d{4}/) || ['0102'])[0]}\n${t.replace(/\D/g, '') || '04120551688'}`;
+  return `${c.replace(/\D/g, '') || '24162167'}
+${(b.match(/\d{4}/) || ['0102'])[0]}
+${t.replace(/\D/g, '') || '04120551688'}`;
 }
+
 function copiarPagoMovilTresLineas() {
   const txt = obtenerPagoMovilTresLineas();
-  navigator.clipboard.writeText(txt).then(() => alert("✅ Copiado en 3 líneas:\n\n" + txt));
+  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:
+
+" + txt));
 }
+
 function actualizarTarjeta3D() {
   const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente General', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago de Cuota / Abono', met = document.getElementById('ia-metodo-cobro')?.value || 'todos', monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, nota = document.getElementById('ia-nota')?.value.trim(), tasa = obtenerTasaActiva();
   document.getElementById('t3d-cliente').textContent = cli; document.getElementById('t3d-concepto').textContent = '📌 Concepto: ' + (nota || tipo);
@@ -1108,25 +1158,90 @@ function actualizarTarjeta3D() {
   if (met === 'todos' || met === 'binance') h += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;"><strong style="color:#ffb703;">🟡 BINANCE PAY:</strong><br>• Pay ID: ${document.getElementById('cfg-binance')?.value || ''}</div>`;
   document.getElementById('t3d-metodos-lista').innerHTML = h;
 }
+
+/* FACTURAR DESDE EL BUZÓN DE PEDIDOS WEB (1 CLIC) */
+function facturarPedidoWeb(idx) {
+  const p = pedidosWeb[idx];
+  if (!p) return;
+  
+  // Cambiar a la pestaña de ventas detal
+  cambiarTab('ventas', document.querySelector('.tab-btn[onclick*="ventas"]'));
+  
+  // Rellenar datos del cliente
+  document.getElementById('v-cliente').value = p.cliente || '';
+  document.getElementById('v-telefono').value = p.telefono || '';
+  document.getElementById('v-direccion').value = p.direccion || '';
+  
+  // Cargar artículos al carrito detal
+  carritoDetal = (p.items || []).map(i => {
+    const prod = inventario.find(x => obtenerNombreLimpio(x).toLowerCase() === i.nombre.toLowerCase());
+    return {
+      nombre: i.nombre,
+      cantidad: i.cantidad,
+      precio: i.precio,
+      costo: prod ? (parseFloat(prod.costo) || 0) : 0
+    };
+  });
+  
+  renderCarritoVentas('detal');
+  alert(`⚡ Pedido de ${p.cliente} cargado en Ventas Detal. ¡Solo revisa y pulsa Registrar Venta!`);
+}
+
+/* ENVÍO DUAL WHATSAPP EN 2 MENSAJES SEPARADOS */
 function enviarCobroTextoYCuentaAparte() {
   const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tel = (document.getElementById('ia-cli-tel')?.value || '').replace(/\D/g, ''), tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva(), tres = obtenerPagoMovilTresLineas();
+  
+  // Mensaje 1: Detalle comercial
+  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨
+
+Hola *${cli}*, un saludo cordial.
+Detalle correspondiente a: *${tipo}*
+${nota ? `📌 *Concepto:* ${nota}
+` : ''}
+💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
+📊 *Tasa del día:* ${tasa.toFixed(2)} Bs
+
+_Por favor realiza tu transferencia y envíanos el comprobante por este medio. ¡Muchas gracias!_`;
+  
+  // Mensaje 2: Cuenta separada en 3 líneas limpias
+  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*
+
+${tres}`;
+
   navigator.clipboard.writeText(tres).catch(() => {});
-  const msg = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nDetalle de cobro correspondiente a: *${tipo}*\n${nota ? `📌 *Concepto:* ${nota}\n` : ''}\n💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n📊 *Tasa del día:* ${tasa.toFixed(2)} Bs\n\n${tres}`;
-  window.open(tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+  
+  const url1 = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(msg1)}` : `https://wa.me/?text=${encodeURIComponent(msg1)}`;
+  window.open(url1, '_blank');
+
+  setTimeout(() => {
+    alert("✅ Mensaje 1 enviado. A continuación se abrirá o podrás pegar el Mensaje 2 con los datos bancarios separados.");
+    const url2 = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(msg2)}` : `https://wa.me/?text=${encodeURIComponent(msg2)}`;
+    window.open(url2, '_blank');
+  }, 1000);
 }
+
 async function compartirTarjeta3D() {
   const tres = obtenerPagoMovilTresLineas();
   try { await navigator.clipboard.writeText(tres); } catch (e) {}
   const card = document.getElementById('tarjeta-cobro-3d'), cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva();
-  const txt = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nDetalle de cobro correspondiente a: *${tipo}*\n${nota ? `📌 Concepto: ${nota}\n` : ''}\n💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n📊 *Tasa del día:* ${tasa.toFixed(2)} Bs (${tipoTasaActiva.toUpperCase()})\n\n${tres}`;
+  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨
+
+Hola *${cli}*, un saludo cordial.
+Concepto: *${tipo}*
+💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
+
+📲 *Datos Bancarios (Pago Móvil):*
+${tres}`;
   const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#070b14' });
   canvas.toBlob(async blob => {
     const file = new File([blob], `Tarjeta_Cobro_${cli.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], text: txt });
-    else alert("✅ Datos en 3 líneas copiados:\n\n" + tres);
+    else alert("✅ Imagen generada y datos de cuenta en 3 líneas copiados para enviar aparte.");
   });
 }
+
 function setCatFiltro(f, btn) { filtroCatActual = f; document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderCatalogoPublico(); }
+
 function renderCatalogoPublico() {
   const grid = document.getElementById('cat-grid-productos'); if (!grid) return;
   const q = (document.getElementById('cat-search')?.value || '').toLowerCase(), tasa = obtenerTasaActiva();
@@ -1143,6 +1258,7 @@ function renderCatalogoPublico() {
       return `<div class="cat-item"><div><div class="cat-item-img">${p.imagen ? `<img src="${p.imagen}" onerror="this.style.display='none';">` : '🧴'}</div><div class="cat-item-name">${nom}</div><div class="cat-item-format">${p.ml || 100}ml</div></div><div><div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;"><span style="font-size:10px; color:var(--text-muted); font-weight:800;">PRECIO:</span><span style="font-size:17px; font-weight:900; color:var(--accent);">$${pr.toFixed(2)}</span></div><div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;"><span style="font-size:10px; color:var(--text-muted);">Al cambio:</span><span style="font-size:11.5px; font-weight:800; color:var(--warning);">Bs. ${(pr * tasa).toFixed(2)}</span></div><button type="button" class="cat-item-btn" onclick="agregarAlCarritoPublico(${p._idx}, this)">🧴 AÑADIR</button></div></div>`;
     }).join('');
 }
+
 function agregarAlCarritoPublico(idx, btn) {
   const p = inventario[idx]; if (!p) return;
   const nom = obtenerNombreLimpio(p), ex = carritoPublico.find(i => i.nombre === nom);
@@ -1150,6 +1266,7 @@ function agregarAlCarritoPublico(idx, btn) {
   if (btn) { btn.classList.add('added'); btn.innerHTML = '✔ ¡AÑADIDO!'; setTimeout(() => { btn.classList.remove('added'); btn.innerHTML = '🧴 AÑADIR'; }, 900); }
   actualizarBarraCarritoPublico();
 }
+
 function actualizarBarraCarritoPublico() {
   const total = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0), cant = carritoPublico.reduce((a, i) => a + i.cantidad, 0), tasa = obtenerTasaActiva();
   document.getElementById('cat-cart-total-txt').textContent = '$' + total.toFixed(2);
@@ -1157,29 +1274,55 @@ function actualizarBarraCarritoPublico() {
   document.getElementById('cat-checkout-total').textContent = '$' + total.toFixed(2);
   document.getElementById('cat-checkout-bs').textContent = 'Bs. ' + (total * tasa).toFixed(2);
 }
+
 function abrirModalCarritoPublico() {
   const cont = document.getElementById('cat-carrito-items');
   cont.innerHTML = carritoPublico.length === 0 ? '<div style="text-align:center; padding:18px; color:var(--text-muted);">Tu carrito está vacío.</div>' :
     carritoPublico.map((item, idx) => `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 0; border-bottom:1px solid var(--border-color);"><div style="font-weight:800; font-size:12.5px;">${item.cantidad}x ${item.nombre} <span style="color:var(--accent);">($${(item.precio * item.cantidad).toFixed(2)})</span></div><button type="button" class="btn-danger" style="padding:5px 9px; font-size:11px;" onclick="eliminarItemCarritoPublico(${idx})">🗑️</button></div>`).join('');
   actualizarBarraCarritoPublico(); document.getElementById('modal-carrito-pub').style.display = 'flex';
 }
+
 function eliminarItemCarritoPublico(idx) { carritoPublico.splice(idx, 1); abrirModalCarritoPublico(); }
+
 function enviarPedidoWeb() {
   if (carritoPublico.length === 0) return alert("⚠️ Carrito vacío.");
   const nom = document.getElementById('cat-cli-nombre').value.trim() || 'Cliente Web', tel = document.getElementById('cat-cli-tel').value.trim() || 'Sin teléfono', dir = document.getElementById('cat-cli-dir').value.trim() || 'Por coordinar', total = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0), tasa = obtenerTasaActiva();
   pedidosWeb.unshift({ fecha: new Date().toLocaleString('es-VE'), cliente: nom, telefono: tel, direccion: dir, items: carritoPublico, total });
   guardarCambiosEnNube(false);
-  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*\n\n👤 *Cliente:* ${nom}\n📱 *Teléfono:* ${tel}\n📍 *Dirección:* ${dir}\n\n*Artículos Solicitados:*\n${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n')}\n\n💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n\n_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
+  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*
+
+👤 *Cliente:* ${nom}
+📱 *Teléfono:* ${tel}
+📍 *Dirección:* ${dir}
+
+*Artículos Solicitados:*
+${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('
+')}
+
+💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})
+
+_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
   carritoPublico = []; document.getElementById('modal-carrito-pub').style.display = 'none'; actualizarBarraCarritoPublico();
   window.open(`https://wa.me/${numeroWATienda}?text=${encodeURIComponent(msg)}`, '_blank');
 }
+
 function renderPedidosWeb() {
   const badge = document.getElementById('badge-pedidos'); if (badge) { badge.style.display = pedidosWeb.length > 0 ? 'inline-block' : 'none'; badge.textContent = pedidosWeb.length; }
   const cont = document.getElementById('contenedor-pedidos-web'); if (!cont) return;
   cont.innerHTML = pedidosWeb.length === 0 ? `<div style="text-align:center; padding:16px; color:var(--text-muted);">No hay pedidos web.</div>` :
-    pedidosWeb.map(p => `<div style="border:1.5px solid var(--border-color); border-radius:12px; padding:12px;"><div style="display:flex; justify-content:space-between; font-weight:900;"><span>👤 ${p.cliente} (${p.telefono})</span><span style="color:var(--accent);">$${(parseFloat(p.total)||0).toFixed(2)}</span></div><div style="font-size:11.5px; color:var(--text-muted); margin:4px 0;">📍 ${p.direccion} | ${p.fecha}</div><div style="font-size:12px; font-weight:700; margin-top:6px;">${(p.items||[]).map(i => `${i.cantidad}x ${i.nombre}`).join(', ')}</div></div>`).join('');
+    pedidosWeb.map((p, idx) => `<div style="border:1.5px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:8px; background:var(--bg-input);">
+      <div style="display:flex; justify-content:space-between; align-items:center; font-weight:900;">
+        <span>👤 ${p.cliente} (${p.telefono})</span>
+        <span style="color:var(--accent);">$${(parseFloat(p.total)||0).toFixed(2)}</span>
+      </div>
+      <div style="font-size:11.5px; color:var(--text-muted); margin:4px 0;">📍 ${p.direccion} | ${p.fecha}</div>
+      <div style="font-size:12px; font-weight:700; margin-bottom:8px;">${(p.items||[]).map(i => `${i.cantidad}x ${i.nombre}`).join(', ')}</div>
+      <button class="btn-primary" style="width:100%; padding:8px; font-size:11.5px; background:var(--success); color:#fff;" onclick="facturarPedidoWeb(${idx})">⚡ FACTURAR VENTA DETAL (1 CLIC)</button>
+    </div>`).join('');
 }
+
 function limpiarPedidosWeb() { if (confirm("🗑️ ¿Borrar todos los pedidos web?")) { pedidosWeb = []; renderTodo(); guardarCambiosEnNube(false); } }
+
 function renderCRM() {
   const tb = document.getElementById('tbody-crm'); if (!tb) return;
   const q = (document.getElementById('buscar-crm')?.value || '').toLowerCase(), mapa = {};
@@ -1187,25 +1330,31 @@ function renderCRM() {
   const lista = Object.values(mapa).filter(c => c.cliente.toLowerCase().includes(q));
   tb.innerHTML = lista.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin clientes</td></tr>` : lista.map(c => `<tr><td><strong>${c.cliente}</strong></td><td>${c.telefono}</td><td>${c.compras}</td><td>$${c.total.toFixed(2)}</td><td style="color:${c.deuda > 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:900;">$${c.deuda.toFixed(2)}</td></tr>`).join('');
 }
+
 function registrarGasto() {
   const c = document.getElementById('g-concepto').value.trim(), m = parseFloat(document.getElementById('g-monto').value) || 0;
   if (!c || m <= 0) return alert("Ingresa concepto y monto.");
   gastos.unshift({ fecha: new Date().toLocaleDateString('es-VE'), concepto: c, monto: m });
   document.getElementById('g-concepto').value = ''; document.getElementById('g-monto').value = ''; renderTodo(); guardarCambiosEnNube(false);
 }
+
 function renderGastos() {
   const tb = document.getElementById('tbody-gastos'); if (!tb) return;
   tb.innerHTML = gastos.map((g, idx) => `<tr><td>${g.fecha}</td><td>${g.concepto}</td><td>$${(parseFloat(g.monto)||0).toFixed(2)}</td><td><button class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="gastos.splice(${idx},1);renderTodo();guardarCambiosEnNube(false);">🗑️</button></td></tr>`).join('');
 }
-function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u)); }
+
+function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:
+" + u)); }
 function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
 function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); }
+
 function guardarCuentasPago() {
   db.ref('/sistema/cuentasPago').set({
     pmBanco: document.getElementById('cfg-pm-banco').value, pmCi: document.getElementById('cfg-pm-ci').value, pmTel: document.getElementById('cfg-pm-tel').value,
     zelleCorreo: document.getElementById('cfg-zelle-correo').value, zelleTitular: document.getElementById('cfg-zelle-titular').value, binance: document.getElementById('cfg-binance').value
   }).then(() => alert("✅ Métodos guardados."));
 }
+
 function cargarCuentasPagoEnInputs(c) {
   if (!c) return;
   if (c.pmBanco) document.getElementById('cfg-pm-banco').value = c.pmBanco;
@@ -1215,6 +1364,7 @@ function cargarCuentasPagoEnInputs(c) {
   if (c.zelleTitular) document.getElementById('cfg-zelle-titular').value = c.zelleTitular;
   if (c.binance) document.getElementById('cfg-binance').value = c.binance;
 }
+
 window.onload = verificarBloqueoSeguridad;
 </script>
 </body>
