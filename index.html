@@ -19,6 +19,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
   *, *::before, *::after { box-sizing: border-box !important; }
   :root { 
@@ -38,8 +39,12 @@
   [data-theme="light"] .user-input { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
   [data-theme="light"] .card-panel, [data-theme="light"] .kpi-card { background: #ffffff !important; border-color: #e2e8f0 !important; }
   [data-theme="light"] td { border-bottom: 1.5px solid #cbd5e1 !important; color: #0f172a !important; }
-  [data-theme="
-   #loader-pantalla { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #111a2e 0%, #070b14 100%); z-index: 9999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+  [data-theme="light"] th { background: #e6f7f7 !important; color: #0f766e !important; border-bottom: 2px solid #99f6e4 !important; }
+  [data-theme="light"] .tasa-input { color: #0f172a !important; font-weight: 900 !important; }
+  [data-theme="light"] .caja-totales { background: #f0fdfa !important; border-color: #99f6e4 !important; }
+  body { margin: 0; padding: 10px; background: var(--bg-main); color: var(--text-main); font-size: 13px; font-family: system-ui, -apple-system, sans-serif; overflow-x: hidden; }
+
+  #loader-pantalla { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #111a2e 0%, #070b14 100%); z-index: 9999999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
   .loader-text-glow { color: #00f2d6; margin-top: 20px; font-weight: 900; letter-spacing: 3px; font-size: 24px; }
   .loader-spinner { margin-top: 15px; width: 44px; height: 44px; border: 4px solid #223254; border-top: 4px solid #00f2d6; border-radius: 50%; animation: spin 0.9s linear infinite; }
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -53,7 +58,7 @@
   #version-badge-flotante { background: rgba(0, 242, 214, 0.1); border: 1.5px solid var(--accent); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
   [data-theme="light"] #version-badge-flotante { background: #ffffff !important; border-color: #0f766e !important; color: #0f766e !important; }
   
-  .tasa-box { background: var(--bg-card); border: 2.5px solid var(--border-color); padding: 6px 10px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; flex: 1 1 0; min-width: 112px; }
+  .tasa-box { background: var(--bg-card); border: 2px solid var(--border-color); padding: 6px 10px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; cursor: pointer; flex: 1 1 0; min-width: 112px; }
   .tasa-box.activa { border-color: var(--accent); background: rgba(0,242,214,0.1); box-shadow: 0 0 12px rgba(0,242,214,0.2); }
   .tasa-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; font-weight: 900; display: block; margin-bottom: 2px; }
   .tasa-input { background: transparent; border: none; color: var(--text-main); font-weight: 900; font-size: 15px; width: 100%; min-width: 85px; outline: none; padding: 0; }
@@ -73,6 +78,55 @@
   .tab-btn.active { background: rgba(15,118,110,0.12); color: var(--accent); border-color: var(--accent); }
   .tab-content { display: none; } .tab-content.active { display: block; }
   .badge-alerta { position: absolute; top: -6px; right: -6px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 50px; display: none; }
+  
+  .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+  .kpi-card { background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; }
+  .kpi-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 900; margin-bottom: 6px; }
+  .kpi-value { font-size: 20px; font-weight: 900; margin-bottom: 2px; }
+  .kpi-sub { font-size: 11px; color: var(--text-muted); font-weight: 700; }
+  
+  .card-panel { background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 14px; width: 100%; max-width: 100%; overflow: hidden; }
+  .card-title { font-size: 15px; font-weight: 900; margin: 0 0 10px 0; color: var(--text-main); }
+  
+  .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px; width: 100%; }
+  .form-group { width: 100%; max-width: 100%; }
+  .form-group label { display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 900; margin-bottom: 4px; }
+  .user-input { width: 100%; max-width: 100%; min-width: 0; background: var(--bg-input); border: 1.5px solid var(--border-color); color: var(--text-main); padding: 9px 12px; border-radius: 10px; font-size: 13px; font-weight: 600; outline: none; }
+  
+  .table-responsive { width: 100%; overflow-x: auto; max-height: 520px; overflow-y: auto; border-radius: 12px; border: 1.5px solid var(--border-color); background: var(--bg-card); }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  th, td { display: table-cell !important; vertical-align: middle !important; padding: 10px 8px; border-bottom: 1.5px solid var(--border-color); font-size: 11.5px; line-height: 1.25; }
+  th { position: sticky; top: 0; z-index: 10; font-size: 10.5px; text-transform: uppercase; font-weight: 900; }
+  
+  .carrito-caja { background: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px; margin-bottom: 12px; width: 100%; }
+  .carrito-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border-color); font-size: 12px; font-weight: 700; gap: 8px; }
+  .caja-totales { background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+  
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7,11,20,0.82); z-index: 9999; justify-content: center; align-items: center; padding: 14px; backdrop-filter: blur(6px); overflow-y: auto; }
+  .modal-box { position: relative; background: var(--bg-card); border: 2px solid var(--accent); border-radius: 16px; padding: 20px; width: 100%; max-width: 440px; margin: auto; }
+  .btn-close-modal { position: absolute; top: 10px; right: 10px; background: var(--bg-input); border: none; color: var(--text-main); font-size: 16px; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-weight: 900; }
+
+  /* CATÁLOGO PÚBLICO */
+  #app-catalogo { display: none; padding-bottom: 95px; }
+  .cat-hero { text-align: center; padding: 14px 10px 10px 10px; background: linear-gradient(180deg, rgba(15,118,110,0.08) 0%, var(--bg-main) 100%); border-bottom: 1.5px solid var(--border-color); }
+  .cat-tasa-badge { background: rgba(15,118,110,0.12); border: 1.5px solid var(--accent); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; display: inline-block; }
+  .cat-filters { display: flex; gap: 8px; overflow-x: auto; padding: 10px 4px; margin-bottom: 8px; scrollbar-width: none; }
+  .cat-filters::-webkit-scrollbar { display: none; }
+  .cat-filter-btn { background: var(--bg-card); border: 1.5px solid var(--border-color); color: var(--text-muted); padding: 8px 14px; border-radius: 25px; font-size: 11.5px; font-weight: 800; white-space: nowrap; }
+  .cat-filter-btn.active { background: var(--accent); color: #ffffff; border-color: var(--accent); font-weight: 900; }
+  .cat-search-input { width: 100%; background: var(--bg-card); border: 1.5px solid var(--border-color); color: var(--text-main); padding: 11px 14px; border-radius: 14px; font-size: 13.5px; outline: none; }
+  .cat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 2px; }
+  @media(min-width: 900px) { .cat-grid { grid-template-columns: repeat(4, 1fr); } }
+  .cat-item { background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--card-shadow); }
+  .cat-item-img { width: 100%; aspect-ratio: 1; background: var(--bg-input); border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; border: 1px solid var(--border-color); overflow: hidden; }
+  .cat-item-img img { width: 100%; height: 100%; object-fit: cover; }
+  .cat-item-name { font-size: 12px; font-weight: 900; color: var(--text-main); margin: 4px 0; line-height: 1.25; }
+  .cat-item-format { font-size: 10.5px; color: var(--warning); font-weight: 800; margin-bottom: 6px; }
+  .cat-item-btn { width: 100%; background: linear-gradient(135deg, #0d9488, #0f766e) !important; border: 1.5px solid #5eead4 !important; color: #ffffff !important; padding: 10px; border-radius: 10px; font-weight: 900; font-size: 12px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 12px rgba(13,148,136,0.25); }
+  .cat-item-btn.added { background: linear-gradient(135deg, #059669, #10b981) !important; color: #ffffff !important; }
+  .cat-cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--bg-card); border-top: 2px solid var(--accent); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; box-shadow: 0 -6px 25px rgba(0,0,0,0.15); cursor: pointer; }
+  .cat-cart-total { color: var(--accent) !important; font-size: 20px; font-weight: 900; }
+  .cat-cart-btn { background: linear-gradient(135deg, var(--accent), var(--accent-hover)); color: #ffffff; padding: 11px 20px; border-radius: 25px; font-weight: 900; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -103,8 +157,42 @@
 
 <datalist id="lista-productos-stock"></datalist>
 
+<div id="loader-pantalla">
+  <div class="logo-3d-wrapper">
+    <div class="logo-3d-circle" style="width: 120px; height: 120px;">
+      <img src="logo.jpg.jpg" alt="Logo" onerror="this.style.display='none';">
+    </div>
+  </div>
+  <h2 class="loader-text-glow">PERFUMA2</h2>
+  <p style="color:#94a3b8; font-size:12px; font-weight:700; margin-top:4px;">Iniciando Sistema...</p>
+  <div class="loader-spinner"></div>
+</div>
+
+<script>
+function safeGetStorage(key, fallback) {
+  try { return localStorage.getItem(key) || fallback; } catch(e) { return fallback; }
+}
+function safeSetStorage(key, val) {
+  try { localStorage.setItem(key, val); } catch(e) {}
+}
+function safeGetSession(key, fallback) {
+  try { return sessionStorage.getItem(key) || fallback; } catch(e) { return fallback; }
+}
+function safeSetSession(key, val) {
+  try { sessionStorage.setItem(key, val); } catch(e) {}
+}
+
+setTimeout(function() {
+  var l = document.getElementById('loader-pantalla');
+  if (l && l.style.display !== 'none') {
+    l.style.opacity = '0';
+    setTimeout(function() { l.style.display = 'none'; }, 400);
+  }
+}, 800);
+</script>
+
 <!-- PANEL ADMINISTRATIVO -->
-<div id="app-admin" style="display:block;">
+<div id="app-admin" style="display:none;">
   <div class="header-bar">
     <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
       <div style="display:flex; align-items:center; gap:10px;">
@@ -139,7 +227,9 @@
       </div>
       <button class="btn-primary" onclick="obtenerTasasAutomaticas(true)" style="background:var(--info); color:#fff; font-size:11px; padding:0 14px; flex-shrink:0; border-radius:12px;">🔄 TASA</button>
     </div>
-  </  <!-- PESTAÑAS -->
+  </div>
+
+  <!-- PESTAÑAS -->
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="cambiarTab('dashboard', this)">📊 DASHBOARD</button>
     <button class="tab-btn" onclick="cambiarTab('pedidos', this)">🔔 PEDIDOS WEB <span class="badge-alerta" id="badge-pedidos">0</span></button>
@@ -152,8 +242,8 @@
     <button class="tab-btn" onclick="cambiarTab('gastos', this)">📉 GASTOS</button>
     <button class="tab-btn" onclick="cambiarTab('ia', this)" style="color:var(--info); border-color:rgba(2,132,199,0.4);">🤖 ASISTENTE IA</button>
   </div>
-  </div>
-   <!-- 1. DASHBOARD -->
+
+  <!-- 1. DASHBOARD -->
   <div id="tab-dashboard" class="tab-content active">
     <div class="card-panel" style="border-color:var(--info); background:rgba(2,132,199,0.04);">
       <h4 style="margin:0 0 4px 0; color:var(--info); font-weight:900; font-size:14px;">🏦 Herramientas de Base de Datos & Cierre</h4>
@@ -186,7 +276,8 @@
       <div class="kpi-card"><div class="kpi-title">CAPITAL EN STOCK (COSTO)</div><div class="kpi-value" id="kpi-capital-stock" style="color:var(--purple);">$0.00</div><div class="kpi-sub" id="kpi-proyeccion-venta">Proyección Venta: $0.00</div></div>
     </div>
   </div>
-   <!-- 2. BUZÓN DE PEDIDOS WEB -->
+
+  <!-- 2. BUZÓN DE PEDIDOS WEB (Con Botón de 1 Clic para Facturar) -->
   <div id="tab-pedidos" class="tab-content">
     <div class="card-panel" style="border-color:var(--danger);">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -199,7 +290,8 @@
       <div id="contenedor-pedidos-web" style="display:flex; flex-direction:column; gap:10px;"></div>
     </div>
   </div>
-   <!-- 3. INVENTARIO & STOCK -->
+
+  <!-- 3. INVENTARIO & STOCK -->
   <div id="tab-inventario" class="tab-content">
     <div class="card-panel" style="padding:12px;">
       <h3 class="card-title" style="margin:0 0 8px 0; font-size:15px;">🧴 Inventario & Stock</h3>
@@ -233,7 +325,8 @@
       </div>
     </div>
   </div>
-   <!-- 4. VENTAS DETAL -->
+
+  <!-- 4. VENTAS DETAL (Estilo anterior solicitado con envío directo de recibo por WhatsApp) -->
   <div id="tab-ventas" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🛒 Registrar Venta Detal</h3>
@@ -283,7 +376,8 @@
       </div>
     </div>
   </div>
-   <!-- 5. VENTA AL MAYOR -->
+
+  <!-- 5. VENTA AL MAYOR (Con Selección Múltiple) -->
   <div id="tab-mayor" class="tab-content">
     <div class="card-panel" style="border-color:var(--warning);">
       <h3 class="card-title" style="color:var(--warning);">📦 Presupuesto y Venta al Mayor</h3>
@@ -327,7 +421,8 @@
       </div>
     </div>
   </div>
-   <!-- 6. COMBOS -->
+
+  <!-- 6. COMBOS -->
   <div id="tab-combos" class="tab-content">
     <div class="card-panel" style="border-color:#ff007f;">
       <h3 class="card-title" style="color:#ff007f;">🎁 Creador de Combos Especiales</h3>
@@ -354,7 +449,8 @@
       <button class="btn-primary" onclick="guardarComboEnInventario()" style="width:100%; padding:14px; background:#ff007f; color:#fff; font-weight:900;">💾 GUARDAR COMBO EN INVENTARIO</button>
     </div>
   </div>
-   <!-- 7. DECANTS -->
+
+  <!-- 7. DECANTS -->
   <div id="tab-decants" class="tab-content">
     <div class="card-panel" style="border-color:var(--warning);">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
@@ -397,7 +493,8 @@
       <button class="btn-warning" onclick="registrarVentaDecant()" style="width:100%; padding:14px; font-size:13.5px; font-weight:900;">💾 REGISTRAR VENTA DECANTS & RECIBO</button>
     </div>
   </div>
-   <!-- 8. CRM CLIENTES -->
+
+  <!-- 8. CRM CLIENTES -->
   <div id="tab-clientes" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">👥 CRM Clientes & Deudas</h3>
@@ -410,7 +507,8 @@
       </div>
     </div>
   </div>
-   <!-- 9. GASTOS -->
+
+  <!-- 9. GASTOS -->
   <div id="tab-gastos" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">📉 Gastos Operativos</h3>
@@ -427,12 +525,14 @@
       </div>
     </div>
   </div>
-   <!-- 10. ASISTENTE IA & TARJETA 3D -->
+
+  <!-- 10. ASISTENTE IA, CHAT & TARJETA 3D -->
   <div id="tab-ia" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🤖 Asistente IA & Redactor Comercial</h3>
       <p style="font-size:11.5px; color:var(--text-muted); margin-top:0;">Escribe cualquier consulta, instrucción de redacción o análisis de inventario para el asistente:</p>
       
+      <!-- Cuadro de Chat con IA -->
       <div style="background:var(--bg-input); border:1.5px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:12px; height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;" id="ia-chat-box">
         <div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">
           🤖 <strong>Asistente PERFUMA2:</strong> ¡Hola Oyam! Estoy listo. Escribe abajo lo que necesites redactar (mensajes de cobro, descripciones de perfumes o análisis de stock).
@@ -512,7 +612,8 @@
     </div>
   </div>
 </div>
- <!-- MODAL PERFUME -->
+
+<!-- MODAL PERFUME (Con Lupa Google + Botón Galería + Margen Individual) -->
 <div id="modal-perfume" class="modal-overlay">
   <div class="modal-box">
     <button class="btn-close-modal" onclick="document.getElementById('modal-perfume').style.display='none'">✖</button>
@@ -524,8 +625,13 @@
       <div class="form-group"><label>Stock (Unidades Selladas)</label><input type="number" id="p-stock" class="user-input" value="1"></div>
       <div class="form-group"><label>Capacidad Botella (ML)</label><input type="number" id="p-ml" class="user-input" value="100"></div>
       <div class="form-group"><label>Costo Unitario ($)</label><input type="number" step="0.01" id="p-costo" class="user-input" value="15.00" oninput="calcularPrecioDesdeCostoModal()"></div>
+      
+      <!-- Apartado de Margen Individual -->
       <div class="form-group"><label>Margen Individual (%)</label><input type="number" id="p-margen-ind" class="user-input" value="75" oninput="calcularPrecioDesdeCostoModal()"></div>
+      
       <div class="form-group"><label>Precio Venta ($)</label><input type="number" step="0.01" id="p-precio" class="user-input" value="26.25"></div>
+      
+      <!-- URL Imagen con Lupa y Botón de Galería (+) -->
       <div class="form-group">
         <label>URL Imagen o Foto</label>
         <div style="display:flex; gap:6px; align-items:center;">
@@ -535,6 +641,7 @@
           <input type="file" id="input-galeria-foto" accept="image/*" style="display:none;" onchange="subirFotoGaleriaModal(this)">
         </div>
       </div>
+
       <div class="form-group"><label>Notas Aromáticas</label><input type="text" id="p-notas" class="user-input" placeholder="Ej: Dulce, Vainilla"></div>
     </div>
     <button class="btn-primary" style="width:100%; padding:13px;" onclick="guardarPerfumeModal()">💾 GUARDAR PERFUME</button>
@@ -591,28 +698,6 @@ function obtenerNombreLimpio(p) {
   if (m && n && !m.toLowerCase().includes(n.toLowerCase())) return m + ' ' + n;
   return m || n || 'Perfume';
 }
-</script>
- <script>
-function safeGetStorage(key, fallback) {
-  try { return localStorage.getItem(key) || fallback; } catch(e) { return fallback; }
-}
-function safeSetStorage(key, val) {
-  try { localStorage.setItem(key, val); } catch(e) {}
-}
-function safeGetSession(key, fallback) {
-  try { sessionStorage.setItem(key, val); } catch(e) {}
-}
-function safeSetSession(key, val) {
-  try { sessionStorage.setItem(key, val); } catch(e) {}
-}
-
-setTimeout(function() {
-  var l = document.getElementById('loader-pantalla');
-  if (l && l.style.display !== 'none') {
-    l.style.opacity = '0';
-    setTimeout(function() { l.style.display = 'none'; }, 400);
-  }
-}, 800);
 
 function actualizarReloj() {
   const el = document.getElementById('reloj-sistema');
@@ -632,6 +717,35 @@ function alternarTemaLuz() {
 
 function forzarActualizacionApp() {
   if (confirm("🔔 ¿Actualizar y recargar la página ahora?")) window.location.reload(true);
+}
+
+function verificarBloqueoSeguridad() {
+  safeSetSession('perfuma2_auth', 'ok');
+  const savedTheme = safeGetStorage('perfuma2_theme', 'light') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.querySelectorAll('.btn-theme-toggle').forEach(b => b.innerHTML = savedTheme === 'light' ? '☀️ DÍA' : '🌙 NOCHE');
+  actualizarReloj();
+  const btnS = document.getElementById('btn-sonido-toggle');
+  if (btnS) btnS.innerHTML = sonidoActivo ? '🔔 SONIDO: ON' : '🔕 SONIDO: OFF';
+  cargarDatosDesdeNube();
+  
+  const loader = document.getElementById('loader-pantalla');
+  if (loader) loader.style.display = 'none';
+  
+  if (isCatalogoPublico) {
+    document.getElementById('app-catalogo').style.display = 'block';
+  } else {
+    document.getElementById('app-admin').style.display = 'block';
+  }
+}
+
+function verificarPIN() {
+  if (document.getElementById('input-pin-acceso').value.trim() === "2026") {
+    safeSetSession('perfuma2_auth', 'ok');
+    document.getElementById('modal-login').style.display = 'none';
+    document.getElementById('app-admin').style.display = 'block';
+    renderTodo();
+  } else reproducirAlertaSonora("alerta"); alert("❌ PIN Incorrecto.");
 }
 
 function cambiarTab(id, btn) {
@@ -685,7 +799,9 @@ async function obtenerTasasAutomaticas(mostrarMsg) {
     if (ofi?.promedio) tasaBCV = parseFloat(ofi.promedio.toFixed(2));
     if (par?.promedio) tasaUSDT = parseFloat(par.promedio.toFixed(2));
     renderTodo(); guardarCambiosEnNube(false);
-    if (mostrarMsg) alert(`✅ Tasas actualizadas:\nBCV: ${tasaBCV} Bs\nUSDT: ${tasaUSDT} Bs`);
+    if (mostrarMsg) alert(`✅ Tasas actualizadas:
+BCV: ${tasaBCV} Bs
+USDT: ${tasaUSDT} Bs`);
   } catch (e) { if (mostrarMsg) alert("⚠️ Edita la tasa manualmente."); }
 }
 
@@ -695,12 +811,13 @@ function renderTodo() {
   if (usdtIn) usdtIn.value = tasaUSDT.toFixed(2);
   document.getElementById('box-tasa-bcv')?.classList.toggle('activa', tipoTasaActiva === 'bcv');
   document.getElementById('box-tasa-usdt')?.classList.toggle('activa', tipoTasaActiva === 'usdt');
+  const catTasa = document.getElementById('cat-tasa-display');
+  if (catTasa) catTasa.textContent = `Tasa: ${obtenerTasaActiva().toFixed(2)} Bs`;
   const dl = document.getElementById('lista-productos-stock');
   if (dl) dl.innerHTML = inventario.map(p => `<option value="${obtenerNombreLimpio(p)}">Stock: ${p.stock || 0} | $${(parseFloat(p.precio)||0).toFixed(2)}</option>`).join('');
-  renderDashboard(); renderPedidosWeb(); renderInventario(); renderHistorialVentas(); renderSelectFrascosDecant(); renderCRM(); renderGastos(); actualizarTarjeta3D();
+  renderDashboard(); renderPedidosWeb(); renderInventario(); renderHistorialVentas(); renderSelectFrascosDecant(); renderCRM(); renderGastos(); actualizarTarjeta3D(); renderCatalogoPublico();
 }
- </script>
- <script>
+
 function renderDashboard() {
   const tasa = obtenerTasaActiva();
   const totalV = ventas.reduce((a, v) => a + (parseFloat(v.total) || 0), 0);
@@ -719,26 +836,187 @@ function renderDashboard() {
   setTxt('kpi-proyeccion-venta', 'Proyección Venta: $' + proy.toFixed(2));
 }
 
-function renderPedidosWeb() {
-  const cont = document.getElementById('contenedor-pedidos-web');
-  const badge = document.getElementById('badge-pedidos');
-  if (!cont) return;
-  if (badge) { badge.textContent = pedidosWeb.length; badge.style.display = pedidosWeb.length > 0 ? 'inline-block' : 'none'; }
-  if (pedidosWeb.length === 0) {
-    cont.innerHTML = '<div style="color:var(--text-muted); font-style:italic; font-size:12px; text-align:center; padding:15px;">No hay pedidos web pendientes.</div>';
-    return;
+function renderInventario() {
+  const tbody = document.getElementById('tbody-inventario');
+  if (!tbody) return;
+  const q = (document.getElementById('buscar-inv')?.value || '').toLowerCase();
+  const orden = document.getElementById('orden-stock')?.value || 'mayor';
+  const tasa = obtenerTasaActiva();
+  let lista = inventario.map((p, idx) => ({ ...p, _idx: idx })).filter(p => `${p.marca || ''} ${p.nombre || ''} ${p.notas || ''}`.toLowerCase().includes(q));
+  if (orden === 'mayor') lista.sort((a, b) => (parseInt(b.stock) || 0) - (parseInt(a.stock) || 0));
+  else if (orden === 'menor') lista.sort((a, b) => (parseInt(a.stock) || 0) - (parseInt(b.stock) || 0));
+  else lista.sort((a, b) => obtenerNombreLimpio(a).localeCompare(obtenerNombreLimpio(b)));
+
+  tbody.innerHTML = lista.map(p => {
+    const costo = parseFloat(p.costo) || 0, precio = parseFloat(p.precio) || 0, stock = parseInt(p.stock) || 0;
+    return `<tr>
+      <td><div style="font-weight:900;">${obtenerNombreLimpio(p)}</div><div style="font-size:10px; color:var(--text-muted);">${p.notas || 'Sin notas'}</div></td>
+      <td style="text-align:center; font-weight:900; color:${stock > 0 ? 'var(--warning)' : 'var(--text-muted)'};">${stock}${p.mlAbierto ? ` <span style="color:var(--info);">(${p.mlAbierto}ml)</span>` : ''}</td>
+      <td>$${costo.toFixed(2)}</td>
+      <td style="font-weight:900; color:var(--accent);">$${precio.toFixed(2)}</td>
+      <td>Bs. ${(precio * tasa).toFixed(2)}</td>
+      <td style="text-align:center;"><div style="display:inline-flex; gap:4px;">
+        <button type="button" class="btn-secondary" style="padding:5px 7px; font-size:11px;" onclick="destaparBotella(${p._idx})">💧</button>
+        <button type="button" class="btn-secondary" style="padding:5px 7px; font-size:11px;" onclick="editarPerfume(${p._idx})">✏️</button>
+        <button type="button" class="btn-danger" style="padding:5px 7px; font-size:11px;" onclick="eliminarPerfume(${p._idx})">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function aplicarMargenGlobal() {
+  const m = parseFloat(document.getElementById('input-margen-global').value) || 0;
+  margenGlobal = m;
+  inventario.forEach(p => { const c = parseFloat(p.costo) || 0; if (c > 0 && !p.esCombo) p.precio = parseFloat((c * (1 + (p.margenInd !== undefined ? p.margenInd : m) / 100)).toFixed(2)); });
+  renderTodo(); guardarCambiosEnNube(true);
+}
+
+/* IMPORTAR EXCEL PROVEEDOR */
+function importarExcelProveedor(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheet = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheet];
+      const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      let categoriaActual = 'PERFUME';
+      let countImportados = 0;
+
+      json.forEach(row => {
+        if (!row || row.length === 0) return;
+        const col0 = String(row[0] || '').trim();
+        const col1 = row[1];
+
+        if (col0 && (!col1 || col1 === 'PRECIOS' || isNaN(col1))) {
+          if (col0.toUpperCase().includes('TESTER') || col0.toUpperCase().includes('PERFUME')) {
+            categoriaActual = col0.toUpperCase();
+          }
+          return;
+        }
+
+        if (col0 && col1 !== undefined && !isNaN(col1)) {
+          const costoVal = parseFloat(col1) || 0;
+          if (costoVal > 0) {
+            const precioVenta = parseFloat((costoVal * (1 + margenGlobal / 100)).toFixed(2));
+            inventario.push({
+              marca: categoriaActual.includes('TESTER') ? 'TESTER' : 'GENERAL',
+              nombre: col0,
+              stock: 1,
+              ml: 100,
+              costo: costoVal,
+              precio: precioVenta,
+              margenInd: margenGlobal,
+              imagen: '',
+              notas: categoriaActual
+            });
+            countImportados++;
+          }
+        }
+      });
+
+      renderTodo();
+      guardarCambiosEnNube(false);
+      alert(`✅ Se han importado y organizado ${countImportados} productos del Excel del proveedor con éxito.`);
+      input.value = '';
+    } catch (err) {
+      alert("❌ Error al leer el archivo Excel del proveedor.");
+      input.value = '';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function abrirModalPerfume() {
+  document.getElementById('p-id-edit').value = ''; 
+  document.getElementById('p-marca').value = ''; 
+  document.getElementById('p-nombre').value = '';
+  document.getElementById('p-stock').value = 1; 
+  document.getElementById('p-ml').value = 100; 
+  document.getElementById('p-costo').value = 15;
+  document.getElementById('p-margen-ind').value = margenGlobal;
+  document.getElementById('p-precio').value = 26.25; 
+  document.getElementById('p-imagen').value = ''; 
+  document.getElementById('p-notas').value = '';
+  actualizarEnlaceBusquedaGoogle();
+  document.getElementById('modal-perfume').style.display = 'flex';
+}
+
+function editarPerfume(idx) {
+  const p = inventario[idx]; if (!p) return;
+  document.getElementById('p-id-edit').value = idx; 
+  document.getElementById('p-marca').value = p.marca || ''; 
+  document.getElementById('p-nombre').value = p.nombre || '';
+  document.getElementById('p-stock').value = p.stock || 0; 
+  document.getElementById('p-ml').value = p.ml || 100; 
+  document.getElementById('p-costo').value = p.costo || 0;
+  document.getElementById('p-margen-ind').value = p.margenInd !== undefined ? p.margenInd : margenGlobal;
+  document.getElementById('p-precio').value = p.precio || 0; 
+  document.getElementById('p-imagen').value = p.imagen || ''; 
+  document.getElementById('p-notas').value = p.notas || '';
+  actualizarEnlaceBusquedaGoogle();
+  document.getElementById('modal-perfume').style.display = 'flex';
+}
+
+function actualizarEnlaceBusquedaGoogle() {
+  const nombre = document.getElementById('p-nombre').value.trim() || document.getElementById('p-marca').value.trim() || 'perfume';
+  const lupa = document.getElementById('btn-lupa-google');
+  if (lupa) {
+    lupa.href = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(nombre)}`;
   }
-  cont.innerHTML = pedidosWeb.map((p, idx) => `
-    <div style="background:var(--bg-input); border:1.5px solid var(--border-color); border-radius:12px; padding:12px;">
-      <div style="display:flex; justify-content:space-between; align-
-  <script>
+}
+
+function subirFotoGaleriaModal(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('p-imagen').value = e.target.result;
+    alert("📁 Foto cargada con éxito.");
+  };
+  reader.readAsDataURL(file);
+}
+
+function calcularPrecioDesdeCostoModal() {
+  const c = parseFloat(document.getElementById('p-costo').value) || 0;
+  const m = parseFloat(document.getElementById('p-margen-ind').value) || margenGlobal;
+  document.getElementById('p-precio').value = (c * (1 + m / 100)).toFixed(2);
+  actualizarEnlaceBusquedaGoogle();
+}
+
+function guardarPerfumeModal() {
+  const idx = document.getElementById('p-id-edit').value;
+  const nuevo = {
+    marca: document.getElementById('p-marca').value.trim(), 
+    nombre: document.getElementById('p-nombre').value.trim(),
+    stock: parseInt(document.getElementById('p-stock').value) || 0, 
+    ml: parseInt(document.getElementById('p-ml').value) || 100,
+    costo: parseFloat(document.getElementById('p-costo').value) || 0, 
+    margenInd: parseFloat(document.getElementById('p-margen-ind').value) || margenGlobal,
+    precio: parseFloat(document.getElementById('p-precio').value) || 0,
+    imagen: document.getElementById('p-imagen').value.trim(), 
+    notas: document.getElementById('p-notas').value.trim()
+  };
+  if (idx !== '') inventario[parseInt(idx)] = { ...inventario[parseInt(idx)], ...nuevo }; else inventario.push(nuevo);
+  document.getElementById('modal-perfume').style.display = 'none'; renderTodo(); guardarCambiosEnNube(false);
+}
+
+function eliminarPerfume(idx) { if (confirm("🗑️ ¿Eliminar este perfume?")) { inventario.splice(idx, 1); renderTodo(); guardarCambiosEnNube(false); } }
+function destaparBotella(idx) {
+  const p = inventario[idx]; if (!p || (parseInt(p.stock) || 0) <= 0) return alert("⚠️ Sin stock sellado.");
+  p.stock = (parseInt(p.stock) || 0) - 1; p.mlAbierto = (parseInt(p.mlAbierto) || 0) + (parseInt(p.ml) || 100);
+  renderTodo(); guardarCambiosEnNube(false); alert(`💧 Botella destapada (${p.mlAbierto} ml disponibles).`);
+}
 function toggleDeliveryPanel(tipo) {
   let idChk = tipo === 'mayor' ? 'm-usa-delivery' : (tipo === 'decant' ? 'dec-usa-delivery' : 'v-usa-delivery');
   let idPanel = tipo === 'mayor' ? 'm-delivery-panel' : (tipo === 'decant' ? 'dec-delivery-panel' : 'v-delivery-panel');
   const chk = document.getElementById(idChk), panel = document.getElementById(idPanel);
   if (chk && panel) panel.style.display = chk.checked ? 'grid' : 'none';
 }
-
 function agregarItemAlCarrito(tipo) {
   const isMayor = tipo === 'mayor';
   const inputProd = document.getElementById(isMayor ? 'm-producto-input' : 'v-producto-input');
@@ -752,7 +1030,6 @@ function agregarItemAlCarrito(tipo) {
   (isMayor ? carritoMayor : carritoDetal).push({ nombre: obtenerNombreLimpio(prod), cantidad: cant, precio: precioU, costo: parseFloat(prod.costo) || 0 });
   inputProd.value = ''; renderCarritoVentas(tipo);
 }
-
 function renderCarritoVentas(tipo) {
   const isMayor = tipo === 'mayor', lista = isMayor ? carritoMayor : carritoDetal;
   const cont = document.getElementById(isMayor ? 'm-items-carrito-lista' : 'v-items-carrito-lista');
@@ -760,7 +1037,6 @@ function renderCarritoVentas(tipo) {
     lista.map((item, idx) => `<div class="carrito-item"><span>${item.cantidad}x ${item.nombre} ($${(item.precio * item.cantidad).toFixed(2)})</span><button type="button" class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="quitarItemCarrito('${tipo}', ${idx})">✖</button></div>`).join('');
   recalcularTotalesVenta(tipo);
 }
-
 function quitarItemCarrito(tipo, idx) { (tipo === 'mayor' ? carritoMayor : carritoDetal).splice(idx, 1); renderCarritoVentas(tipo); }
 
 function recalcularTotalesVenta(tipo) {
@@ -773,20 +1049,27 @@ function recalcularTotalesVenta(tipo) {
     const plan = document.getElementById('v-plan')?.value || 'Contado';
     const abonoVal = parseFloat(document.getElementById('v-abono')?.value) || 0;
     const monedaAbono = document.getElementById('v-moneda-abono')?.value || 'USD';
+    
     let abonoUsd = abonoVal;
     if (monedaAbono === 'BS') {
       abonoUsd = abonoVal / tasa;
-      document.getElementById('v-abono-conv').textContent = `Equivale a: $${abonoUsd.toFixed(2)} USD`;
+      const convEl = document.getElementById('v-abono-conv');
+      if (convEl) convEl.textContent = `Equivale a: $${abonoUsd.toFixed(2)} USD`;
     } else {
-      document.getElementById('v-abono-conv').textContent = `Equivale a: Bs. ${(abonoVal * tasa).toFixed(2)}`;
+      const convEl = document.getElementById('v-abono-conv');
+      if (convEl) convEl.textContent = `Equivale a: Bs. ${(abonoVal * tasa).toFixed(2)}`;
     }
+    
     const abonado = plan === 'Contado' ? total : abonoUsd;
     const restante = Math.max(0, total - abonado);
-    document.getElementById('v-resumen-abono').innerHTML = `Total: $${total.toFixed(2)} | Abonado: $${abonado.toFixed(2)}`;
+    const numPerf = lista.reduce((a, i) => a + i.cantidad, 0);
+    
+    document.getElementById('v-resumen-abono').innerHTML = `Total: $${total.toFixed(2)} | Abonado: $${abonado.toFixed(2)}<br><small>${numPerf} perfumes</small>`;
     document.getElementById('v-resumen-restante').textContent = `Saldo Restante: $${restante.toFixed(2)}`;
   }
 }
 
+/* REGISTRAR VENTA DETAL Y ENVIAR RECIBO POR WHATSAPP COMO ANTES */
 function registrarVentaDetalConFacturaWA() {
   if (carritoDetal.length === 0) return alert("⚠️ Carrito de ventas vacío.");
   const cli = document.getElementById('v-cliente').value.trim() || 'Cliente General';
@@ -812,20 +1095,38 @@ function registrarVentaDetalConFacturaWA() {
     if (p) p.stock = Math.max(0, (parseInt(p.stock) || 0) - item.cantidad); 
   });
 
-  ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'detal', cliente: cli, telefono: tel, metodo: met, productos: carritoDetal.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), total, ganancia: sub - costoT, abonado, restante });
+  ventas.unshift({ 
+    fecha: new Date().toLocaleString('es-VE'), 
+    tipo: 'detal', 
+    cliente: cli, 
+    telefono: tel, 
+    metodo: met, 
+    productos: carritoDetal.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), 
+    total, 
+    ganancia: sub - costoT, 
+    abonado, 
+    restante 
+  });
 
   const textoWhatsApp = `✨ *PERFUMA2 - RESUMEN DE COMPRA* ✨\n\n` +
     carritoDetal.map(i => `◆ ${i.cantidad}x ${obtenerNombreLimpio(i)}`).join('\n') +
-    `\n• Metodo de pago: ${met}` + (dir ? `\n• Dirección: ${dir}` : '') +
-    `\n\nResumen de cuenta:\n💵 Total: $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n✅ Abonado: $${abonado.toFixed(2)} (Bs. ${(abonado * tasa).toFixed(2)})\n⚠️ Saldo Pendiente: $${restante.toFixed(2)} (Bs. ${(restante * tasa).toFixed(2)})\n\n¡Que disfrutes mucho tu fragancia!`;
+    `\n• Metodo de pago: ${met}` +
+    (dir ? `\n• Dirección: ${dir}` : '') +
+    `\n\nResumen de cuenta:\n` +
+    `💵 Total: $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n` +
+    `✅ Abonado: $${abonado.toFixed(2)} (Bs. ${(abonado * tasa).toFixed(2)})\n` +
+    `⚠️ Saldo Pendiente: $${restante.toFixed(2)} (Bs. ${(restante * tasa).toFixed(2)})\n\n` +
+    `¡Que disfrutes mucho tu fragancia!`;
 
   navigator.clipboard.writeText(textoWhatsApp).catch(() => {});
 
+  // Popular voucher canvas DOM
   const comprNum = Math.floor(10000 + Math.random() * 90000);
   document.getElementById('vc-fecha-comp').textContent = `Fecha: ${new Date().toLocaleDateString('es-VE')} | Compr. #${comprNum}`;
   document.getElementById('vc-cliente').textContent = cli;
   document.getElementById('vc-medio').textContent = met;
   document.getElementById('vc-direccion').textContent = dir || 'N/A';
+  
   document.getElementById('vc-articulos').innerHTML = carritoDetal.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('<br>');
   document.getElementById('vc-total').textContent = `$${total.toFixed(2)}`;
   document.getElementById('vc-total-bs').textContent = `Bs. ${(total * tasa).toFixed(2)}`;
@@ -835,17 +1136,30 @@ function registrarVentaDetalConFacturaWA() {
   document.getElementById('vc-pendiente-bs').textContent = `Bs. ${(restante * tasa).toFixed(2)}`;
   document.getElementById('vc-tasa').textContent = `Tasa aplicada: ${tasa.toFixed(2)} Bs`;
 
-  carritoDetal = []; renderCarritoVentas('detal'); renderTodo(); guardarCambiosEnNube(false); reproducirAlertaSonora("exito");
+  carritoDetal = [];
+  renderCarritoVentas('detal');
+  renderTodo();
+  guardarCambiosEnNube(false);
 
+  reproducirAlertaSonora("exito");
+
+  // Generar imagen de factura con html2canvas
   const voucherEl = document.getElementById('voucher-factura-canvas');
   html2canvas(voucherEl, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
     canvas.toBlob(blob => {
       const file = new File([blob], `Factura_${cli.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
       const urlWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(textoWhatsApp)}` : `https://wa.me/?text=${encodeURIComponent(textoWhatsApp)}`;
+      
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({ files: [file], text: textoWhatsApp }).catch(() => { window.open(urlWA, '_blank'); });
+        navigator.share({ files: [file], text: textoWhatsApp }).catch(() => {
+          window.open(urlWA, '_blank');
+        });
       } else {
-        const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `Factura_${cli.replace(/\s+/g, '_')}.png`; link.click();
+        // Descargar imagen automáticamente para que el usuario la envíe
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Factura_${cli.replace(/\s+/g, '_')}.png`;
+        link.click();
         window.open(urlWA, '_blank');
       }
     });
@@ -854,56 +1168,90 @@ function registrarVentaDetalConFacturaWA() {
     window.open(urlWA, '_blank');
   });
 
-  alert("✅ Venta registrada y factura generada para WhatsApp.");
+  alert("✅ Venta registrada, texto copiado y factura generada para WhatsApp.");
 }
 
 function registrarVenta(tipo) {
-  if (tipo === 'detal') { registrarVentaDetalConFacturaWA(); return; }
-  const lista = carritoMayor; if (lista.length === 0) return alert("⚠️ Carrito vacío.");
-  const cli = document.getElementById('m-cliente').value.trim() || 'Cliente Mayorista', tel = document.getElementById('m-telefono').value.trim(), met = document.getElementById('m-metodo').value;
+  if (tipo === 'detal') {
+    registrarVentaDetalConFacturaWA();
+    return;
+  }
+  const lista = carritoMayor;
+  if (lista.length === 0) return alert("⚠️ Carrito vacío.");
+  const cli = document.getElementById('m-cliente').value.trim() || 'Cliente Mayorista';
+  const tel = document.getElementById('m-telefono').value.trim();
+  const met = document.getElementById('m-metodo').value;
   const sub = lista.reduce((a, i) => a + (i.precio * i.cantidad), 0), costoT = lista.reduce((a, i) => a + (i.costo * i.cantidad), 0);
   const total = sub + (parseFloat(document.getElementById('m-delivery')?.value) || 0);
+  
   lista.forEach(item => { const p = inventario.find(x => obtenerNombreLimpio(x) === item.nombre); if (p) p.stock = Math.max(0, (parseInt(p.stock) || 0) - item.cantidad); });
   ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'mayor', cliente: cli, telefono: tel, metodo: met, productos: lista.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), total, ganancia: sub - costoT, abonado: total, restante: 0 });
-  carritoMayor = []; renderCarritoVentas('mayor'); renderTodo(); guardarCambiosEnNube(false); alert("✅ Venta al mayor registrada.");
+  carritoMayor = [];
+  renderCarritoVentas('mayor'); renderTodo(); guardarCambiosEnNube(false); alert("✅ Venta al mayor registrada.");
 }
 
 function renderHistorialVentas() {
   const tasa = obtenerTasaActiva();
   const tbD = document.getElementById('tbody-ventas-detal'), tbM = document.getElementById('tbody-ventas-mayor');
+  
   if (tbD) {
     tbD.innerHTML = ventas.map((v, idx) => ({ ...v, _origIdx: idx })).filter(v => v.tipo !== 'mayor').map((v) => `<tr>
-      <td>${v.fecha || ''}</td><td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
-      <td>${v.productos}</td><td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small style="color:var(--warning);">Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td>
-      <td style="text-align:center;"><div style="display:inline-flex; gap:6px; align-items:center;">
-        <button class="btn-secondary" style="padding:5px 8px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, '${v.tipo}')" title="Ver Factura / Recibo">🛵🧾</button>
-        <button class="btn-danger" style="padding:5px 8px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar">🗑️</button>
-      </div></td></tr>`).join('');
+      <td>${v.fecha || ''}</td>
+      <td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
+      <td>${v.productos}</td>
+      <td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small style="color:var(--warning);">Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td>
+      <td style="text-align:center;">
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+          <button class="btn-secondary" style="padding:5px 8px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, '${v.tipo}')" title="Ver Factura / Recibo y WhatsApp">🛵🧾</button>
+          <button class="btn-danger" style="padding:5px 8px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar Venta">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
   }
+
   if (tbM) {
     tbM.innerHTML = ventas.map((v, idx) => ({ ...v, _origIdx: idx })).filter(v => v.tipo === 'mayor').map((v) => `<tr>
-      <td>${v.fecha || ''}</td><td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
-      <td>${v.productos}</td><td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small style="color:var(--warning);">Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td>
-      <td style="text-align:center;"><div style="display:inline-flex; gap:6px; align-items:center;">
-        <button class="btn-secondary" style="padding:5px 8px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, 'mayor')" title="Ver Factura">🛵🧾</button>
-        <button class="btn-danger" style="padding:5px 8px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar">🗑️</button>
-      </div></td></tr>`).join('');
+      <td>${v.fecha || ''}</td>
+      <td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
+      <td>${v.productos}</td>
+      <td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small style="color:var(--warning);">Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td>
+      <td style="text-align:center;">
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+          <button class="btn-secondary" style="padding:5px 8px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, 'mayor')" title="Ver Factura / Recibo y WhatsApp">🛵🧾</button>
+          <button class="btn-danger" style="padding:5px 8px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar Venta">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
   }
 }
 
 function eliminarVentaRegistro(idx) {
-  if (confirm("🗑️ ¿Estás seguro de eliminar este registro de venta?")) { ventas.splice(idx, 1); renderTodo(); guardarCambiosEnNube(false); reproducirAlertaSonora("alerta"); }
+  if (confirm("🗑️ ¿Estás seguro de eliminar este registro de venta?")) {
+    ventas.splice(idx, 1);
+    renderTodo();
+    guardarCambiosEnNube(false);
+    reproducirAlertaSonora("alerta");
+  }
 }
 
 function verReciboUniversal(idx, tipo) {
-  const v = ventas[idx]; if (!v) return;
-  const tasa = obtenerTasaActiva(), tipoTitulo = tipo === 'mayor' ? 'VENTA AL MAYOR' : (tipo === 'decant' ? 'VENTA DECANTS' : 'VENTA DETAL');
-  const reciboTxt = `✨ *FACTURA / RECIBO - PERFUMA2 (${tipoTitulo})* ✨\n\n👤 *Cliente:* ${v.cliente}\n📱 *Teléfono:* ${v.telefono || 'N/A'}\n📦 *Detalle del Pedido:*\n${v.productos}\n\n💰 *Total:* $${(parseFloat(v.total)||0).toFixed(2)} (Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)})\n💳 *Método de Pago:* ${v.metodo}\n${v.restante && v.restante > 0 ? `💵 *Abonado:* $${(parseFloat(v.abonado)||0).toFixed(2)}\n⏳ *Saldo Restante:* $${(parseFloat(v.restante)||0).toFixed(2)}\n` : ''}\n📊 *Tasa del día:* ${tasa.toFixed(2)} Bs\n\n_¡Gracias por tu preferencia en PERFUMA2!_`;
-  navigator.clipboard.writeText(reciboTxt).catch(() => {}); reproducirAlertaSonora("exito");
-  if (confirm(`📄 Factura (${tipoTitulo}) de ${v.cliente}\nTotal: $${v.total}\n\n¿Deseas reenviar este recibo por WhatsApp?`)) {
+  const v = ventas[idx];
+  if (!v) return;
+  const tasa = obtenerTasaActiva();
+  const tipoTitulo = tipo === 'mayor' ? 'VENTA AL MAYOR' : (tipo === 'decant' ? 'VENTA DECANTS' : 'VENTA DETAL');
+  
+  const reciboTxt = "✨ *FACTURA / RECIBO - PERFUMA2 (" + tipoTitulo + ")* ✨\n\n👤 *Cliente:* " + v.cliente + "\n📱 *Teléfono:* " + (v.telefono || 'N/A') + "\n📦 *Detalle del Pedido:*\n" + v.productos + "\n\n💰 *Total:* $" + (parseFloat(v.total)||0).toFixed(2) + " (Bs. " + ((parseFloat(v.total)||0)*tasa).toFixed(2) + ")\n💳 *Método de Pago:* " + v.metodo + "\n" + (v.restante && v.restante > 0 ? "💵 *Abonado:* $" + (parseFloat(v.abonado)||0).toFixed(2) + "\n⏳ *Saldo Restante:* $" + (parseFloat(v.restante)||0).toFixed(2) + "\n" : "") + "\n📊 *Tasa del día:* " + tasa.toFixed(2) + " Bs\n\n_¡Gracias por tu preferencia en PERFUMA2!_";
+  
+  navigator.clipboard.writeText(reciboTxt).catch(() => {});
+  reproducirAlertaSonora("exito");
+  
+  if (confirm("📄 Factura (" + tipoTitulo + ") de " + v.cliente + "\nTotal: $" + v.total + "\n\n¿Deseas reenviar este recibo por WhatsApp al cliente?")) {
     const tel = (v.telefono || '').replace(/\D/g, '');
-    if (tel) window.open(`https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(reciboTxt)}`, '_blank');
-    else window.open(`https://wa.me/?text=${encodeURIComponent(reciboTxt)}`, '_blank');
+    if (tel) {
+      window.open("https://wa.me/" + (tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')) + "?text=" + encodeURIComponent(reciboTxt), '_blank');
+    } else {
+      window.open("https://wa.me/?text=" + encodeURIComponent(reciboTxt), '_blank');
+    }
   }
 }
 
@@ -941,23 +1289,26 @@ function registrarVentaDecant() {
   ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'decant', cliente: cli, productos: carritoDecants.map(d => `${d.cantidad}x ${d.nombre}`).join(', '), total, ganancia: sub * 0.5, abonado: total, restante: 0 });
   carritoDecants = []; document.getElementById('dec-items-carrito-lista').innerHTML = 'Carrito de decants vacío.'; renderTodo(); guardarCambiosEnNube(false); reproducirAlertaSonora("exito"); alert("✅ Venta de Decants registrada.");
 }
-</script>
- <script>
+
 function obtenerPagoMovilTresLineas() {
   const b = document.getElementById('cfg-pm-banco')?.value || 'BDV (0102)', c = document.getElementById('cfg-pm-ci')?.value || 'V-24162167', t = document.getElementById('cfg-pm-tel')?.value || '04120551688';
-  return `${c.replace(/\D/g, '') || '24162167'}\n${(b.match(/\d{4}/) || ['0102'])[0]}\n${t.replace(/\D/g, '') || '04120551688'}`;
+  return `${c.replace(/\D/g, '') || '24162167'}
+${(b.match(/\d{4}/) || ['0102'])[0]}
+${t.replace(/\D/g, '') || '04120551688'}`;
 }
 
 function copiarPagoMovilTresLineas() {
   const txt = obtenerPagoMovilTresLineas();
-  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:\n\n" + txt));
+  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:
+
+" + txt));
 }
 
 function actualizarTarjeta3D() {
-  const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente General', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', met = document.getElementById('ia-metodo-cobro')?.value || 'todos', monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, nota = document.getElementById('ia-nota')?.value.trim(), tasa = obtenerTasaActiva();
+  const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente General', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago de Cuota / Abono', met = document.getElementById('ia-metodo-cobro')?.value || 'todos', monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, nota = document.getElementById('ia-nota')?.value.trim(), tasa = obtenerTasaActiva();
   document.getElementById('t3d-cliente').textContent = cli; document.getElementById('t3d-concepto').textContent = '📌 Concepto: ' + (nota || tipo);
   document.getElementById('t3d-monto-usd').textContent = '$' + monto.toFixed(2); document.getElementById('t3d-monto-bs').textContent = 'Bs. ' + (monto * tasa).toFixed(2);
-  document.getElementById('t3d-tasa').textContent = `Tasa aplicada: ${tasa.toFixed(2)} Bs`;
+  document.getElementById('t3d-tasa').textContent = `Tasa aplicada: ${tasa.toFixed(2)} Bs (${tipoTasaActiva.toUpperCase()})`;
   const pmB = document.getElementById('cfg-pm-banco')?.value || 'BDV (0102)', pmC = document.getElementById('cfg-pm-ci')?.value || 'V-24162167', pmT = document.getElementById('cfg-pm-tel')?.value || '04120551688';
   let h = '';
   if (met === 'todos' || met === 'pagomovil') h += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;"><strong style="color:#00f2d6;">📲 PAGO MÓVIL:</strong><br>• Banco: ${pmB}<br>• Cédula/RIF: ${pmC}<br>• Teléfono: ${pmT}</div>`;
@@ -966,28 +1317,89 @@ function actualizarTarjeta3D() {
   document.getElementById('t3d-metodos-lista').innerHTML = h;
 }
 
+/* CHAT CON ASISTENTE IA */
 function enviarConsultaIA() {
-  const input = document.getElementById('ia-prompt-input'), chatBox = document.getElementById('ia-chat-box');
+  const input = document.getElementById('ia-prompt-input');
+  const chatBox = document.getElementById('ia-chat-box');
   if (!input || !input.value.trim()) return;
   const txt = input.value.trim();
+  
+  // Mostrar mensaje usuario
   chatBox.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; font-size:12px; align-self:flex-end; max-width:85%;">👤 <strong>Tú:</strong> ${txt}</div>`;
-  input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
+  input.value = '';
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  // Respuesta inteligente simulada
   setTimeout(() => {
-    let respuesta = `🤖 Entendido, Oyam. Para "${txt}", mantén organizada la rotación de tus frascos y verifica la tasa USDT.`;
+    let respuesta = "🤖 Analizando tu solicitud en PERFUMA2...";
+    const t = txt.toLowerCase();
+    if (t.includes('deuda') || t.includes('cobro')) {
+      respuesta = "💡 *Sugerencia de Cobro:* 'Hola estimado/a, le escribimos de PERFUMA2 para recordarle su saldo pendiente. ¡Contáctenos para coordinar su pago y seguir disfrutando de sus fragancias!'";
+    } else if (t.includes('estado') || t.includes('whatsapp') || t.includes('promo')) {
+      respuesta = "✨ *Idea para Estado:* '🔥 ¡Llegaron fragancias exclusivas a PERFUMA2! Escríbenos al DM o al WhatsApp para asegurar tu decant o botella sellada antes de que se agoten. 🧴💨'";
+    } else if (t.includes('stock') || t.includes('inventario') || t.includes('ventas')) {
+      const totalP = inventario.reduce((a, p) => a + (parseInt(p.stock) || 0), 0);
+      respuesta = `📊 *Resumen de Inventario:* Tienes ${inventario.length} referencias registradas con un total de ${totalP} unidades selladas en stock. ¡Todo marcha excelente!`;
+    } else {
+      respuesta = `🤖 Entendido, Oyam. Para "${txt}", te recomiendo mantener organizada la rotación de tus frascos abiertos y verificar la tasa de cambio USDT del día.`;
+    }
+    
     chatBox.innerHTML += `<div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">🤖 <strong>Asistente:</strong> ${respuesta}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
   }, 600);
 }
 
+/* FACTURAR DESDE EL BUZÓN DE PEDIDOS WEB (1 CLIC) */
+function facturarPedidoWeb(idx) {
+  const p = pedidosWeb[idx];
+  if (!p) return;
+  
+  cambiarTab('ventas', document.querySelector('.tab-btn[onclick*="ventas"]'));
+  
+  document.getElementById('v-cliente').value = p.cliente || '';
+  document.getElementById('v-telefono').value = p.telefono || '';
+  document.getElementById('v-direccion').value = p.direccion || '';
+  
+  carritoDetal = (p.items || []).map(i => {
+    const prod = inventario.find(x => obtenerNombreLimpio(x).toLowerCase() === i.nombre.toLowerCase());
+    return {
+      nombre: i.nombre,
+      cantidad: i.cantidad,
+      precio: i.precio,
+      costo: prod ? (parseFloat(prod.costo) || 0) : 0
+    };
+  });
+  
+  renderCarritoVentas('detal');
+  alert(`⚡ Pedido de ${p.cliente} cargado en Ventas Detal. ¡Solo revisa y pulsa Registrar Venta & Recibo!`);
+}
+
+/* ENVÍO DUAL WHATSAPP EN 2 MENSAJES SEPARADOS */
 function enviarCobroTextoYCuentaAparte() {
   const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tel = (document.getElementById('ia-cli-tel')?.value || '').replace(/\D/g, ''), tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva(), tres = obtenerPagoMovilTresLineas();
-  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nDetalle: *${tipo}*\n${nota ? `📌 *Concepto:* ${nota}\n` : ''}\n💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n📊 *Tasa:* ${tasa.toFixed(2)} Bs\n\n_Por favor realiza tu transferencia y envíanos el comprobante._`;
-  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*\n\n${tres}`;
+  
+  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨
+
+Hola *${cli}*, un saludo cordial.
+Detalle correspondiente a: *${tipo}*
+${nota ? `📌 *Concepto:* ${nota}
+` : ''}
+💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
+📊 *Tasa del día:* ${tasa.toFixed(2)} Bs
+
+_Por favor realiza tu transferencia y envíanos el comprobante por este medio. ¡Muchas gracias!_`;
+  
+  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*
+
+${tres}`;
+
   navigator.clipboard.writeText(tres).catch(() => {});
+  
   const url1 = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(msg1)}` : `https://wa.me/?text=${encodeURIComponent(msg1)}`;
   window.open(url1, '_blank');
+
   setTimeout(() => {
-    alert("✅ Mensaje 1 enviado. A continuación se abrirá el Mensaje 2 con los datos bancarios.");
+    alert("✅ Mensaje 1 enviado. A continuación se abrirá o podrás pegar el Mensaje 2 con los datos bancarios separados.");
     const url2 = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(msg2)}` : `https://wa.me/?text=${encodeURIComponent(msg2)}`;
     window.open(url2, '_blank');
   }, 1000);
@@ -996,15 +1408,105 @@ function enviarCobroTextoYCuentaAparte() {
 async function compartirTarjeta3D() {
   const tres = obtenerPagoMovilTresLineas();
   try { await navigator.clipboard.writeText(tres); } catch (e) {}
-  const card = document.getElementById('tarjeta-cobro-3d'), cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva();
-  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨\n\nHola *${cli}*,\nConcepto: *${tipo}*\n💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n\n📲 *Pago Móvil:*\n${tres}`;
+  const card = document.getElementById('tarjeta-cobro-3d'), cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva();
+  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨
+
+Hola *${cli}*, un saludo cordial.
+Concepto: *${tipo}*
+💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
+
+📲 *Datos Bancarios (Pago Móvil):*
+${tres}`;
   const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#070b14' });
   canvas.toBlob(async blob => {
     const file = new File([blob], `Tarjeta_Cobro_${cli.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], text: txt });
-    else alert("✅ Imagen generada y datos de cuenta copiados.");
+    else alert("✅ Imagen generada y datos de cuenta en 3 líneas copiados para enviar aparte.");
   });
 }
+
+function setCatFiltro(f, btn) { filtroCatActual = f; document.querySelectorAll('.cat-filter-btn').forEach(b => b.classList.remove('active')); if (btn) btn.classList.add('active'); renderCatalogoPublico(); }
+
+function renderCatalogoPublico() {
+  const grid = document.getElementById('cat-grid-productos'); if (!grid) return;
+  const q = (document.getElementById('cat-search')?.value || '').toLowerCase(), tasa = obtenerTasaActiva();
+  const disp = inventario.map((p, idx) => ({ ...p, _idx: idx })).filter(p => {
+    if ((parseInt(p.stock) || 0) <= 0 && (parseInt(p.mlAbierto) || 0) <= 0) return false;
+    if (filtroCatActual === 'perfumes' && p.esCombo) return false;
+    if (filtroCatActual === 'decants' && (parseInt(p.mlAbierto) || 0) <= 0) return false;
+    if (filtroCatActual === 'combos' && !p.esCombo) return false;
+    return `${p.marca || ''} ${p.nombre || ''} ${p.notas || ''}`.toLowerCase().includes(q);
+  });
+  grid.innerHTML = disp.length === 0 ? `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted);">No hay productos disponibles.</div>` :
+    disp.map(p => {
+      const nom = obtenerNombreLimpio(p), pr = parseFloat(p.precio) || 0;
+      return `<div class="cat-item"><div><div class="cat-item-img">${p.imagen ? `<img src="${p.imagen}" onerror="this.style.display='none';">` : '🧴'}</div><div class="cat-item-name">${nom}</div><div class="cat-item-format">${p.ml || 100}ml</div></div><div><div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;"><span style="font-size:10px; color:var(--text-muted); font-weight:800;">PRECIO:</span><span style="font-size:17px; font-weight:900; color:var(--accent);">$${pr.toFixed(2)}</span></div><div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;"><span style="font-size:10px; color:var(--text-muted);">Al cambio:</span><span style="font-size:11.5px; font-weight:800; color:var(--warning);">Bs. ${(pr * tasa).toFixed(2)}</span></div><button type="button" class="cat-item-btn" onclick="agregarAlCarritoPublico(${p._idx}, this)">🧴 AÑADIR</button></div></div>`;
+    }).join('');
+}
+
+function agregarAlCarritoPublico(idx, btn) {
+  const p = inventario[idx]; if (!p) return;
+  const nom = obtenerNombreLimpio(p), ex = carritoPublico.find(i => i.nombre === nom);
+  if (ex) ex.cantidad += 1; else carritoPublico.push({ nombre: nom, precio: parseFloat(p.precio) || 0, cantidad: 1 });
+  if (btn) { btn.classList.add('added'); btn.innerHTML = '✔ ¡AÑADIDO!'; setTimeout(() => { btn.classList.remove('added'); btn.innerHTML = '🧴 AÑADIR'; }, 900); }
+  actualizarBarraCarritoPublico();
+}
+
+function actualizarBarraCarritoPublico() {
+  const total = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0), cant = carritoPublico.reduce((a, i) => a + i.cantidad, 0), tasa = obtenerTasaActiva();
+  document.getElementById('cat-cart-total-txt').textContent = '$' + total.toFixed(2);
+  document.getElementById('cat-cart-btn-txt').textContent = `VER CARRITO (${cant})`;
+  document.getElementById('cat-checkout-total').textContent = '$' + total.toFixed(2);
+  document.getElementById('cat-checkout-bs').textContent = 'Bs. ' + (total * tasa).toFixed(2);
+}
+
+function abrirModalCarritoPublico() {
+  const cont = document.getElementById('cat-carrito-items');
+  cont.innerHTML = carritoPublico.length === 0 ? '<div style="text-align:center; padding:18px; color:var(--text-muted);">Tu carrito está vacío.</div>' :
+    carritoPublico.map((item, idx) => `<div style="display:flex; justify-content:space-between; align-items:center; gap:8px; padding:10px 0; border-bottom:1px solid var(--border-color);"><div style="font-weight:800; font-size:12.5px;">${item.cantidad}x ${item.nombre} <span style="color:var(--accent);">($${(item.precio * item.cantidad).toFixed(2)})</span></div><button type="button" class="btn-danger" style="padding:5px 9px; font-size:11px;" onclick="eliminarItemCarritoPublico(${idx})">🗑️</button></div>`).join('');
+  actualizarBarraCarritoPublico(); document.getElementById('modal-carrito-pub').style.display = 'flex';
+}
+
+function eliminarItemCarritoPublico(idx) { carritoPublico.splice(idx, 1); abrirModalCarritoPublico(); }
+
+function enviarPedidoWeb() {
+  if (carritoPublico.length === 0) return alert("⚠️ Carrito vacío.");
+  const nom = document.getElementById('cat-cli-nombre').value.trim() || 'Cliente Web', tel = document.getElementById('cat-cli-tel').value.trim() || 'Sin teléfono', dir = document.getElementById('cat-cli-dir').value.trim() || 'Por coordinar', total = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0), tasa = obtenerTasaActiva();
+  pedidosWeb.unshift({ fecha: new Date().toLocaleString('es-VE'), cliente: nom, telefono: tel, direccion: dir, items: carritoPublico, total });
+  guardarCambiosEnNube(false);
+  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*
+
+👤 *Cliente:* ${nom}
+📱 *Teléfono:* ${tel}
+📍 *Dirección:* ${dir}
+
+*Artículos Solicitados:*
+${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('
+')}
+
+💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})
+
+_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
+  carritoPublico = []; document.getElementById('modal-carrito-pub').style.display = 'none'; actualizarBarraCarritoPublico();
+  window.open(`https://wa.me/${numeroWATienda}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function renderPedidosWeb() {
+  const badge = document.getElementById('badge-pedidos'); if (badge) { badge.style.display = pedidosWeb.length > 0 ? 'inline-block' : 'none'; badge.textContent = pedidosWeb.length; }
+  const cont = document.getElementById('contenedor-pedidos-web'); if (!cont) return;
+  cont.innerHTML = pedidosWeb.length === 0 ? `<div style="text-align:center; padding:16px; color:var(--text-muted);">No hay pedidos web.</div>` :
+    pedidosWeb.map((p, idx) => `<div style="border:1.5px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:8px; background:var(--bg-input);">
+      <div style="display:flex; justify-content:space-between; align-items:center; font-weight:900;">
+        <span>👤 ${p.cliente} (${p.telefono})</span>
+        <span style="color:var(--accent);">$${(parseFloat(p.total)||0).toFixed(2)}</span>
+      </div>
+      <div style="font-size:11.5px; color:var(--text-muted); margin:4px 0;">📍 ${p.direccion} | ${p.fecha}</div>
+      <div style="font-size:12px; font-weight:700; margin-bottom:8px;">${(p.items||[]).map(i => `${i.cantidad}x ${i.nombre}`).join(', ')}</div>
+      <button class="btn-primary" style="width:100%; padding:8px; font-size:11.5px; background:var(--success); color:#fff;" onclick="facturarPedidoWeb(${idx})">⚡ FACTURAR VENTA DETAL (1 CLIC)</button>
+    </div>`).join('');
+}
+
+function limpiarPedidosWeb() { if (confirm("🗑️ ¿Borrar todos los pedidos web?")) { pedidosWeb = []; renderTodo(); guardarCambiosEnNube(false); } }
 
 function renderCRM() {
   const tb = document.getElementById('tbody-crm'); if (!tb) return;
@@ -1026,10 +1528,8 @@ function renderGastos() {
   tb.innerHTML = gastos.map((g, idx) => `<tr><td>${g.fecha}</td><td>${g.concepto}</td><td>$${(parseFloat(g.monto)||0).toFixed(2)}</td><td><button class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="gastos.splice(${idx},1);renderTodo();guardarCambiosEnNube(false);">🗑️</button></td></tr>`).join('');
 }
 
-function copiarLinkCatalogo() {
-  const u = window.location.origin + window.location.pathname + '?catalogo=true';
-  navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u));
-}
+function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:
+" + u)); }
 function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
 function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); }
 
@@ -1050,15 +1550,7 @@ function cargarCuentasPagoInpuntu(c) {
   if (c.binance) document.getElementById('cfg-binance').value = c.binance;
 }
 
-window.onload = function() {
-  const savedTheme = safeGetStorage('perfuma2_theme', 'light') || 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  actualizarReloj();
-  cargarDatosDesdeNube();
-};
+window.onload = verificarBloqueoSeguridad;
 </script>
 </body>
 </html>
-
-    
-  
