@@ -246,6 +246,7 @@ setTimeout(function() {
     <!-- Fila 1 Controles -->
     <div style="display:flex; align-items:center; gap:5px; flex-wrap:nowrap; width:100%; overflow-x:auto; scrollbar-width:none;">
       <button class="btn-secondary btn-theme-toggle" onclick="alternarTemaLuz()" style="font-size:9.5px; font-weight:900; border-radius:20px; padding:4px 8px; flex-shrink:0;">☀️ DÍA</button>
+      <button class="btn-secondary" id="btn-sonido-toggle" onclick="alternarSonidoAlerta()" style="font-size:9.5px; font-weight:900; border-radius:20px; padding:4px 8px; flex-shrink:0;">🔔 SONIDO: ON</button>
       <div id="version-badge-flotante" onclick="forzarActualizacionApp()" style="padding:4px 8px; font-size:9.5px; flex-shrink:0;">🔔 oyamh95</div>
       <div id="reloj-sistema" style="font-size:9.5px; font-weight:800; background:rgba(15,118,110,0.08); padding:4px 8px; border-radius:20px; border:1px solid rgba(15,118,110,0.25); white-space:nowrap; flex-shrink:0;"></div>
       <button id="btn-sync-manual" class="btn-primary" onclick="guardarCambiosEnNube(true)" style="font-size:9.5px; padding:4px 9px; border-radius:20px; flex-shrink:0; margin-left:auto;">☁️ GUARDAR</button>
@@ -690,6 +691,35 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let inventario = [], ventas = [], gastos = [], pedidosWeb = [];
+let sonidoActivo = localStorage.getItem('perfuma2_sonido') !== 'off';
+
+function reproducirAlertaSonora(tipo) {
+  if (!sonidoActivo) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = tipo === 'exito' ? 'sine' : (tipo === 'alerta' ? 'sawtooth' : 'triangle');
+    osc.frequency.setValueAtTime(tipo === 'exito' ? 587.33 : (tipo === 'alerta' ? 440 : 523.25), ctx.currentTime);
+    if (tipo === 'exito') {
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+    }
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.3);
+  } catch (e) {}
+}
+
+function alternarSonidoAlerta() {
+  sonidoActivo = !sonidoActivo;
+  localStorage.setItem('perfuma2_sonido', sonidoActivo ? 'on' : 'off');
+  const btn = document.getElementById('btn-sonido-toggle');
+  if (btn) btn.innerHTML = sonidoActivo ? '🔔 SONIDO: ON' : '🔕 SONIDO: OFF';
+  if (sonidoActivo) reproducirAlertaSonora('exito');
+}
 let tasaBCV = 896.12, tasaUSDT = 1011.32, tipoTasaActiva = 'usdt', margenGlobal = 75, numeroWATienda = '584120551688';
 let carritoDetal = [], carritoMayor = [], carritoDecants = [], carritoPublico = [], filtroCatActual = 'todo';
 
@@ -731,6 +761,8 @@ function verificarBloqueoSeguridad() {
   document.documentElement.setAttribute('data-theme', savedTheme);
   document.querySelectorAll('.btn-theme-toggle').forEach(b => b.innerHTML = savedTheme === 'light' ? '☀️ DÍA' : '🌙 NOCHE');
   actualizarReloj();
+  const btnS = document.getElementById('btn-sonido-toggle');
+  if (btnS) btnS.innerHTML = sonidoActivo ? '🔔 SONIDO: ON' : '🔕 SONIDO: OFF';
   cargarDatosDesdeNube();
   const loader = document.getElementById('loader-pantalla');
   if (isCatalogoPublico) {
@@ -752,7 +784,7 @@ function verificarPIN() {
     document.getElementById('modal-login').style.display = 'none';
     document.getElementById('app-admin').style.display = 'block';
     renderTodo();
-  } else alert("❌ PIN Incorrecto.");
+  } else reproducirAlertaSonora("alerta"); alert("❌ PIN Incorrecto.");
 }
 
 function cambiarTab(id, btn) {
@@ -773,7 +805,7 @@ function cargarDatosDesdeNube() {
     if (data.tasaUSDT) tasaUSDT = parseFloat(data.tasaUSDT);
     if (data.tipoTasaActiva) tipoTasaActiva = data.tipoTasaActiva;
     if (data.numeroWATienda) numeroWATienda = data.numeroWATienda;
-    if (data.cuentasPago) cargarCuentasPagoInpuntu(data.cuentasPago);
+    if (data.cuentasPago) cargarCuentasPagoEnInputs(data.cuentasPago);
     renderTodo();
   });
 }
@@ -806,7 +838,9 @@ async function obtenerTasasAutomaticas(mostrarMsg) {
     if (ofi?.promedio) tasaBCV = parseFloat(ofi.promedio.toFixed(2));
     if (par?.promedio) tasaUSDT = parseFloat(par.promedio.toFixed(2));
     renderTodo(); guardarCambiosEnNube(false);
-    if (mostrarMsg) alert(`✅ Tasas actualizadas:\nBCV: ${tasaBCV} Bs\nUSDT: ${tasaUSDT} Bs`);
+    if (mostrarMsg) alert(`✅ Tasas actualizadas:
+BCV: ${tasaBCV} Bs
+USDT: ${tasaUSDT} Bs`);
   } catch (e) { if (mostrarMsg) alert("⚠️ Edita la tasa manualmente."); }
 }
 
@@ -1115,7 +1149,25 @@ function registrarVentaDetalConFacturaWA() {
   });
 
   // Generar factura / recibo de texto para WhatsApp
-  const reciboTxt = `✨ *FACTURA / RECIBO - PERFUMA2* ✨\n\n👤 *Cliente:* ${cli}\n📱 *Teléfono:* ${tel || 'N/A'}\n${dir ? `📍 *Dirección:* ${dir}\n` : ''}📦 *Detalle del Pedido:*\n${carritoDetal.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n')}\n${delivery > 0 ? `🛵 *Delivery:* $${delivery.toFixed(2)}\n` : ''}\n💰 *Total a Pagar:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n💳 *Método de Pago:* ${met}\n${plan === 'Crédito / Abono' ? `📊 *Plan:* Crédito / Abono\n💵 *Abonado:* $${abonado.toFixed(2)}\n⏳ *Saldo Restante:* $${restante.toFixed(2)}\n` : ''}\n📊 *Tasa del día:* ${tasa.toFixed(2)} Bs\n\n_¡Gracias por tu compra en PERFUMA2! Tu fragancia ideal._`;
+  const reciboTxt = `✨ *FACTURA / RECIBO - PERFUMA2* ✨
+
+👤 *Cliente:* ${cli}
+📱 *Teléfono:* ${tel || 'N/A'}
+${dir ? `📍 *Dirección:* ${dir}
+` : ''}📦 *Detalle del Pedido:*
+${carritoDetal.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('
+')}
+${delivery > 0 ? `🛵 *Delivery:* $${delivery.toFixed(2)}
+` : ''}
+💰 *Total a Pagar:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})
+💳 *Método de Pago:* ${met}
+${plan === 'Crédito / Abono' ? `📊 *Plan:* Crédito / Abono
+💵 *Abonado:* $${abonado.toFixed(2)}
+⏳ *Saldo Restante:* $${restante.toFixed(2)}
+` : ''}
+📊 *Tasa del día:* ${tasa.toFixed(2)} Bs
+
+_¡Gracias por tu compra en PERFUMA2! Tu fragancia ideal._`;
 
   navigator.clipboard.writeText(reciboTxt).catch(() => {});
   
@@ -1124,7 +1176,7 @@ function registrarVentaDetalConFacturaWA() {
   renderTodo();
   guardarCambiosEnNube(false);
 
-  alert("✅ Venta registrada con éxito y recibo copiado al portapapeles.");
+  reproducirAlertaSonora("exito"); alert("✅ Venta registrada con éxito y recibo copiado al portapapeles.");
   
   if (tel) {
     window.open(`https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(reciboTxt)}`, '_blank');
@@ -1191,17 +1243,21 @@ function registrarVentaDecant() {
   const sub = carritoDecants.reduce((a, d) => a + (d.precio * d.cantidad), 0), total = sub + (parseFloat(document.getElementById('dec-delivery')?.value) || 0);
   carritoDecants.forEach(d => { const p = inventario[d.idxPerfume]; if (p) p.mlAbierto = Math.max(0, (parseInt(p.mlAbierto) || 0) - (d.ml * d.cantidad)); });
   ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'decant', cliente: cli, productos: carritoDecants.map(d => `${d.cantidad}x ${d.nombre}`).join(', '), total, ganancia: sub * 0.5, abonado: total, restante: 0 });
-  carritoDecants = []; document.getElementById('dec-items-carrito-lista').innerHTML = 'Carrito de decants vacío.'; renderTodo(); guardarCambiosEnNube(false); alert("✅ Venta de Decants registrada.");
+  carritoDecants = []; document.getElementById('dec-items-carrito-lista').innerHTML = 'Carrito de decants vacío.'; renderTodo(); guardarCambiosEnNube(false); reproducirAlertaSonora("exito"); alert("✅ Venta de Decants registrada.");
 }
 
 function obtenerPagoMovilTresLineas() {
   const b = document.getElementById('cfg-pm-banco')?.value || 'BDV (0102)', c = document.getElementById('cfg-pm-ci')?.value || 'V-24162167', t = document.getElementById('cfg-pm-tel')?.value || '04120551688';
-  return `${c.replace(/\D/g, '') || '24162167'}\n${(b.match(/\d{4}/) || ['0102'])[0]}\n${t.replace(/\D/g, '') || '04120551688'}`;
+  return `${c.replace(/\D/g, '') || '24162167'}
+${(b.match(/\d{4}/) || ['0102'])[0]}
+${t.replace(/\D/g, '') || '04120551688'}`;
 }
 
 function copiarPagoMovilTresLineas() {
   const txt = obtenerPagoMovilTresLineas();
-  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:\n\n" + txt));
+  navigator.clipboard.writeText(txt).then(() => alert("✅ Cuenta copiada en 3 líneas:
+
+" + txt));
 }
 
 function actualizarTarjeta3D() {
@@ -1224,10 +1280,12 @@ function enviarConsultaIA() {
   if (!input || !input.value.trim()) return;
   const txt = input.value.trim();
   
+  // Mostrar mensaje usuario
   chatBox.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; font-size:12px; align-self:flex-end; max-width:85%;">👤 <strong>Tú:</strong> ${txt}</div>`;
   input.value = '';
   chatBox.scrollTop = chatBox.scrollHeight;
 
+  // Respuesta inteligente simulada
   setTimeout(() => {
     let respuesta = "🤖 Analizando tu solicitud en PERFUMA2...";
     const t = txt.toLowerCase();
@@ -1276,9 +1334,20 @@ function facturarPedidoWeb(idx) {
 function enviarCobroTextoYCuentaAparte() {
   const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tel = (document.getElementById('ia-cli-tel')?.value || '').replace(/\D/g, ''), tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva(), tres = obtenerPagoMovilTresLineas();
   
-  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nDetalle correspondiente a: *${tipo}*\n${nota ? `📌 *Concepto:* ${nota}\n` : ''}\n💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n📊 *Tasa del día:* ${tasa.toFixed(2)} Bs\n\n_Por favor realiza tu transferencia y envíanos el comprobante por este medio. ¡Muchas gracias!_`;
+  const msg1 = `✨ *PERFUMA2 - DETALLE DE PAGO* ✨
+
+Hola *${cli}*, un saludo cordial.
+Detalle correspondiente a: *${tipo}*
+${nota ? `📌 *Concepto:* ${nota}
+` : ''}
+💰 *Total a pagar:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
+📊 *Tasa del día:* ${tasa.toFixed(2)} Bs
+
+_Por favor realiza tu transferencia y envíanos el comprobante por este medio. ¡Muchas gracias!_`;
   
-  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*\n\n${tres}`;
+  const msg2 = `📲 *DATOS BANCARIOS (PAGO MÓVIL)*
+
+${tres}`;
 
   navigator.clipboard.writeText(tres).catch(() => {});
   
@@ -1296,7 +1365,14 @@ async function compartirTarjeta3D() {
   const tres = obtenerPagoMovilTresLineas();
   try { await navigator.clipboard.writeText(tres); } catch (e) {}
   const card = document.getElementById('tarjeta-cobro-3d'), cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', nota = document.getElementById('ia-nota')?.value.trim(), monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, tasa = obtenerTasaActiva();
-  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨\n\nHola *${cli}*, un saludo cordial.\nConcepto: *${tipo}*\n💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})\n\n📲 *Datos Bancarios (Pago Móvil):*\n${tres}`;
+  const txt = `✨ *PERFUMA2 - DATOS DE PAGO* ✨
+
+Hola *${cli}*, un saludo cordial.
+Concepto: *${tipo}*
+💰 *Total:* $${monto.toFixed(2)} (Bs. ${(monto * tasa).toFixed(2)})
+
+📲 *Datos Bancarios (Pago Móvil):*
+${tres}`;
   const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#070b14' });
   canvas.toBlob(async blob => {
     const file = new File([blob], `Tarjeta_Cobro_${cli.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
@@ -1354,7 +1430,19 @@ function enviarPedidoWeb() {
   const nom = document.getElementById('cat-cli-nombre').value.trim() || 'Cliente Web', tel = document.getElementById('cat-cli-tel').value.trim() || 'Sin teléfono', dir = document.getElementById('cat-cli-dir').value.trim() || 'Por coordinar', total = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0), tasa = obtenerTasaActiva();
   pedidosWeb.unshift({ fecha: new Date().toLocaleString('es-VE'), cliente: nom, telefono: tel, direccion: dir, items: carritoPublico, total });
   guardarCambiosEnNube(false);
-  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*\n\n👤 *Cliente:* ${nom}\n📱 *Teléfono:* ${tel}\n📍 *Dirección:* ${dir}\n\n*Artículos Solicitados:*\n${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n')}\n\n💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n\n_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
+  const msg = `🛒 *NUEVO PEDIDO WEB PERFUMA2*
+
+👤 *Cliente:* ${nom}
+📱 *Teléfono:* ${tel}
+📍 *Dirección:* ${dir}
+
+*Artículos Solicitados:*
+${carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('
+')}
+
+💰 *Total:* $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})
+
+_Hola, quiero confirmar la disponibilidad y coordinar la entrega de este pedido._`;
   carritoPublico = []; document.getElementById('modal-carrito-pub').style.display = 'none'; actualizarBarraCarritoPublico();
   window.open(`https://wa.me/${numeroWATienda}?text=${encodeURIComponent(msg)}`, '_blank');
 }
@@ -1396,7 +1484,8 @@ function renderGastos() {
   tb.innerHTML = gastos.map((g, idx) => `<tr><td>${g.fecha}</td><td>${g.concepto}</td><td>$${(parseFloat(g.monto)||0).toFixed(2)}</td><td><button class="btn-danger" style="padding:4px 8px; font-size:10px;" onclick="gastos.splice(${idx},1);renderTodo();guardarCambiosEnNube(false);">🗑️</button></td></tr>`).join('');
 }
 
-function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u)); }
+function copiarLinkCatalogo() { const u = window.location.origin + window.location.pathname + '?catalogo=true'; navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:
+" + u)); }
 function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
 function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); }
 
