@@ -114,7 +114,7 @@
 </div>
 
 <!-- VISTA DE CLIENTE (CATÁLOGO PÚBLICO) -->
-<div id="app-catalogo-publico" style="display:none; padding:12px; max-width:500px; margin:0 auto;">
+<div id="app-catalogo-publico" style="display:none; padding:12px; max-width:500px; margin:0 auto; padding-bottom:80px;">
   <div style="text-align:center; padding:15px 0; border-bottom:2px solid var(--border-color); margin-bottom:15px;">
     <h2 style="color:var(--accent); margin:0; font-size:24px; font-weight:900;">PERFUMA2</h2>
     <div style="font-size:10.5px; color:var(--text-muted); font-weight:700;">CATÁLOGO OFICIAL DE FRAGANCIAS</div>
@@ -124,17 +124,22 @@
   </div>
   <div id="cat-grid-productos" style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; margin-bottom:20px;"></div>
   
-  <div class="card-panel" style="border-color:var(--accent);">
-    <h4 class="card-title" style="color:var(--accent);">🛒 Tu Pedido</h4>
-    <div id="cat-carrito-items" style="font-size:11.5px; margin-bottom:10px; max-height:120px; overflow-y:auto;">Tu carrito está vacío.</div>
-    <div style="font-weight:900; font-size:14px; margin-bottom:10px;" id="cat-carrito-total">Total: $0.00</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Tu Nombre</label><input type="text" id="cat-cli-nombre" class="user-input" placeholder="Nombre completo"></div>
-      <div class="form-group"><label>Tu Teléfono (WhatsApp)</label><input type="text" id="cat-cli-tel" class="user-input" placeholder="Ej: 0412..."></div>
-      <div class="form-group"><label>Dirección / Zona</label><input type="text" id="cat-cli-dir" class="user-input" placeholder="Zona de entrega"></div>
-      <div class="form-group"><label>Método de Pago</label><select id="cat-cli-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay">Binance Pay</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+  <!-- CARRITO FLOTANTE Y PANEL DE PEDIDO -->
+  <div id="cat-carrito-flotante" style="position:fixed; bottom:0; left:0; width:100%; background:var(--bg-card); border-top:2px solid var(--accent); padding:12px; box-shadow:0 -5px 20px rgba(0,0,0,0.4); z-index:99999;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div style="font-weight:900; font-size:13px; color:var(--accent);" id="cat-flotante-resumen">🛒 Carrito: 0 items ($0.00)</div>
+      <button class="btn-primary" style="font-size:10px; padding:5px 10px;" onclick="document.getElementById('cat-checkout-box').style.display = document.getElementById('cat-checkout-box').style.display === 'none' ? 'block' : 'none'">📦 Finalizar Pedido</button>
     </div>
-    <button class="btn-primary" style="width:100%; padding:13px; font-weight:900;" onclick="enviarPedidoWebTienda()">🚀 ENVIAR PEDIDO A LA TIENDA</button>
+    <div id="cat-checkout-box" style="display:none; border-top:1px dashed var(--border-color); padding-top:8px; margin-top:8px; max-height:220px; overflow-y:auto;">
+      <div id="cat-carrito-items" style="font-size:11.5px; margin-bottom:8px;">Tu carrito está vacío.</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Tu Nombre</label><input type="text" id="cat-cli-nombre" class="user-input" placeholder="Nombre completo"></div>
+        <div class="form-group"><label>Tu Teléfono (WhatsApp)</label><input type="text" id="cat-cli-tel" class="user-input" placeholder="Ej: 0412..."></div>
+        <div class="form-group"><label>Dirección / Zona</label><input type="text" id="cat-cli-dir" class="user-input" placeholder="Zona de entrega"></div>
+        <div class="form-group"><label>Método de Pago</label><select id="cat-cli-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay">Binance Pay</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+      </div>
+      <button class="btn-primary" style="width:100%; padding:12px; font-weight:900; margin-top:6px;" onclick="enviarPedidoWebTienda()">🚀 ENVIAR PEDIDO A WHATSAPP</button>
+    </div>
   </div>
 </div>
 
@@ -642,6 +647,7 @@ const db = firebase.database();
 
 let inventario = [], ventas = [], gastos = [], pedidosWeb = [];
 let sonidoActivo = safeGetStorage('perfuma2_sonido', 'on') !== 'off';
+let ultimaCantidadPedidos = 0;
 
 function reproducirAlertaSonora(tipo) {
   if (!sonidoActivo) return;
@@ -676,7 +682,6 @@ let carritoDetal = [], carritoMayor = [], carritoDecants = [], carritoPublico = 
 const urlParams = new URLSearchParams(window.location.search);
 const isCatalogoPublico = urlParams.get('catalogo') === 'true';
 
-// Si es catálogo público, activamos la vista de cliente
 if (isCatalogoPublico) {
   document.getElementById('app-admin').style.display = 'none';
   document.getElementById('app-catalogo-publico').style.display = 'block';
@@ -740,7 +745,15 @@ function cargarDatosDesdeNube() {
     if (data.inventario) inventario = Array.isArray(data.inventario) ? data.inventario : Object.values(data.inventario);
     if (data.ventas) ventas = Array.isArray(data.ventas) ? data.ventas : Object.values(data.ventas);
     if (data.gastos) gastos = Array.isArray(data.gastos) ? data.gastos : Object.values(data.gastos);
-    if (data.pedidosWeb) pedidosWeb = Array.isArray(data.pedidosWeb) ? data.pedidosWeb : Object.values(data.pedidosWeb);
+    if (data.pedidosWeb) {
+      const nuevosPedidos = Array.isArray(data.pedidosWeb) ? data.pedidosWeb : Object.values(data.pedidosWeb);
+      if (nuevosPedidos.length > ultimaCantidadPedidos && ultimaCantidadPedidos !== 0) {
+        reproducirAlertaSonora('alerta');
+        alert("🚨 ¡NUEVO PEDIDO WEB RECIBIDO!");
+      }
+      pedidosWeb = nuevosPedidos;
+      ultimaCantidadPedidos = pedidosWeb.length;
+    }
     if (data.tasaBCV) tasaBCV = parseFloat(data.tasaBCV);
     if (data.tasaUSDT) tasaUSDT = parseFloat(data.tasaUSDT);
     if (data.tipoTasaActiva) tipoTasaActiva = data.tipoTasaActiva;
@@ -880,7 +893,7 @@ function renderCatalogoPublico() {
   grid.innerHTML = disponibles.map((p, idx) => `
     <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:12px; padding:10px; display:flex; flex-direction:column; justify-content:space-between;">
       <div>
-        ${p.imagen ? `<div style="width:100%; height:110px; border-radius:8px; overflow:hidden; margin-bottom:8px; background:#000;"><img src="${p.imagen}" style="width:100%; height:100%; object-fit:cover;"></div>` : ''}
+        ${p.imagen ? `<div style="width:100%; height:130px; border-radius:8px; overflow:hidden; margin-bottom:8px; background:#000;"><img src="${p.imagen}" style="width:100%; height:100%; object-fit:cover;"></div>` : ''}
         <div style="font-weight:900; font-size:12px; margin-bottom:2px;">${obtenerNombreLimpio(p)}</div>
         <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px;">${p.notas || 'Fragancia exclusiva'}</div>
       </div>
@@ -903,19 +916,20 @@ function agregarAlCarritoPublico(idx) {
 
 function renderCarritoPublico() {
   const cont = document.getElementById('cat-carrito-items');
-  const totalEl = document.getElementById('cat-carrito-total');
+  const flotanteRes = document.getElementById('cat-flotante-resumen');
   if (!cont) return;
   if (carritoPublico.length === 0) {
     cont.innerHTML = 'Tu carrito está vacío.';
-    totalEl.textContent = 'Total: $0.00';
+    if (flotanteRes) flotanteRes.textContent = '🛒 Carrito: 0 items ($0.00)';
     return;
   }
-  let sub = 0;
-  cont.innerHTML = carritoPublico.map(i => {
+  let sub = 0, cantTotal = 0;
+  cont.innerHTML = carritoPublico.map((i, iIdx) => {
     sub += i.precio * i.cantidad;
-    return `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`;
-  }).join('<br>');
-  totalEl.textContent = `Total: $${sub.toFixed(2)}`;
+    cantTotal += i.cantidad;
+    return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;"><span>${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})</span><button class="btn-danger" style="padding:2px 6px; font-size:9px;" onclick="carritoPublico.splice(${iIdx},1);renderCarritoPublico();">✖</button></div>`;
+  }).join('');
+  if (flotanteRes) flotanteRes.textContent = `🛒 Carrito: ${cantTotal} items ($${sub.toFixed(2)})`;
 }
 
 function enviarPedidoWebTienda() {
@@ -926,6 +940,9 @@ function enviarPedidoWebTienda() {
   const met = document.getElementById('cat-cli-metodo').value;
   if (!cli || !tel) return alert("Por favor ingresa tu nombre y teléfono.");
 
+  const itemsTxt = carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n');
+  const totalPed = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0);
+
   pedidosWeb.push({
     fecha: new Date().toLocaleString('es-VE'),
     cliente: cli,
@@ -935,7 +952,12 @@ function enviarPedidoWebTienda() {
     items: carritoPublico
   });
   guardarCambiosEnNube(false);
-  alert("✅ ¡Pedido enviado con éxito a la tienda!");
+
+  const textoWA = `🛒 *NUEVO PEDIDO WEB - PERFUMA2* 🛒\n\n👤 *Cliente:* ${cli}\n📱 *Teléfono:* ${tel}\n📍 *Dirección:* ${dir || 'N/A'}\n💳 *Pago:* ${met}\n\n*Artículos:*\n${itemsTxt}\n\n💰 *Total Pedido:* $${totalPed.toFixed(2)}`;
+  const urlWA = `https://wa.me/${numeroWATienda}?text=${encodeURIComponent(textoWA)}`;
+  
+  alert("✅ ¡Pedido registrado y listo para enviar por WhatsApp!");
+  window.open(urlWA, '_blank');
   carritoPublico = [];
   renderCarritoPublico();
   document.getElementById('cat-cli-nombre').value = '';
@@ -1293,8 +1315,7 @@ function cobrarCuotaWhatsApp(idx) {
   const v = ventas[idx]; if (!v) return;
   const resto = parseFloat(v.restante) || 0;
   const tel = (v.telefono || '').replace(/\D/g, '');
-  const msgCobro = `✨ *PERFUMA2 - RECORDATORIO DE PAGO* ✨\n\nHola *${v.cliente}*, un saludo cordial.\nTe escribimos para recordarte tu saldo pendiente de *$${resto.toFixed(2)}* correspondiente a tu compra en Perfuma2.\n\nPor favor envíanos tu comprobante de pago por este medio. ¡Muchas gracias!`;
-  
+  const msgCobro = `✨ *PERFUMA2 - RECORDATORIO DE PAGO* ✨\n\nHola *${v.cliente}*, un saludo cordial.\nTe escribimos de Perfuma2 para recordarte tu saldo pendiente de *$${resto.toFixed(2)}*. ¿Deseas cancelar hoy?\n\nPor favor envíanos tu comprobante por este medio. ¡Muchas gracias!`;
   const urlWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(msgCobro)}` : `https://wa.me/?text=${encodeURIComponent(msgCobro)}`;
   window.open(urlWA, '_blank');
 }
@@ -1395,15 +1416,15 @@ function enviarConsultaIA() {
       if (listaC.length === 0) {
         respuestaHTML = "🤖 No hay clientes registrados en el sistema todavía.";
       } else {
-        respuestaHTML = `🤖 <strong>Listado de Clientes y Deudas:</strong><br>` + listaC.map(c => {
+        respuestaHTML = `🤖 <strong>Listado de Clientes con Deudas y Cuotas:</strong><br>` + listaC.map(c => {
           const info = mapaClientes[c];
           const tel = info.telefono.replace(/\D/g, '');
-          const linkWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(`Hola ${c}, te escribimos de Perfuma2 para saludarte y recordarte tus pagos pendientes.`)}` : `#`;
-          return `• <strong>${c}</strong> (Compras: ${info.compras} | Deuda: $${info.deuda.toFixed(2)}) ${tel ? `<a href="${linkWA}" target="_blank" style="background:var(--success); color:#fff; padding:2px 6px; border-radius:6px; text-decoration:none; font-size:10px; margin-left:6px;">💬 WhatsApp</a>` : ''}`;
+          const linkWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(`Hola ${c}, te escribimos de Perfuma2 para saludarte y recordarte tu saldo pendiente de $${info.deuda.toFixed(2)}. ¿Deseas cancelar hoy?`)}` : `#`;
+          return `• <strong>${c}</strong> (Compras: ${info.compras} | Deuda: <strong style="color:var(--warning);">$${info.deuda.toFixed(2)}</strong>) ${tel ? `<a href="${linkWA}" target="_blank" style="background:var(--success); color:#fff; padding:2px 6px; border-radius:6px; text-decoration:none; font-size:10px; margin-left:6px;">💬 Cobrar por WhatsApp</a>` : ''}`;
         }).join('<br>');
       }
     } else {
-      respuestaHTML = `🤖 Entendido. Para "${promptOriginal}", te sugiero revisar el inventario y mantener actualizadas tus tasas y cobros en el sistema.`;
+      respuestaHTML = `🤖 Entendido. Para "${promptOriginal}", revisa el stock y las tasas vigentes en el sistema.`;
     }
 
     chatBox.innerHTML += `<div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">${respuestaHTML}</div>`;
