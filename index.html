@@ -109,33 +109,7 @@
   <div class="loader-spinner"></div>
 </div>
 
-<div id="voucher-factura-canvas" style="position: absolute; left: -9999px; top: 0; width: 420px; background: #ffffff; color: #0f172a; padding: 24px; font-family: system-ui, sans-serif; border-radius: 12px; border: 1px solid #cbd5e1;">
-  <div style="text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 14px; margin-bottom: 14px;">
-    <h2 style="margin: 0; font-size: 20px; font-weight: 900; letter-spacing: 1px;">PERFUMA2</h2>
-    <div style="font-size: 10px; color: #64748b; font-weight: 700; margin-top: 2px;">BOUTIQUE DE FRAGANCIAS (OYAMH95)</div>
-    <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;" id="vc-fecha-comp">Fecha: 08/11/26 | Compr. #66445</div>
-  </div>
-  <div style="font-size: 11.5px; margin-bottom: 14px; line-height: 1.5;">
-    <div><strong>Cliente:</strong> <span id="vc-cliente">Oyam Hernández</span></div>
-    <div><strong>Medio:</strong> <span id="vc-medio">Pago Móvil</span></div>
-    <div><strong>Dirección:</strong> <span id="vc-direccion">Holaaa</span></div>
-  </div>
-  <div style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-bottom: 14px;">
-    <div style="font-weight: 900; font-size: 12px; margin-bottom: 6px;">Artículos:</div>
-    <div id="vc-articulos" style="font-size: 11.5px; line-height: 1.4;"></div>
-  </div>
-  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;">
-    <div style="text-align: center; font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Resumen de Pago</div>
-    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><strong>Total Factura:</strong> <div style="text-align: right;"><strong id="vc-total" style="font-size: 14px;">$87.61</strong><br><small style="color: #64748b;" id="vc-total-bs">Bs. 87610.00</small></div></div>
-    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; color: #059669;"><strong>Abonado:</strong> <div style="text-align: right;"><strong id="vc-abonado">$87.61</strong><br><small style="color: #64748b;" id="vc-abonado-bs">Bs. 87610.00</small></div></div>
-    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #dc2626;"><strong>Pendiente:</strong> <div style="text-align: right;"><strong id="vc-pendiente">$0.00</strong><br><small style="color: #64748b;" id="vc-pendiente-bs">Bs. 0.00</small></div></div>
-  </div>
-  <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 14px;" id="vc-tasa">Tasa aplicada: 1000.00 Bs</div>
-</div>
-
-<datalist id="lista-productos-stock"></datalist>
-
-<!-- PANEL ADMINISTRATIVO -->
+<!-- PANEL ADMINISTRATIVO PRINCIPAL -->
 <div id="app-admin" style="display:block;">
   <div class="header-bar">
     <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
@@ -154,7 +128,7 @@
     <div style="display:flex; align-items:center; gap:5px; flex-wrap:nowrap; width:100%; overflow-x:auto; scrollbar-width:none;">
       <button class="btn-secondary btn-theme-toggle" onclick="alternarTemaLuz()" style="font-size:9.5px; font-weight:900; border-radius:20px; padding:4px 8px; flex-shrink:0;">☀️ DÍA</button>
       <button class="btn-secondary" id="btn-sonido-toggle" onclick="alternarSonidoAlerta()" style="font-size:9.5px; font-weight:900; border-radius:20px; padding:4px 8px; flex-shrink:0;">🔔 SONIDO: ON</button>
-      <div id="version-badge-flotante" onclick="forzarActualizacionApp()" style="padding:4px 8px; font-size:9.5px; flex-shrink:0;">🔔 oyamh95</div>
+      <div id="version-badge-flotante" onclick="forzarActualizacionApp()" style="padding:4px 8px; font-size:9.5px; flex-shrink:0;">🔔 PERFUMA2</div>
       <div id="reloj-sistema" style="font-size:9.5px; font-weight:800; background:rgba(15,118,110,0.08); padding:4px 8px; border-radius:20px; border:1px solid rgba(15,118,110,0.25); white-space:nowrap; flex-shrink:0;"></div>
       <button id="btn-sync-manual" class="btn-primary" onclick="guardarCambiosEnNube(true)" style="font-size:9.5px; padding:4px 9px; border-radius:20px; flex-shrink:0; margin-left:auto;">☁️ GUARDAR</button>
     </div>
@@ -163,11 +137,11 @@
     <div style="display:flex; align-items:stretch; gap:8px; width:100%;">
       <div class="tasa-box" id="box-tasa-bcv" onclick="alternarTipoTasa('bcv')">
         <span class="tasa-label">BCV (Bs)</span>
-        <input type="number" step="0.01" id="tasaBCVInput" class="tasa-input" value="896.12" onchange="actualizarTasaManual('bcv')" onclick="event.stopPropagation()">
+        <input type="number" step="0.01" id="tasaBCVInput" class="tasa-input" value="897.54" onchange="actualizarTasaManual('bcv')" onclick="event.stopPropagation()">
       </div>
       <div class="tasa-box activa" id="box-tasa-usdt" onclick="alternarTipoTasa('usdt')">
         <span class="tasa-label">USDT (Bs)</span>
-        <input type="number" step="0.01" id="tasaUSDTInput" class="tasa-input" value="1011.32" onchange="actualizarTasaManual('usdt')" onclick="event.stopPropagation()">
+        <input type="number" step="0.01" id="tasaUSDTInput" class="tasa-input" value="1047.80" onchange="actualizarTasaManual('usdt')" onclick="event.stopPropagation()">
       </div>
       <button class="btn-primary" onclick="obtenerTasasAutomaticas(true)" style="background:var(--info); color:#fff; font-size:11px; padding:0 14px; flex-shrink:0; border-radius:12px;">🔄 TASA</button>
     </div>
@@ -193,9 +167,9 @@
       <h4 style="margin:0 0 4px 0; color:var(--info); font-weight:900; font-size:14px;">🏦 Herramientas de Base de Datos & Cierre</h4>
       <p style="margin:0 0 10px 0; font-size:11px; color:var(--text-muted); font-weight:700;">Descarga respaldos offline de seguridad, cierre de caja y link del catálogo.</p>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="btn-primary" style="background:var(--success); color:#fff; font-size:10.5px; padding:8px 11px;" onclick="guardarPuntoRespaldoNube()">☁️ PUNTOS DE RESPALDO NUBE (7 MAX)</button>
-        <button class="btn-secondary" style="border-color:var(--accent); color:var(--accent); font-size:10.5px; padding:8px 11px;" onclick="descargarRespaldoJSON()">💾 DESCARGAR RESPALDO JSON</button>
-        <button class="btn-secondary" style="border-color:var(--warning); color:var(--warning); font-size:10.5px; padding:8px 11px;" onclick="document.getElementById('input-restaurar-json').click()">📂 RESTAURAR ARCHIVO JSON</button>
+        <button class="btn-primary" style="background:var(--success); color:#fff; font-size:10.5px; padding:8px 11px;" onclick="guardarPuntoRespaldoNube()">☁️ RESPALDAR NUBE</button>
+        <button class="btn-secondary" style="border-color:var(--accent); color:var(--accent); font-size:10.5px; padding:8px 11px;" onclick="descargarRespaldoJSON()">💾 DESCARGAR JSON</button>
+        <button class="btn-secondary" style="border-color:var(--warning); color:var(--warning); font-size:10.5px; padding:8px 11px;" onclick="document.getElementById('input-restaurar-json').click()">📂 RESTAURAR JSON</button>
         <input type="file" id="input-restaurar-json" accept=".json" style="display:none;" onchange="restaurarRespaldoJSON(this)">
         <button class="btn-secondary" style="border-color:var(--info); color:var(--info); font-size:10.5px; padding:8px 11px;" onclick="copiarLinkCatalogo()">🔗 LINK CATÁLOGO</button>
         <button class="btn-primary" style="background:var(--info); color:#fff; font-size:10.5px; padding:8px 11px;" onclick="generarCierreCaja()">📊 REPORTE DE HOY</button>
@@ -478,7 +452,7 @@
       
       <div style="background:var(--bg-input); border:1.5px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:12px; height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;" id="ia-chat-box">
         <div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">
-          🤖 <strong>Asistente PERFUMA2:</strong> ¡Hola Oyam! Estoy listo. Escribe abajo lo que necesites redactar (mensajes de cobro, descripciones de perfumes o análisis de stock).
+          🤖 <strong>Asistente PERFUMA2:</strong> ¡Hola! Estoy listo para ayudarte con la redacción, cobros y análisis de inventario.
         </div>
       </div>
       <div style="display:flex; gap:6px; margin-bottom:16px;">
@@ -527,8 +501,8 @@
         <div style="background:rgba(0,242,214,0.08); border:1.5px solid rgba(0,242,214,0.35); border-radius:12px; padding:10px; text-align:center; margin-bottom:12px;">
           <div style="font-size:9.5px; color:#94a3b8; font-weight:800;">TOTAL A TRANSFERIR</div>
           <div id="t3d-monto-usd" style="font-size:26px; font-weight:900; color:#fff;">$25.00</div>
-          <div id="t3d-monto-bs" style="font-size:14px; font-weight:900; color:#00f2d6;">Bs. 25283.00</div>
-          <div id="t3d-tasa" style="font-size:9.5px; color:#94a3b8; margin-top:2px;">Tasa aplicada: 1011.32 Bs</div>
+          <div id="t3d-monto-bs" style="font-size:14px; font-weight:900; color:#00f2d6;">Bs. 26195.00</div>
+          <div id="t3d-tasa" style="font-size:9.5px; color:#94a3b8; margin-top:2px;">Tasa aplicada: 1047.80 Bs</div>
         </div>
         <div id="t3d-metodos-lista" style="font-size:11px; line-height:1.45; display:flex; flex-direction:column; gap:8px;"></div>
         <div style="text-align:center; font-size:9.5px; color:#94a3b8; margin-top:10px;">Por favor enviar el comprobante de pago por este medio. ¡Muchas gracias!</div>
@@ -554,6 +528,33 @@
       <button class="btn-primary" style="width:100%; background:var(--success); color:#fff;" onclick="guardarCuentasPago()">💾 GUARDAR TODOS LOS MÉTODOS</button>
     </div>
   </div>
+</div>
+
+<!-- VOUCHER OCULTO PARA FACTURA CLIENTE -->
+<div id="voucher-factura-canvas" style="position: absolute; left: -9999px; top: 0; width: 420px; background: #ffffff; color: #0f172a; padding: 24px; font-family: system-ui, sans-serif; border-radius: 12px; border: 1px solid #cbd5e1;">
+  <div style="text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 14px; margin-bottom: 14px;">
+    <h2 style="margin: 0; font-size: 20px; font-weight: 900; letter-spacing: 1px;">PERFUMA2</h2>
+    <div style="font-size: 10px; color: #64748b; font-weight: 700; margin-top: 2px;">BOUTIQUE DE FRAGANCIAS</div>
+    <div style="font-size: 10.5px; color: #64748b; margin-top: 4px;" id="vc-fecha-comp">Fecha: 09/11/26 | Compr. #66445</div>
+  </div>
+  <div style="font-size: 11.5px; margin-bottom: 14px; line-height: 1.5;">
+    <div><strong>Cliente:</strong> <span id="vc-cliente">Cliente</span></div>
+    <div><strong>Medio:</strong> <span id="vc-medio">Pago Móvil</span></div>
+    <div><strong>Dirección:</strong> <span id="vc-direccion">N/A</span></div>
+  </div>
+  <div style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-bottom: 14px;">
+    <div style="font-weight: 900; font-size: 12px; margin-bottom: 6px;">Artículos:</div>
+    <div id="vc-articulos" style="font-size: 11.5px; line-height: 1.4;"></div>
+  </div>
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px;">
+    <div style="text-align: center; font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">Resumen de Pago</div>
+    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;"><strong>Subtotal Productos:</strong> <span id="vc-subtotal">$0.00</span></div>
+    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px;" id="vc-fila-delivery-v"><strong>Delivery:</strong> <span id="vc-delivery-val">$0.00</span></div>
+    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; border-top: 1px solid #e2e8f0; padding-top: 6px;"><strong>Total Factura:</strong> <div style="text-align: right;"><strong id="vc-total" style="font-size: 14px;">$0.00</strong><br><small style="color: #64748b;" id="vc-total-bs">Bs. 0.00</small></div></div>
+    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; color: #059669;"><strong>Abonado:</strong> <div style="text-align: right;"><strong id="vc-abonado">$0.00</strong><br><small style="color: #64748b;" id="vc-abonado-bs">Bs. 0.00</small></div></div>
+    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #dc2626;"><strong>Pendiente:</strong> <div style="text-align: right;"><strong id="vc-pendiente">$0.00</strong><br><small style="color: #64748b;" id="vc-pendiente-bs">Bs. 0.00</small></div></div>
+  </div>
+  <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 14px;" id="vc-tasa">Tasa aplicada: 1047.80 Bs</div>
 </div>
 
 <!-- MODAL PERFUME -->
@@ -584,6 +585,8 @@
     <button class="btn-primary" style="width:100%; padding:13px;" onclick="guardarPerfumeModal()">💾 GUARDAR PERFUME</button>
   </div>
 </div>
+
+<datalist id="lista-productos-stock"></datalist>
 
 <script>
 const firebaseConfig = { databaseURL: "https://perfuma2-1cb0d-default-rtdb.firebaseio.com/" };
@@ -620,8 +623,8 @@ function alternarSonidoAlerta() {
   if (btn) btn.innerHTML = sonidoActivo ? '🔔 SONIDO: ON' : '🔕 SONIDO: OFF';
   if (sonidoActivo) reproducirAlertaSonora('exito');
 }
-let tasaBCV = 896.12, tasaUSDT = 1011.32, tipoTasaActiva = 'usdt', margenGlobal = 75, numeroWATienda = '584120551688';
-let carritoDetal = [], carritoMayor = [], carritoDecants = [], carritoPublico = [], filtroCatActual = 'todo';
+let tasaBCV = 897.54, tasaUSDT = 1047.80, tipoTasaActiva = 'usdt', margenGlobal = 75, numeroWATienda = '584120551688';
+let carritoDetal = [], carritoMayor = [], carritoDecants = [];
 
 const urlParams = new URLSearchParams(window.location.search);
 const isCatalogoPublico = urlParams.get('catalogo') === 'true';
@@ -974,7 +977,9 @@ function quitarItemCarrito(tipo, idx) { (tipo === 'mayor' ? carritoMayor : carri
 
 function recalcularTotalesVenta(tipo) {
   const isMayor = tipo === 'mayor', lista = isMayor ? carritoMayor : carritoDetal;
-  const total = lista.reduce((a, i) => a + (i.precio * i.cantidad), 0) + (parseFloat(document.getElementById(isMayor ? 'm-delivery' : 'v-delivery')?.value) || 0);
+  const subtotal = lista.reduce((a, i) => a + (i.precio * i.cantidad), 0);
+  const delivery = parseFloat(document.getElementById(isMayor ? 'm-delivery' : 'v-delivery')?.value) || 0;
+  const total = subtotal + delivery;
   const tasa = obtenerTasaActiva();
   if (isMayor) {
     document.getElementById('m-resumen-total').textContent = `Total al Mayor: $${total.toFixed(2)}`;
@@ -1004,7 +1009,12 @@ function registrarVentaDetalConFacturaWA() {
   const dir = document.getElementById('v-direccion').value.trim();
   const sub = carritoDetal.reduce((a, i) => a + (i.precio * i.cantidad), 0);
   const costoT = carritoDetal.reduce((a, i) => a + (i.costo * i.cantidad), 0);
-  const delivery = document.getElementById('v-usa-delivery')?.checked ? (parseFloat(document.getElementById('v-delivery')?.value) || 0) : 0;
+  
+  const usaDelivery = document.getElementById('v-usa-delivery')?.checked;
+  const delivery = usaDelivery ? (parseFloat(document.getElementById('v-delivery')?.value) || 0) : 0;
+  const motorizadoNombre = document.getElementById('v-motorizado-nombre')?.value.trim() || 'Motorizado';
+  const motorizadoTel = (document.getElementById('v-motorizado-telefono')?.value || '').replace(/\D/g, '');
+
   const total = sub + delivery;
   const plan = document.getElementById('v-plan')?.value || 'Contado';
   const abonoVal = parseFloat(document.getElementById('v-abono')?.value) || 0;
@@ -1023,9 +1033,11 @@ function registrarVentaDetalConFacturaWA() {
 
   ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'detal', cliente: cli, telefono: tel, metodo: met, productos: carritoDetal.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), total, ganancia: sub - costoT, abonado, restante });
 
-  const textoWhatsApp = `✨ *PERFUMA2 - RESUMEN DE COMPRA* ✨\n\n` +
-    carritoDetal.map(i => `◆ ${i.cantidad}x ${obtenerNombreLimpio(i)}`).join('\n') +
-    `\n• Metodo de pago: ${met}` + (dir ? `\n• Dirección: ${dir}` : '') +
+  // Mensaje para el cliente
+  let textoWhatsApp = `✨ *PERFUMA2 - RESUMEN DE COMPRA* ✨\n\n` +
+    carritoDetal.map(i => `◆ ${i.cantidad}x ${obtenerNombreLimpio(i)} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n') +
+    (delivery > 0 ? `\n🛵 *Delivery:* $${delivery.toFixed(2)}` : '') +
+    `\n• Método de pago: ${met}` + (dir ? `\n• Dirección: ${dir}` : '') +
     `\n\nResumen de cuenta:\n💵 Total: $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n✅ Abonado: $${abonado.toFixed(2)} (Bs. ${(abonado * tasa).toFixed(2)})\n⚠️ Saldo Pendiente: $${restante.toFixed(2)} (Bs. ${(restante * tasa).toFixed(2)})\n\n¡Que disfrutes mucho tu fragancia!`;
 
   navigator.clipboard.writeText(textoWhatsApp).catch(() => {});
@@ -1036,6 +1048,13 @@ function registrarVentaDetalConFacturaWA() {
   document.getElementById('vc-medio').textContent = met;
   document.getElementById('vc-direccion').textContent = dir || 'N/A';
   document.getElementById('vc-articulos').innerHTML = carritoDetal.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('<br>');
+  document.getElementById('vc-subtotal').textContent = `$${sub.toFixed(2)}`;
+  if (delivery > 0) {
+    document.getElementById('vc-fila-delivery-v').style.display = 'flex';
+    document.getElementById('vc-delivery-val').textContent = `$${delivery.toFixed(2)}`;
+  } else {
+    document.getElementById('vc-fila-delivery-v').style.display = 'none';
+  }
   document.getElementById('vc-total').textContent = `$${total.toFixed(2)}`;
   document.getElementById('vc-total-bs').textContent = `Bs. ${(total * tasa).toFixed(2)}`;
   document.getElementById('vc-abonado').textContent = `$${abonado.toFixed(2)}`;
@@ -1051,6 +1070,16 @@ function registrarVentaDetalConFacturaWA() {
     canvas.toBlob(blob => {
       const file = new File([blob], `Factura_${cli.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
       const urlWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(textoWhatsApp)}` : `https://wa.me/?text=${encodeURIComponent(textoWhatsApp)}`;
+      
+      // Si hay delivery seleccionado, generar mensaje separado para el motorizado
+      if (usaDelivery && delivery > 0) {
+        const mensajeMotorizado = `🛵 *SOLICITUD DE DELIVERY - PERFUMA2* 🛵\n\nHola *${motorizadoNombre}*, tienes un servicio asignado:\n\n👤 *Cliente:* ${cli}\n📱 *Teléfono:* ${tel || 'N/A'}\n📍 *Dirección de entrega:* ${dir || 'N/A'}\n💵 *Monto delivery a cobrar:* $${delivery.toFixed(2)}\n\n¡Por favor confirmar recepción del pedido!`;
+        const urlMotorizado = motorizadoTel ? `https://wa.me/${motorizadoTel.startsWith('58') ? motorizadoTel : '58' + motorizadoTel.replace(/^0/, '')}?text=${encodeURIComponent(mensajeMotorizado)}` : `https://wa.me/?text=${encodeURIComponent(mensajeMotorizado)}`;
+        
+        // Abrir WhatsApp del motorizado en una pestaña secundaria o dar aviso
+        setTimeout(() => { window.open(urlMotorizado, '_blank'); }, 800);
+      }
+
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         navigator.share({ files: [file], text: textoWhatsApp }).catch(() => { window.open(urlWA, '_blank'); });
       } else {
@@ -1181,7 +1210,7 @@ function enviarConsultaIA() {
   chatBox.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; font-size:12px; align-self:flex-end; max-width:85%;">👤 <strong>Tú:</strong> ${txt}</div>`;
   input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
   setTimeout(() => {
-    let respuesta = `🤖 Entendido, Oyam. Para "${txt}", mantén organizada la rotación de tus frascos y verifica la tasa USDT.`;
+    let respuesta = `🤖 Entendido. Para "${txt}", mantén organizada la rotación de tus frascos y verifica la tasa USDT.`;
     chatBox.innerHTML += `<div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">🤖 <strong>Asistente:</strong> ${respuesta}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
   }, 600);
@@ -1239,7 +1268,46 @@ function copiarLinkCatalogo() {
   navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u));
 }
 function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
-function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); }
+function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); alert("☁️ Respaldo guardado en la nube con éxito."); }
+
+function descargarRespaldoJSON() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ inventario, ventas, gastos, pedidosWeb }));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", "respaldo_perfuma2.json");
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+function restaurarRespaldoJSON(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.inventario) inventario = data.inventario;
+      if (data.ventas) ventas = data.ventas;
+      if (data.gastos) gastos = data.gastos;
+      if (data.pedidosWeb) pedidosWeb = data.pedidosWeb;
+      renderTodo();
+      guardarCambiosEnNube(false);
+      alert("📂 Respaldo restaurado con éxito.");
+    } catch (err) {
+      alert("❌ Archivo JSON inválido.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function generarCierreCaja() {
+  const tasa = obtenerTasaActiva();
+  const totalV = ventas.reduce((a, v) => a + (parseFloat(v.total) || 0), 0);
+  const totalAb = ventas.reduce((a, v) => a + (parseFloat(v.abonado) || 0), 0);
+  const totalGas = gastos.reduce((a, g) => a + (parseFloat(g.monto) || 0), 0);
+  alert(`📊 REPORTE DE CAJA (HOY)\n\n• Ventas Totales: $${totalV.toFixed(2)} (Bs. ${(totalV * tasa).toFixed(2)})\n• Efectivo/Abonos Ingresados: $${totalAb.toFixed(2)}\n• Gastos Operativos: $${totalGas.toFixed(2)}\n• Utilidad Neta en Caja: $${(totalAb - totalGas).toFixed(2)}`);
+}
 
 function guardarCuentasPago() {
   db.ref('/sistema/cuentasPago').set({
