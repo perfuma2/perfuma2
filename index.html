@@ -198,7 +198,7 @@
       <div class="kpi-card"><div class="kpi-title">CAPITAL EN STOCK (COSTO)</div><div class="kpi-value" id="kpi-capital-stock" style="color:var(--purple);">$0.00</div><div class="kpi-sub" id="kpi-proyeccion-venta">Proyección Venta: $0.00</div></div>
     </div>
 
-    <!-- NUEVOS RANKINGS DE CLIENTES (PUNTO 4) -->
+    <!-- RANKINGS DE CLIENTES (PUNTO 4) -->
     <div class="card-panel" style="border-color:var(--purple);">
       <h4 class="card-title" style="color:var(--purple); margin:0 0 10px 0;">🏆 Clientes Destacados</h4>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -463,19 +463,19 @@
     </div>
   </div>
 
-  <!-- 10. ASISTENTE IA & TARJETA 3D -->
+  <!-- 10. ASISTENTE IA & TARJETA 3D (CON IA INTELIGENTE - PUNTO 2) -->
   <div id="tab-ia" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🤖 Asistente IA & Redactor Comercial</h3>
-      <p style="font-size:11.5px; color:var(--text-muted); margin-top:0;">Escribe cualquier consulta, instrucción de redacción o análisis de inventario para el asistente:</p>
+      <p style="font-size:11.5px; color:var(--text-muted); margin-top:0;">Escribe palabras clave como <strong>"clientes"</strong>, <strong>"deudas"</strong> o <strong>"cuotas"</strong> para interactuar con tus datos:</p>
       
       <div style="background:var(--bg-input); border:1.5px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:12px; height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;" id="ia-chat-box">
         <div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">
-          🤖 <strong>Asistente PERFUMA2:</strong> ¡Hola! Estoy listo para ayudarte con la redacción, cobros y análisis de inventario.
+          🤖 <strong>Asistente PERFUMA2:</strong> ¡Hola! Escribe "clientes", "deudas" o "cuotas" para consultar los registros y enviar cobros directos por WhatsApp.
         </div>
       </div>
       <div style="display:flex; gap:6px; margin-bottom:16px;">
-        <input type="text" id="ia-prompt-input" class="user-input" placeholder="Escribe aquí tu consulta o instrucción..." style="flex:1;" onkeydown="if(event.key==='Enter') enviarConsultaIA()">
+        <input type="text" id="ia-prompt-input" class="user-input" placeholder="Ej: clientes, deudas, cuotas..." style="flex:1;" onkeydown="if(event.key==='Enter') enviarConsultaIA()">
         <button class="btn-primary" onclick="enviarConsultaIA()" style="padding:10px 16px;">💬 ENVIAR</button>
       </div>
     </div>
@@ -576,7 +576,7 @@
   <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 14px;" id="vc-tasa">Tasa aplicada: 1047.80 Bs</div>
 </div>
 
-<!-- MODAL PERFUME -->
+<!-- MODAL PERFUME (CON VISTA PREVIA Y NOTAS REORDENADAS - PUNTO 1) -->
 <div id="modal-perfume" class="modal-overlay">
   <div class="modal-box">
     <button class="btn-close-modal" onclick="document.getElementById('modal-perfume').style.display='none'">✖</button>
@@ -590,7 +590,8 @@
       <div class="form-group"><label>Costo Unitario ($)</label><input type="number" step="0.01" id="p-costo" class="user-input" value="15.00" oninput="calcularPrecioDesdeCostoModal()"></div>
       <div class="form-group"><label>Margen Individual (%)</label><input type="number" id="p-margen-ind" class="user-input" value="75" oninput="calcularPrecioDesdeCostoModal()"></div>
       <div class="form-group"><label>Precio Venta ($)</label><input type="number" step="0.01" id="p-precio" class="user-input" value="26.25"></div>
-      <div class="form-group">
+      <div class="form-group"><label>Notas Aromáticas</label><input type="text" id="p-notas" class="user-input" placeholder="Ej: Dulce, Vainilla"></div>
+      <div class="form-group" style="grid-column: span 2;">
         <label>URL Imagen o Foto</label>
         <div style="display:flex; gap:6px; align-items:center;">
           <input type="text" id="p-imagen" class="user-input" placeholder="https://..." style="flex:1;" oninput="actualizarVistaPreviaModal()">
@@ -598,14 +599,12 @@
           <button type="button" class="btn-secondary" onclick="document.getElementById('input-galeria-foto').click()" style="padding:9px 12px;" title="Subir foto de la galería">📁+</button>
           <input type="file" id="input-galeria-foto" accept="image/*" style="display:none;" onchange="subirFotoGaleriaModal(this)">
         </div>
-        <!-- VISTA PREVIA DE FOTO (PUNTO 1) -->
         <div class="preview-img-container" id="preview-container">
           <span class="preview-img-placeholder">📷 Vista previa de la foto</span>
         </div>
       </div>
-      <div class="form-group"><label>Notas Aromáticas</label><input type="text" id="p-notas" class="user-input" placeholder="Ej: Dulce, Vainilla"></div>
     </div>
-    <button class="btn-primary" style="width:100%; padding:13px;" onclick="guardarPerfumeModal()">💾 GUARDAR PERFUME</button>
+    <button class="btn-primary" style="width:100%; padding:13px; margin-top:10px;" onclick="guardarPerfumeModal()">💾 GUARDAR PERFUME</button>
   </div>
 </div>
 
@@ -780,7 +779,7 @@ function renderDashboard() {
   setTxt('kpi-stock-unidades', stockFis); setTxt('kpi-capital-stock', '$' + capCosto.toFixed(2));
   setTxt('kpi-proyeccion-venta', 'Proyección Venta: $' + proy.toFixed(2));
 
-  // Cálculo de Clientes Destacados (Punto 4)
+  // Clientes Destacados (Punto 4)
   const mapCant = {}, mapCosto = {};
   ventas.forEach(v => {
     const cli = v.cliente || 'General';
@@ -1160,13 +1159,13 @@ function renderHistorialVentas() {
       <td style="text-align:center;"><div style="display:inline-flex; gap:4px; align-items:center; flex-wrap:nowrap;">
         <button class="btn-secondary" style="padding:5px 7px; font-size:11px; border-color:var(--warning); color:var(--warning);" onclick="enviarMotoSolo(${v._origIdx})" title="Enviar recado al Motorizado">🛵</button>
         <button class="btn-secondary" style="padding:5px 7px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, '${v.tipo}')" title="Ver Recibo Factura">🧾</button>
-        ${(parseFloat(v.restante) || 0) > 0 ? `<button class="btn-primary" style="padding:5px 7px; font-size:10px; background:var(--warning); color:#000;" onclick="abonarCuotaVenta(${v._origIdx})" title="Cobrar Cuota">💵</button>` : ''}
+        <button class="btn-primary" style="padding:5px 7px; font-size:10px; background:var(--success); color:#fff;" onclick="cobrarCuotaWhatsApp(${v._origIdx})" title="Cobrar Cuota por WhatsApp">💵</button>
         <button class="btn-danger" style="padding:5px 7px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar">🗑️</button>
       </div></td></tr>`).join('');
   }
   if (tbM) {
     tbM.innerHTML = ventas.map((v, idx) => ({ ...v, _origIdx: idx })).filter(v => v.tipo === 'mayor').map((v) => `<tr>
-      <td>${v.fecha || ''}</td><td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
+      <td>${v.fecha || {} }</td><td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
       <td>${v.productos}</td><td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small style="color:var(--warning);">Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td>
       <td style="text-align:center;"><div style="display:inline-flex; gap:4px; align-items:center;">
         <button class="btn-secondary" style="padding:5px 7px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, 'mayor')" title="Ver Factura">🧾</button>
@@ -1182,17 +1181,15 @@ function enviarMotoSolo(idx) {
   window.open(`https://wa.me/?text=${encodeURIComponent(mensajeMotorizado)}`, '_blank');
 }
 
-function abonarCuotaVenta(idx) {
+// COBRAR CUOTA DIRECTO POR WHATSAPP (PUNTO 3 / VIDEO 1)
+function cobrarCuotaWhatsApp(idx) {
   const v = ventas[idx]; if (!v) return;
   const resto = parseFloat(v.restante) || 0;
-  const abonoStr = prompt(`💵 Cobro de Cuota / Saldo pendiente para ${v.cliente}\nSaldo actual: $${resto.toFixed(2)}\n\nIngresa el monto del abono en $ USD:`, resto.toFixed(2));
-  if (!abonoStr) return;
-  const montoAb = parseFloat(abonoStr) || 0;
-  if (montoAb <= 0) return;
-  v.abonado = (parseFloat(v.abonado) || 0) + montoAb;
-  v.restante = Math.max(0, (parseFloat(v.total) || 0) - v.abonado);
-  renderTodo(); guardarCambiosEnNube(false);
-  alert(`✅ Abono de $${montoAb.toFixed(2)} registrado con éxito. Saldo restante: $${v.restante.toFixed(2)}`);
+  const tel = (v.telefono || '').replace(/\D/g, '');
+  const msgCobro = `✨ *PERFUMA2 - RECORDATORIO DE PAGO* ✨\n\nHola *${v.cliente}*, un saludo cordial.\nTe escribimos para recordarte tu saldo pendiente de *$${resto.toFixed(2)}* correspondiente a tu compra en Perfuma2.\n\nPor favor envíanos tu comprobante de pago por este medio. ¡Muchas gracias!`;
+  
+  const urlWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(msgCobro)}` : `https://wa.me/?text=${encodeURIComponent(msgCobro)}`;
+  window.open(urlWA, '_blank');
 }
 
 function eliminarVentaRegistro(idx) {
@@ -1269,17 +1266,43 @@ function actualizarTarjeta3D() {
   document.getElementById('t3d-metodos-lista').innerHTML = h;
 }
 
+// ASISTENTE IA INTELIGENTE (PUNTO 2 / VIDEO 2)
 function enviarConsultaIA() {
   const input = document.getElementById('ia-prompt-input'), chatBox = document.getElementById('ia-chat-box');
   if (!input || !input.value.trim()) return;
-  const txt = input.value.trim();
-  chatBox.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; font-size:12px; align-self:flex-end; max-width:85%;">👤 <strong>Tú:</strong> ${txt}</div>`;
+  const txt = input.value.trim().toLowerCase();
+  chatBox.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; font-size:12px; align-self:flex-end; max-width:85%;">👤 <strong>Tú:</strong> ${input.value}</div>`;
+  const promptOriginal = input.value;
   input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
+
   setTimeout(() => {
-    let respuesta = `🤖 Entendido. Para "${txt}", mantén organizada la rotación de tus frascos y verifica la tasa USDT.`;
-    chatBox.innerHTML += `<div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">🤖 <strong>Asistente:</strong> ${respuesta}</div>`;
+    let respuestaHTML = '';
+    if (txt.includes('cliente') || txt.includes('deuda') || txt.includes('cuota')) {
+      const mapaClientes = {};
+      ventas.forEach(v => {
+        const c = v.cliente || 'General';
+        if (!mapaClientes[c]) mapaClientes[c] = { telefono: v.telefono || '', deuda: 0, compras: 0 };
+        mapaClientes[c].compras += 1;
+        mapaClientes[c].deuda += parseFloat(v.restante) || 0;
+      });
+      const listaC = Object.keys(mapaClientes);
+      if (listaC.length === 0) {
+        respuestaHTML = "🤖 No hay clientes registrados en el sistema todavía.";
+      } else {
+        respuestaHTML = `🤖 <strong>Listado de Clientes y Deudas:</strong><br>` + listaC.map(c => {
+          const info = mapaClientes[c];
+          const tel = info.telefono.replace(/\D/g, '');
+          const linkWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(`Hola ${c}, te escribimos de Perfuma2 para saludarte y recordarte tus pagos pendientes.`)}` : `#`;
+          return `• <strong>${c}</strong> (Compras: ${info.compras} | Deuda: $${info.deuda.toFixed(2)}) ${tel ? `<a href="${linkWA}" target="_blank" style="background:var(--success); color:#fff; padding:2px 6px; border-radius:6px; text-decoration:none; font-size:10px; margin-left:6px;">💬 WhatsApp</a>` : ''}`;
+        }).join('<br>');
+      }
+    } else {
+      respuestaHTML = `🤖 Entendido. Para "${promptOriginal}", te sugiero revisar el inventario y mantener actualizadas tus tasas y cobros en el sistema.`;
+    }
+
+    chatBox.innerHTML += `<div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">${respuestaHTML}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
-  }, 600);
+  }, 500);
 }
 
 function enviarCobroTextoYCuentaAparte() {
