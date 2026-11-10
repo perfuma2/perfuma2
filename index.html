@@ -3,7 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PERFUMA2 - Catálogo y Sistema de Gestión</title>
+  <title>PERFUMA2 - Sistema de Gestión</title>
+  
+  <!-- CONFIGURACIÓN PWA PARA INSTALAR EN MÓVILES Y PC -->
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PERFUMA2">
+  
+  <!-- Manifiesto dinámico incrustado para permitir instalación instantánea -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"PERFUMA2","short_name":"PERFUMA2","start_url":".","display":"standalone","background_color":"#070b14","theme_color":"#00f2d6","icons":[{"src":"logo.jpg.jpg","sizes":"192x192","type":"image/jpeg"},{"src":"logo.jpg.jpg","sizes":"512x512","type":"image/jpeg"}]}'>
+
   <!-- Librerías Externas (Firebase, Excel, Html2Canvas) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
