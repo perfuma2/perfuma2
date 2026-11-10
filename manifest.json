@@ -1,15 +1,16 @@
 {
   "name": "PERFUMA2",
-  "short_name": "Perfuma2",
-  "start_url": "/perfuma2/index.html", 
+  "short_name": "PERFUMA2",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#004d40",
+  "background_color": "#070b14",
+  "theme_color": "#00f2d6",
   "icons": [
     {
-      "src": "icono-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg"
     }
   ]
 }
