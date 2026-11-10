@@ -12,7 +12,6 @@
   <meta name="apple-mobile-web-app-title" content="PERFUMA2">
   <link rel="apple-touch-icon" href="logo.jpg">
   <link rel="icon" type="image/jpeg" href="logo.jpg">
-  <link rel="manifest" href="manifest.json">
 
   <!-- Librerías Externas (Firebase, Excel, Html2Canvas) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -113,21 +112,21 @@
     .modal-box { background: var(--bg-card); border: 2px solid var(--accent); border-radius: 16px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 18px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
     .btn-close-modal { position: absolute; top: 12px; right: 12px; background: rgba(255,77,109,0.2); color: var(--danger); border: none; border-radius: 50%; width: 28px; height: 28px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* --- ESTILOS CORREGIDOS PARA EL CATÁLOGO (2 Columnas Móvil y Adaptable PC) --- */
+    /* --- CORRECCIÓN 1: CATÁLOGO ADAPTADO (2 columnas móvil, fluido en PC) --- */
     #cat-grid-productos {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr)); /* Exactamente 2 columnas en teléfonos */
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       margin-bottom: 30px;
     }
     @media (min-width: 768px) {
       #cat-grid-productos {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); /* Adaptable en tablets y PC */
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 16px;
       }
     }
 
-    /* --- ESTILOS CORREGIDOS PARA EL CHAT DE IA (Tarjetas individuales separadas) --- */
+    /* --- CORRECCIÓN 2: CHAT DE IA (Tarjetas individuales separadas) --- */
     #chat-messages {
       display: flex;
       flex-direction: column;
