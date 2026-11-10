@@ -113,6 +113,31 @@
   <div class="loader-spinner"></div>
 </div>
 
+<!-- VISTA DE CLIENTE (CATÁLOGO PÚBLICO) -->
+<div id="app-catalogo-publico" style="display:none; padding:12px; max-width:500px; margin:0 auto;">
+  <div style="text-align:center; padding:15px 0; border-bottom:2px solid var(--border-color); margin-bottom:15px;">
+    <h2 style="color:var(--accent); margin:0; font-size:24px; font-weight:900;">PERFUMA2</h2>
+    <div style="font-size:10.5px; color:var(--text-muted); font-weight:700;">CATÁLOGO OFICIAL DE FRAGANCIAS</div>
+  </div>
+  <div style="margin-bottom:12px;">
+    <input type="text" id="cat-buscar" class="user-input" placeholder="🔍 Buscar perfume o marca..." oninput="renderCatalogoPublico()">
+  </div>
+  <div id="cat-grid-productos" style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; margin-bottom:20px;"></div>
+  
+  <div class="card-panel" style="border-color:var(--accent);">
+    <h4 class="card-title" style="color:var(--accent);">🛒 Tu Pedido</h4>
+    <div id="cat-carrito-items" style="font-size:11.5px; margin-bottom:10px; max-height:120px; overflow-y:auto;">Tu carrito está vacío.</div>
+    <div style="font-weight:900; font-size:14px; margin-bottom:10px;" id="cat-carrito-total">Total: $0.00</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Tu Nombre</label><input type="text" id="cat-cli-nombre" class="user-input" placeholder="Nombre completo"></div>
+      <div class="form-group"><label>Tu Teléfono (WhatsApp)</label><input type="text" id="cat-cli-tel" class="user-input" placeholder="Ej: 0412..."></div>
+      <div class="form-group"><label>Dirección / Zona</label><input type="text" id="cat-cli-dir" class="user-input" placeholder="Zona de entrega"></div>
+      <div class="form-group"><label>Método de Pago</label><select id="cat-cli-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay">Binance Pay</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+    </div>
+    <button class="btn-primary" style="width:100%; padding:13px; font-weight:900;" onclick="enviarPedidoWebTienda()">🚀 ENVIAR PEDIDO A LA TIENDA</button>
+  </div>
+</div>
+
 <!-- PANEL ADMINISTRATIVO PRINCIPAL -->
 <div id="app-admin" style="display:block;">
   <div class="header-bar">
@@ -198,7 +223,7 @@
       <div class="kpi-card"><div class="kpi-title">CAPITAL EN STOCK (COSTO)</div><div class="kpi-value" id="kpi-capital-stock" style="color:var(--purple);">$0.00</div><div class="kpi-sub" id="kpi-proyeccion-venta">Proyección Venta: $0.00</div></div>
     </div>
 
-    <!-- RANKINGS DE CLIENTES (PUNTO 4) -->
+    <!-- RANKINGS DE CLIENTES -->
     <div class="card-panel" style="border-color:var(--purple);">
       <h4 class="card-title" style="color:var(--purple); margin:0 0 10px 0;">🏆 Clientes Destacados</h4>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
@@ -463,7 +488,7 @@
     </div>
   </div>
 
-  <!-- 10. ASISTENTE IA & TARJETA 3D (CON IA INTELIGENTE - PUNTO 2) -->
+  <!-- 10. ASISTENTE IA & TARJETA 3D -->
   <div id="tab-ia" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🤖 Asistente IA & Redactor Comercial</h3>
@@ -576,7 +601,7 @@
   <div style="text-align: center; font-size: 9.5px; color: #94a3b8; margin-top: 14px;" id="vc-tasa">Tasa aplicada: 1047.80 Bs</div>
 </div>
 
-<!-- MODAL PERFUME (CON VISTA PREVIA Y NOTAS REORDENADAS - PUNTO 1) -->
+<!-- MODAL PERFUME -->
 <div id="modal-perfume" class="modal-overlay">
   <div class="modal-box">
     <button class="btn-close-modal" onclick="document.getElementById('modal-perfume').style.display='none'">✖</button>
@@ -646,10 +671,16 @@ function alternarSonidoAlerta() {
   if (sonidoActivo) reproducirAlertaSonora('exito');
 }
 let tasaBCV = 897.54, tasaUSDT = 1047.80, tipoTasaActiva = 'usdt', margenGlobal = 75, numeroWATienda = '584120551688';
-let carritoDetal = [], carritoMayor = [], carritoDecants = [];
+let carritoDetal = [], carritoMayor = [], carritoDecants = [], carritoPublico = [];
 
 const urlParams = new URLSearchParams(window.location.search);
 const isCatalogoPublico = urlParams.get('catalogo') === 'true';
+
+// Si es catálogo público, activamos la vista de cliente
+if (isCatalogoPublico) {
+  document.getElementById('app-admin').style.display = 'none';
+  document.getElementById('app-catalogo-publico').style.display = 'block';
+}
 
 function obtenerTasaActiva() { return tipoTasaActiva === 'usdt' ? (parseFloat(tasaUSDT) || 1) : (parseFloat(tasaBCV) || 1); }
 
@@ -716,6 +747,7 @@ function cargarDatosDesdeNube() {
     if (data.numeroWATienda) numeroWATienda = data.numeroWATienda;
     if (data.cuentasPago) cargarCuentasPagoInpuntu(data.cuentasPago);
     renderTodo();
+    if (isCatalogoPublico) renderCatalogoPublico();
   });
 }
 
@@ -779,7 +811,6 @@ function renderDashboard() {
   setTxt('kpi-stock-unidades', stockFis); setTxt('kpi-capital-stock', '$' + capCosto.toFixed(2));
   setTxt('kpi-proyeccion-venta', 'Proyección Venta: $' + proy.toFixed(2));
 
-  // Clientes Destacados (Punto 4)
   const mapCant = {}, mapCosto = {};
   ventas.forEach(v => {
     const cli = v.cliente || 'General';
@@ -833,6 +864,83 @@ function facturarPedidoWeb(idx) {
   renderTodo(); guardarCambiosEnNube(false);
   cambiarTab('ventas', document.querySelector('[onclick*="ventas"]'));
   alert("✅ Pedido cargado en la sección de Ventas Detal para facturar.");
+}
+
+function renderCatalogoPublico() {
+  const grid = document.getElementById('cat-grid-productos');
+  if (!grid) return;
+  const q = (document.getElementById('cat-buscar')?.value || '').toLowerCase();
+  const disponibles = inventario.filter(p => (parseInt(p.stock) || 0) > 0 && `${p.marca || ''} ${p.nombre || ''} ${p.notas || ''}`.toLowerCase().includes(q));
+  
+  if (disponibles.length === 0) {
+    grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:var(--text-muted); padding:20px;">No hay perfumes disponibles.</div>';
+    return;
+  }
+
+  grid.innerHTML = disponibles.map((p, idx) => `
+    <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:12px; padding:10px; display:flex; flex-direction:column; justify-content:space-between;">
+      <div>
+        ${p.imagen ? `<div style="width:100%; height:110px; border-radius:8px; overflow:hidden; margin-bottom:8px; background:#000;"><img src="${p.imagen}" style="width:100%; height:100%; object-fit:cover;"></div>` : ''}
+        <div style="font-weight:900; font-size:12px; margin-bottom:2px;">${obtenerNombreLimpio(p)}</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px;">${p.notas || 'Fragancia exclusiva'}</div>
+      </div>
+      <div>
+        <div style="font-weight:900; color:var(--accent); font-size:14px; margin-bottom:8px;">$${(parseFloat(p.precio)||0).toFixed(2)}</div>
+        <button class="btn-primary" style="width:100%; padding:7px; font-size:10px;" onclick="agregarAlCarritoPublico(${idx})">+ AGREGAR</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function agregarAlCarritoPublico(idx) {
+  const p = inventario[idx];
+  if (!p) return;
+  const existente = carritoPublico.find(i => i.nombre === obtenerNombreLimpio(p));
+  if (existente) existente.cantidad += 1;
+  else carritoPublico.push({ nombre: obtenerNombreLimpio(p), precio: parseFloat(p.precio) || 0, cantidad: 1, costo: parseFloat(p.costo) || 0 });
+  renderCarritoPublico();
+}
+
+function renderCarritoPublico() {
+  const cont = document.getElementById('cat-carrito-items');
+  const totalEl = document.getElementById('cat-carrito-total');
+  if (!cont) return;
+  if (carritoPublico.length === 0) {
+    cont.innerHTML = 'Tu carrito está vacío.';
+    totalEl.textContent = 'Total: $0.00';
+    return;
+  }
+  let sub = 0;
+  cont.innerHTML = carritoPublico.map(i => {
+    sub += i.precio * i.cantidad;
+    return `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`;
+  }).join('<br>');
+  totalEl.textContent = `Total: $${sub.toFixed(2)}`;
+}
+
+function enviarPedidoWebTienda() {
+  if (carritoPublico.length === 0) return alert("⚠️ Tu carrito está vacío.");
+  const cli = document.getElementById('cat-cli-nombre').value.trim();
+  const tel = document.getElementById('cat-cli-tel').value.trim();
+  const dir = document.getElementById('cat-cli-dir').value.trim();
+  const met = document.getElementById('cat-cli-metodo').value;
+  if (!cli || !tel) return alert("Por favor ingresa tu nombre y teléfono.");
+
+  pedidosWeb.push({
+    fecha: new Date().toLocaleString('es-VE'),
+    cliente: cli,
+    telefono: tel,
+    direccion: dir,
+    metodo: met,
+    items: carritoPublico
+  });
+  guardarCambiosEnNube(false);
+  alert("✅ ¡Pedido enviado con éxito a la tienda!");
+  carritoPublico = [];
+  renderCarritoPublico();
+  document.getElementById('cat-cli-nombre').value = '';
+  document.getElementById('cat-cli-tel').value = '';
+  document.getElementById('cat-cli-dir').value = '';
 }
 
 function renderInventario() {
@@ -1165,7 +1273,7 @@ function renderHistorialVentas() {
   }
   if (tbM) {
     tbM.innerHTML = ventas.map((v, idx) => ({ ...v, _origIdx: idx })).filter(v => v.tipo === 'mayor').map((v) => `<tr>
-      <td>${v.fecha || {} }</td><td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
+      <td>${v.fecha || ''}</td><td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
       <td>${v.productos}</td><td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small style="color:var(--warning);">Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td>
       <td style="text-align:center;"><div style="display:inline-flex; gap:4px; align-items:center;">
         <button class="btn-secondary" style="padding:5px 7px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, 'mayor')" title="Ver Factura">🧾</button>
@@ -1181,7 +1289,6 @@ function enviarMotoSolo(idx) {
   window.open(`https://wa.me/?text=${encodeURIComponent(mensajeMotorizado)}`, '_blank');
 }
 
-// COBRAR CUOTA DIRECTO POR WHATSAPP (PUNTO 3 / VIDEO 1)
 function cobrarCuotaWhatsApp(idx) {
   const v = ventas[idx]; if (!v) return;
   const resto = parseFloat(v.restante) || 0;
@@ -1266,7 +1373,6 @@ function actualizarTarjeta3D() {
   document.getElementById('t3d-metodos-lista').innerHTML = h;
 }
 
-// ASISTENTE IA INTELIGENTE (PUNTO 2 / VIDEO 2)
 function enviarConsultaIA() {
   const input = document.getElementById('ia-prompt-input'), chatBox = document.getElementById('ia-chat-box');
   if (!input || !input.value.trim()) return;
