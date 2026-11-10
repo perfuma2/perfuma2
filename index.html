@@ -92,6 +92,10 @@
     .carrito-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 6px 8px; border-radius: 8px; font-size: 11.5px; border: 1px solid var(--border-color); }
     .caja-totales { background: rgba(0,242,214,0.05); border: 1.5px solid var(--accent); border-radius: 10px; padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
     
+    .preview-img-container { width: 100%; height: 75px; background: var(--bg-input); border: 1.5px dashed var(--border-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 4px; }
+    .preview-img-container img { width: 100%; height: 100%; object-fit: cover; }
+    .preview-img-placeholder { font-size: 10px; color: var(--text-muted); font-weight: 700; text-align: center; }
+
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(7,11,20,0.85); z-index: 999999; display: none; justify-content: center; align-items: center; padding: 15px; backdrop-filter: blur(4px); }
     .modal-box { background: var(--bg-card); border: 2px solid var(--accent); border-radius: 16px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 18px; position: relative; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
     .btn-close-modal { position: absolute; top: 12px; right: 12px; background: rgba(255,77,109,0.2); color: var(--danger); border: none; border-radius: 50%; width: 28px; height: 28px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -193,6 +197,21 @@
       <div class="kpi-card"><div class="kpi-title">STOCK FÍSICO (UNIDADES)</div><div class="kpi-value" id="kpi-stock-unidades">0</div><div class="kpi-sub" style="color:var(--danger);">Cajas Selladas</div></div>
       <div class="kpi-card"><div class="kpi-title">CAPITAL EN STOCK (COSTO)</div><div class="kpi-value" id="kpi-capital-stock" style="color:var(--purple);">$0.00</div><div class="kpi-sub" id="kpi-proyeccion-venta">Proyección Venta: $0.00</div></div>
     </div>
+
+    <!-- NUEVOS RANKINGS DE CLIENTES (PUNTO 4) -->
+    <div class="card-panel" style="border-color:var(--purple);">
+      <h4 class="card-title" style="color:var(--purple); margin:0 0 10px 0;">🏆 Clientes Destacados</h4>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div style="background:var(--bg-input); padding:10px; border-radius:10px; border:1px solid var(--border-color);">
+          <div style="font-size:9.5px; font-weight:900; color:var(--text-muted);">MAYOR COMPRA (CANTIDAD)</div>
+          <div id="top-cliente-cant" style="font-size:13px; font-weight:900; color:var(--accent); margin-top:4px;">N/A</div>
+        </div>
+        <div style="background:var(--bg-input); padding:10px; border-radius:10px; border:1px solid var(--border-color);">
+          <div style="font-size:9.5px; font-weight:900; color:var(--text-muted);">MAYOR COMPRA (COSTO $)</div>
+          <div id="top-cliente-costo" style="font-size:13px; font-weight:900; color:var(--success); margin-top:4px;">N/A</div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 2. BUZÓN DE PEDIDOS WEB -->
@@ -288,7 +307,7 @@
       <h4 class="card-title">📋 Historial de Ventas (Detal)</h4>
       <div class="table-responsive">
         <table>
-          <thead><tr><th>FECHA / HORA</th><th>CLIENTE</th><th>PRODUCTOS</th><th>TOTAL ($/BS)</th><th>ACCIONES</th></tr></thead>
+          <thead><tr><th>FECHA / HORA</th><th>CLIENTE</th><th>PRODUCTOS</th><th>TOTAL ($/BS)</th><th style="text-align:center;">ACCIONES (MOTO / FACTURA / COBRAR)</th></tr></thead>
           <tbody id="tbody-ventas-detal"></tbody>
         </table>
       </div>
@@ -419,7 +438,7 @@
       <input type="text" id="buscar-crm" class="user-input" placeholder="🔍 Buscar cliente..." style="margin-bottom:10px;" oninput="renderCRM()">
       <div class="table-responsive">
         <table>
-          <thead><tr><th>CLIENTE</th><th>TELÉFONO</th><th>COMPRAS</th><th>TOTAL ($)</th><th>DEUDA ($)</th></tr></thead>
+          <thead><tr><th>CLIENTE</th><th>TELÉFONO</th><th>COMPRAS</th><th>TOTAL ($)</th><th>DEUDA ($)</th><th style="text-align:center;">ACCIONES</th></tr></thead>
           <tbody id="tbody-crm"></tbody>
         </table>
       </div>
@@ -574,10 +593,14 @@
       <div class="form-group">
         <label>URL Imagen o Foto</label>
         <div style="display:flex; gap:6px; align-items:center;">
-          <input type="text" id="p-imagen" class="user-input" placeholder="https://..." style="flex:1;">
+          <input type="text" id="p-imagen" class="user-input" placeholder="https://..." style="flex:1;" oninput="actualizarVistaPreviaModal()">
           <a id="btn-lupa-google" href="https://www.google.com/search?tbm=isch&q=perfume" target="_blank" class="btn-secondary" style="padding:9px 12px; text-decoration:none;" title="Buscar en Google Imágenes">🔍</a>
           <button type="button" class="btn-secondary" onclick="document.getElementById('input-galeria-foto').click()" style="padding:9px 12px;" title="Subir foto de la galería">📁+</button>
           <input type="file" id="input-galeria-foto" accept="image/*" style="display:none;" onchange="subirFotoGaleriaModal(this)">
+        </div>
+        <!-- VISTA PREVIA DE FOTO (PUNTO 1) -->
+        <div class="preview-img-container" id="preview-container">
+          <span class="preview-img-placeholder">📷 Vista previa de la foto</span>
         </div>
       </div>
       <div class="form-group"><label>Notas Aromáticas</label><input type="text" id="p-notas" class="user-input" placeholder="Ej: Dulce, Vainilla"></div>
@@ -756,6 +779,20 @@ function renderDashboard() {
   setTxt('kpi-por-cobrar', '$' + totalDeu.toFixed(2)); setTxt('kpi-por-cobrar-bs', 'Bs. ' + (totalDeu * tasa).toFixed(2));
   setTxt('kpi-stock-unidades', stockFis); setTxt('kpi-capital-stock', '$' + capCosto.toFixed(2));
   setTxt('kpi-proyeccion-venta', 'Proyección Venta: $' + proy.toFixed(2));
+
+  // Cálculo de Clientes Destacados (Punto 4)
+  const mapCant = {}, mapCosto = {};
+  ventas.forEach(v => {
+    const cli = v.cliente || 'General';
+    mapCant[cli] = (mapCant[cli] || 0) + 1;
+    mapCosto[cli] = (mapCosto[cli] || 0) + (parseFloat(v.total) || 0);
+  });
+  let topCantName = 'N/A', maxCant = -1;
+  for (let c in mapCant) { if (mapCant[c] > maxCant) { maxCant = mapCant[c]; topCantName = `${c} (${maxCant} compras)`; } }
+  let topCostoName = 'N/A', maxCosto = -1;
+  for (let c in mapCosto) { if (mapCosto[c] > maxCosto) { maxCosto = mapCosto[c]; topCostoName = `${c} ($${maxCosto.toFixed(2)})`; } }
+  setTxt('top-cliente-cant', topCantName);
+  setTxt('top-cliente-costo', topCostoName);
 }
 
 function renderPedidosWeb() {
@@ -870,12 +907,23 @@ function importarExcelProveedor(input) {
   reader.readAsArrayBuffer(file);
 }
 
+function actualizarVistaPreviaModal() {
+  const url = document.getElementById('p-imagen').value.trim();
+  const container = document.getElementById('preview-container');
+  if (!container) return;
+  if (url) {
+    container.innerHTML = `<img src="${url}" alt="Vista previa" onerror="this.onerror=null; this.parentNode.innerHTML='<span class=\'preview-img-placeholder\'>❌ No se pudo cargar la imagen</span>';">`;
+  } else {
+    container.innerHTML = `<span class="preview-img-placeholder">📷 Vista previa de la foto</span>`;
+  }
+}
+
 function abrirModalPerfume() {
   document.getElementById('p-id-edit').value = ''; document.getElementById('p-marca').value = ''; document.getElementById('p-nombre').value = '';
   document.getElementById('p-stock').value = 1; document.getElementById('p-ml').value = 100; document.getElementById('p-costo').value = 15;
   document.getElementById('p-margen-ind').value = margenGlobal; document.getElementById('p-precio').value = 26.25; 
   document.getElementById('p-imagen').value = ''; document.getElementById('p-notas').value = '';
-  actualizarEnlaceBusquedaGoogle(); document.getElementById('modal-perfume').style.display = 'flex';
+  actualizarEnlaceBusquedaGoogle(); actualizarVistaPreviaModal(); document.getElementById('modal-perfume').style.display = 'flex';
 }
 
 function editarPerfume(idx) {
@@ -884,7 +932,7 @@ function editarPerfume(idx) {
   document.getElementById('p-stock').value = p.stock || 0; document.getElementById('p-ml').value = p.ml || 100; document.getElementById('p-costo').value = p.costo || 0;
   document.getElementById('p-margen-ind').value = p.margenInd !== undefined ? p.margenInd : margenGlobal;
   document.getElementById('p-precio').value = p.precio || 0; document.getElementById('p-imagen').value = p.imagen || ''; document.getElementById('p-notas').value = p.notas || '';
-  actualizarEnlaceBusquedaGoogle(); document.getElementById('modal-perfume').style.display = 'flex';
+  actualizarEnlaceBusquedaGoogle(); actualizarVistaPreviaModal(); document.getElementById('modal-perfume').style.display = 'flex';
 }
 
 function actualizarEnlaceBusquedaGoogle() {
@@ -896,7 +944,7 @@ function actualizarEnlaceBusquedaGoogle() {
 function subirFotoGaleriaModal(input) {
   const file = input.files[0]; if (!file) return;
   const reader = new FileReader();
-  reader.onload = function(e) { document.getElementById('p-imagen').value = e.target.result; alert("📁 Foto cargada con éxito."); };
+  reader.onload = function(e) { document.getElementById('p-imagen').value = e.target.result; actualizarVistaPreviaModal(); alert("📁 Foto cargada con éxito."); };
   reader.readAsDataURL(file);
 }
 
@@ -1033,7 +1081,6 @@ function registrarVentaDetalConFacturaWA() {
 
   ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'detal', cliente: cli, telefono: tel, metodo: met, productos: carritoDetal.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), total, ganancia: sub - costoT, abonado, restante });
 
-  // Mensaje para el cliente
   let textoWhatsApp = `✨ *PERFUMA2 - RESUMEN DE COMPRA* ✨\n\n` +
     carritoDetal.map(i => `◆ ${i.cantidad}x ${obtenerNombreLimpio(i)} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n') +
     (delivery > 0 ? `\n🛵 *Delivery:* $${delivery.toFixed(2)}` : '') +
@@ -1071,12 +1118,9 @@ function registrarVentaDetalConFacturaWA() {
       const file = new File([blob], `Factura_${cli.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
       const urlWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(textoWhatsApp)}` : `https://wa.me/?text=${encodeURIComponent(textoWhatsApp)}`;
       
-      // Si hay delivery seleccionado, generar mensaje separado para el motorizado
       if (usaDelivery && delivery > 0) {
         const mensajeMotorizado = `🛵 *SOLICITUD DE DELIVERY - PERFUMA2* 🛵\n\nHola *${motorizadoNombre}*, tienes un servicio asignado:\n\n👤 *Cliente:* ${cli}\n📱 *Teléfono:* ${tel || 'N/A'}\n📍 *Dirección de entrega:* ${dir || 'N/A'}\n💵 *Monto delivery a cobrar:* $${delivery.toFixed(2)}\n\n¡Por favor confirmar recepción del pedido!`;
         const urlMotorizado = motorizadoTel ? `https://wa.me/${motorizadoTel.startsWith('58') ? motorizadoTel : '58' + motorizadoTel.replace(/^0/, '')}?text=${encodeURIComponent(mensajeMotorizado)}` : `https://wa.me/?text=${encodeURIComponent(mensajeMotorizado)}`;
-        
-        // Abrir WhatsApp del motorizado en una pestaña secundaria o dar aviso
         setTimeout(() => { window.open(urlMotorizado, '_blank'); }, 800);
       }
 
@@ -1113,20 +1157,42 @@ function renderHistorialVentas() {
     tbD.innerHTML = ventas.map((v, idx) => ({ ...v, _origIdx: idx })).filter(v => v.tipo !== 'mayor').map((v) => `<tr>
       <td>${v.fecha || ''}</td><td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
       <td>${v.productos}</td><td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small style="color:var(--warning);">Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td>
-      <td style="text-align:center;"><div style="display:inline-flex; gap:6px; align-items:center;">
-        <button class="btn-secondary" style="padding:5px 8px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, '${v.tipo}')" title="Ver Factura / Recibo">🛵🧾</button>
-        <button class="btn-danger" style="padding:5px 8px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar">🗑️</button>
+      <td style="text-align:center;"><div style="display:inline-flex; gap:4px; align-items:center; flex-wrap:nowrap;">
+        <button class="btn-secondary" style="padding:5px 7px; font-size:11px; border-color:var(--warning); color:var(--warning);" onclick="enviarMotoSolo(${v._origIdx})" title="Enviar recado al Motorizado">🛵</button>
+        <button class="btn-secondary" style="padding:5px 7px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, '${v.tipo}')" title="Ver Recibo Factura">🧾</button>
+        ${(parseFloat(v.restante) || 0) > 0 ? `<button class="btn-primary" style="padding:5px 7px; font-size:10px; background:var(--warning); color:#000;" onclick="abonarCuotaVenta(${v._origIdx})" title="Cobrar Cuota">💵</button>` : ''}
+        <button class="btn-danger" style="padding:5px 7px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar">🗑️</button>
       </div></td></tr>`).join('');
   }
   if (tbM) {
     tbM.innerHTML = ventas.map((v, idx) => ({ ...v, _origIdx: idx })).filter(v => v.tipo === 'mayor').map((v) => `<tr>
       <td>${v.fecha || ''}</td><td><strong>${v.cliente}</strong><br><small style="color:var(--text-muted);">${v.telefono || ''}</small></td>
       <td>${v.productos}</td><td>$${(parseFloat(v.total)||0).toFixed(2)}<br><small style="color:var(--warning);">Bs. ${((parseFloat(v.total)||0)*tasa).toFixed(2)}</small></td>
-      <td style="text-align:center;"><div style="display:inline-flex; gap:6px; align-items:center;">
-        <button class="btn-secondary" style="padding:5px 8px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, 'mayor')" title="Ver Factura">🛵🧾</button>
-        <button class="btn-danger" style="padding:5px 8px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar">🗑️</button>
+      <td style="text-align:center;"><div style="display:inline-flex; gap:4px; align-items:center;">
+        <button class="btn-secondary" style="padding:5px 7px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${v._origIdx}, 'mayor')" title="Ver Factura">🧾</button>
+        <button class="btn-danger" style="padding:5px 7px; font-size:11px;" onclick="eliminarVentaRegistro(${v._origIdx})" title="Eliminar">🗑️</button>
       </div></td></tr>`).join('');
   }
+}
+
+function enviarMotoSolo(idx) {
+  const v = ventas[idx]; if (!v) return;
+  const tel = (v.telefono || '').replace(/\D/g, '');
+  const mensajeMotorizado = `🛵 *SOLICITUD DE DELIVERY - PERFUMA2* 🛵\n\nHola, tienes un servicio asignado:\n\n👤 *Cliente:* ${v.cliente}\n📱 *Teléfono:* ${v.telefono || 'N/A'}\n📦 *Productos:* ${v.productos}\n💵 *Total a cobrar / Cobro:* $${(parseFloat(v.total)||0).toFixed(2)}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(mensajeMotorizado)}`, '_blank');
+}
+
+function abonarCuotaVenta(idx) {
+  const v = ventas[idx]; if (!v) return;
+  const resto = parseFloat(v.restante) || 0;
+  const abonoStr = prompt(`💵 Cobro de Cuota / Saldo pendiente para ${v.cliente}\nSaldo actual: $${resto.toFixed(2)}\n\nIngresa el monto del abono en $ USD:`, resto.toFixed(2));
+  if (!abonoStr) return;
+  const montoAb = parseFloat(abonoStr) || 0;
+  if (montoAb <= 0) return;
+  v.abonado = (parseFloat(v.abonado) || 0) + montoAb;
+  v.restante = Math.max(0, (parseFloat(v.total) || 0) - v.abonado);
+  renderTodo(); guardarCambiosEnNube(false);
+  alert(`✅ Abono de $${montoAb.toFixed(2)} registrado con éxito. Saldo restante: $${v.restante.toFixed(2)}`);
 }
 
 function eliminarVentaRegistro(idx) {
@@ -1246,9 +1312,26 @@ async function compartirTarjeta3D() {
 function renderCRM() {
   const tb = document.getElementById('tbody-crm'); if (!tb) return;
   const q = (document.getElementById('buscar-crm')?.value || '').toLowerCase(), mapa = {};
-  ventas.forEach(v => { const k = v.cliente || 'Cliente'; if (!mapa[k]) mapa[k] = { cliente: k, telefono: v.telefono || '', compras: 0, total: 0, deuda: 0 }; mapa[k].compras += 1; mapa[k].total += parseFloat(v.total) || 0; mapa[k].deuda += parseFloat(v.restante) || 0; });
+  ventas.forEach((v, origIdx) => { 
+    const k = v.cliente || 'Cliente'; 
+    if (!mapa[k]) mapa[k] = { cliente: k, telefono: v.telefono || '', compras: 0, total: 0, deuda: 0, indices: [] }; 
+    mapa[k].compras += 1; 
+    mapa[k].total += parseFloat(v.total) || 0; 
+    mapa[k].deuda += parseFloat(v.restante) || 0; 
+    mapa[k].indices.push(origIdx);
+  });
   const lista = Object.values(mapa).filter(c => c.cliente.toLowerCase().includes(q));
-  tb.innerHTML = lista.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin clientes</td></tr>` : lista.map(c => `<tr><td><strong>${c.cliente}</strong></td><td>${c.telefono}</td><td>${c.compras}</td><td>$${c.total.toFixed(2)}</td><td style="color:${c.deuda > 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:900;">$${c.deuda.toFixed(2)}</td></tr>`).join('');
+  tb.innerHTML = lista.length === 0 ? `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sin clientes</td></tr>` : lista.map(c => `<tr>
+    <td><strong>${c.cliente}</strong></td>
+    <td>${c.telefono}</td>
+    <td>${c.compras}</td>
+    <td>$${c.total.toFixed(2)}</td>
+    <td style="color:${c.deuda > 0 ? 'var(--danger)' : 'var(--success)'}; font-weight:900;">$${c.deuda.toFixed(2)}</td>
+    <td style="text-align:center;"><div style="display:inline-flex; gap:4px; align-items:center;">
+      <button class="btn-secondary" style="padding:5px 7px; font-size:11px; border-color:var(--accent); color:var(--accent);" onclick="verReciboUniversal(${c.indices[0]}, 'detal')" title="Ver Factura">🧾</button>
+      <button class="btn-danger" style="padding:5px 7px; font-size:11px;" onclick="eliminarVentaRegistro(${c.indices[0]})" title="Papelera / Eliminar">🗑️</button>
+    </div></td>
+  </tr>`).join('');
 }
 
 function registrarGasto() {
