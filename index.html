@@ -5,10 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PERFUMA2 - Catálogo y Sistema de Gestión</title>
   
+  <!-- Configuración PWA e Icono Oficial -->
   <meta name="theme-color" content="#0f766e">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href='data:application/manifest+json,{"name":"PERFUMA2","short_name":"PERFUMA2","start_url":".","display":"standalone","background_color":"#070b14","theme_color":"#00f2d6","icons":[{"src":"logo.jpg.jpg","sizes":"192x192","type":"image/jpeg"},{"src":"logo.jpg.jpg","sizes":"512x512","type":"image/jpeg"}]}'>
+  <meta name="apple-mobile-web-app-title" content="PERFUMA2">
+  <link rel="apple-touch-icon" href="logo.jpg">
+  <link rel="icon" type="image/jpeg" href="logo.jpg">
+  
+  <!-- Manifiesto Estándar para Instalación en PC y Móviles -->
+  <link rel="manifest" href="manifest.json">
 
   <!-- Librerías Externas (Firebase, Excel, Html2Canvas) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -112,7 +118,7 @@
 <div id="loader-pantalla">
   <div class="logo-3d-wrapper">
     <div class="logo-3d-circle" style="width: 70px; height: 70px;">
-      <img src="logo.jpg.jpg" alt="Logo" onerror="this.style.display='none';">
+      <img src="logo.jpg" alt="Logo" onerror="this.style.display='none';">
     </div>
   </div>
   <div class="loader-text-glow">PERFUMA2</div>
@@ -124,7 +130,7 @@
   <div style="text-align:center; padding:25px 0; border-bottom:2px solid var(--border-color); margin-bottom:20px;">
     <div class="logo-3d-wrapper" style="margin-bottom: 10px;">
       <div class="logo-3d-circle" style="width: 75px; height: 75px;">
-        <img src="logo.jpg.jpg" alt="Logo" onerror="this.style.display='none';">
+        <img src="logo.jpg" alt="Logo" onerror="this.style.display='none';">
       </div>
     </div>
     <h2 style="color:var(--accent); margin:0; font-size:28px; font-weight:900; letter-spacing:1px;">PERFUMA2</h2>
@@ -176,7 +182,7 @@
       <div style="display:flex; align-items:center; gap:10px;">
         <div class="logo-3d-wrapper">
           <div class="logo-3d-circle" style="width: 46px; height: 46px;">
-            <img src="logo.jpg.jpg" alt="Logo" onerror="this.style.display='none';">
+            <img src="logo.jpg" alt="Logo" onerror="this.style.display='none';">
           </div>
         </div>
         <h1 class="brand-title">PERFUMA2</h1>
@@ -564,7 +570,7 @@
       <div id="tarjeta-cobro-3d" style="width:100%; max-width:340px; margin:12px auto; background:linear-gradient(145deg, #070b14, #111a2e); border:2px solid #00f2d6; border-radius:18px; padding:16px; color:#f8fafc; box-shadow:0 12px 30px rgba(0,0,0,0.4);">
         <div style="display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(0,242,214,0.25); padding-bottom:10px; margin-bottom:10px;">
           <div class="logo-3d-circle" style="width:44px; height:44px; flex-shrink:0;">
-            <img src="logo.jpg.jpg" alt="Logo" onerror="this.style.display='none';">
+            <img src="logo.jpg" alt="Logo" onerror="this.style.display='none';">
           </div>
           <div>
             <div style="font-size:17px; font-weight:900; color:#00f2d6; letter-spacing:1px;">PERFUMA2</div>
@@ -839,7 +845,7 @@ function renderDashboard() {
   const totalG = ventas.reduce((a, v) => a + (parseFloat(v.ganancia) || 0), 0);
   const totalAb = ventas.reduce((a, v) => a + (parseFloat(v.abonado) || 0), 0);
   const totalDeu = ventas.reduce((a, v) => a + (parseFloat(v.restante) || 0), 0);
-  const totalGas = gastos.reduce((a, g) => a + (parseFloat(g.monto) || 0), 0);
+  const totalGas = gastos.reduce((a, g) => a + (parseFloat(v.monto) || 0), 0);
   const stockFis = inventario.reduce((a, p) => a + (parseInt(p.stock) || 0), 0);
   const capCosto = inventario.reduce((a, p) => a + ((parseFloat(p.costo) || 0) * (parseInt(p.stock) || 0)), 0);
   const proy = inventario.reduce((a, p) => a + ((parseFloat(p.precio) || 0) * (parseInt(p.stock) || 0)), 0);
@@ -1582,7 +1588,7 @@ function generarCierreCaja() {
   const tasa = obtenerTasaActiva();
   const totalV = ventas.reduce((a, v) => a + (parseFloat(v.total) || 0), 0);
   const totalAb = ventas.reduce((a, v) => a + (parseFloat(v.abonado) || 0), 0);
-  const totalGas = gastos.reduce((a, g) => a + (parseFloat(g.monto) || 0), 0);
+  const totalGas = gastos.reduce((a, g) => a + (parseFloat(v.monto) || 0), 0);
   alert(`📊 REPORTE DE CAJA (HOY)\n\n• Ventas Totales: $${totalV.toFixed(2)} (Bs. ${(totalV * tasa).toFixed(2)})\n• Efectivo/Abonos Ingresados: $${totalAb.toFixed(2)}\n• Gastos Operativos: $${totalGas.toFixed(2)}\n• Utilidad Neta en Caja: $${(totalAb - totalGas).toFixed(2)}`);
 }
 
