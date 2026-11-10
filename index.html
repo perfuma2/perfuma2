@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PERFUMA2 - Sistema de Gestión</title>
+  <title>PERFUMA2 - Catálogo y Sistema de Gestión</title>
   <!-- Librerías Externas (Firebase, Excel, Html2Canvas) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -113,33 +113,53 @@
   <div class="loader-spinner"></div>
 </div>
 
-<!-- VISTA DE CLIENTE (CATÁLOGO PÚBLICO) -->
-<div id="app-catalogo-publico" style="display:none; padding:12px; max-width:500px; margin:0 auto; padding-bottom:80px;">
-  <div style="text-align:center; padding:15px 0; border-bottom:2px solid var(--border-color); margin-bottom:15px;">
-    <h2 style="color:var(--accent); margin:0; font-size:24px; font-weight:900;">PERFUMA2</h2>
-    <div style="font-size:10.5px; color:var(--text-muted); font-weight:700;">CATÁLOGO OFICIAL DE FRAGANCIAS</div>
-  </div>
-  <div style="margin-bottom:12px;">
-    <input type="text" id="cat-buscar" class="user-input" placeholder="🔍 Buscar perfume o marca..." oninput="renderCatalogoPublico()">
-  </div>
-  <div id="cat-grid-productos" style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; margin-bottom:20px;"></div>
-  
-  <!-- CARRITO FLOTANTE Y PANEL DE PEDIDO -->
-  <div id="cat-carrito-flotante" style="position:fixed; bottom:0; left:0; width:100%; background:var(--bg-card); border-top:2px solid var(--accent); padding:12px; box-shadow:0 -5px 20px rgba(0,0,0,0.4); z-index:99999;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <div style="font-weight:900; font-size:13px; color:var(--accent);" id="cat-flotante-resumen">🛒 Carrito: 0 items ($0.00)</div>
-      <button class="btn-primary" style="font-size:10px; padding:5px 10px;" onclick="document.getElementById('cat-checkout-box').style.display = document.getElementById('cat-checkout-box').style.display === 'none' ? 'block' : 'none'">📦 Finalizar Pedido</button>
-    </div>
-    <div id="cat-checkout-box" style="display:none; border-top:1px dashed var(--border-color); padding-top:8px; margin-top:8px; max-height:220px; overflow-y:auto;">
-      <div id="cat-carrito-items" style="font-size:11.5px; margin-bottom:8px;">Tu carrito está vacío.</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Tu Nombre</label><input type="text" id="cat-cli-nombre" class="user-input" placeholder="Nombre completo"></div>
-        <div class="form-group"><label>Tu Teléfono (WhatsApp)</label><input type="text" id="cat-cli-tel" class="user-input" placeholder="Ej: 0412..."></div>
-        <div class="form-group"><label>Dirección / Zona</label><input type="text" id="cat-cli-dir" class="user-input" placeholder="Zona de entrega"></div>
-        <div class="form-group"><label>Método de Pago</label><select id="cat-cli-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay">Binance Pay</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+<!-- VISTA DE CLIENTE (CATÁLOGO PÚBLICO ADAPTADO A PC, TABLET Y TELÉFONO) -->
+<div id="app-catalogo-publico" style="display:none; padding:15px; max-width:1000px; margin:0 auto; padding-bottom:90px;">
+  <div style="text-align:center; padding:20px 0; border-bottom:2px solid var(--border-color); margin-bottom:20px;">
+    <div class="logo-3d-wrapper" style="margin-bottom: 8px;">
+      <div class="logo-3d-circle" style="width: 65px; height: 65px;">
+        <img src="logo.jpg.jpg" alt="Logo" onerror="this.style.display='none';">
       </div>
-      <button class="btn-primary" style="width:100%; padding:12px; font-weight:900; margin-top:6px;" onclick="enviarPedidoWebTienda()">🚀 ENVIAR PEDIDO A WHATSAPP</button>
     </div>
+    <h2 style="color:var(--accent); margin:0; font-size:26px; font-weight:900; letter-spacing:1px;">PERFUMA2</h2>
+    <div style="font-size:11px; color:var(--text-muted); font-weight:800; margin-top:2px;">CATÁLOGO OFICIAL DE FRAGANCIAS</div>
+    <div style="margin-top:10px; display:inline-flex; gap:8px;">
+      <span style="font-size:10px; background:rgba(0,242,214,0.1); border:1px solid var(--accent); color:var(--accent); padding:4px 10px; border-radius:20px; font-weight:900;" id="cat-tasa-badge">Tasa USDT: 1047.80 Bs</span>
+      <button class="btn-secondary" onclick="alternarTemaLuz()" style="font-size:9.5px; padding:4px 10px; border-radius:20px;">☀️ MODO DÍA</button>
+    </div>
+  </div>
+
+  <div style="margin-bottom:15px; max-width:600px; margin-left:auto; margin-right:auto;">
+    <input type="text" id="cat-buscar" class="user-input" placeholder="🔍 Buscar perfume, marca o notas..." style="padding:11px 14px; font-size:13px;" oninput="renderCatalogoPublico()">
+  </div>
+
+  <!-- GRILLA ADAPTADA (PC, TABLET Y TELÉFONO) -->
+  <div id="cat-grid-productos" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:14px; margin-bottom:30px;"></div>
+  
+  <!-- CARRITO FLOTANTE INFERIOR -->
+  <div id="cat-carrito-flotante" style="position:fixed; bottom:0; left:0; width:100%; background:var(--bg-card); border-top:2.5px solid var(--accent); padding:12px 20px; box-shadow:0 -6px 25px rgba(0,0,0,0.5); z-index:99999; display:flex; justify-content:space-between; align-items:center; max-width:800px; margin-left:50%; transform:translateX(-50%); border-radius:16px 16px 0 0;">
+    <div>
+      <div style="font-weight:900; font-size:13.5px; color:var(--text-main);" id="cat-flotante-resumen">TOTAL PEDIDO: $0.00</div>
+      <div style="font-size:10px; color:var(--text-muted);" id="cat-flotante-items-cant">0 artículos seleccionados</div>
+    </div>
+    <button class="btn-primary" style="padding:10px 18px; font-size:11.5px; font-weight:900;" onclick="abrirModalCheckoutCliente()">🛒 VER CARRITO & FINALIZAR</button>
+  </div>
+</div>
+
+<!-- MODAL CHECKOUT CLIENTE -->
+<div id="modal-checkout-cliente" class="modal-overlay">
+  <div class="modal-box" style="max-width:500px;">
+    <button class="btn-close-modal" onclick="document.getElementById('modal-checkout-cliente').style.display='none'">✖</button>
+    <h3 style="margin-top:0; color:var(--accent); font-weight:900;">🛍️ Tu Pedido en PERFUMA2</h3>
+    <div id="cat-carrito-items" style="font-size:12px; margin-bottom:12px; max-height:160px; overflow-y:auto; border-bottom:1px solid var(--border-color); padding-bottom:8px;">Tu carrito está vacío.</div>
+    <div style="font-weight:900; font-size:16px; margin-bottom:14px; text-align:right; color:var(--accent);" id="cat-carrito-total">Total: $0.00</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Tu Nombre</label><input type="text" id="cat-cli-nombre" class="user-input" placeholder="Nombre completo"></div>
+      <div class="form-group"><label>Tu Teléfono (WhatsApp)</label><input type="text" id="cat-cli-tel" class="user-input" placeholder="Ej: 0412..."></div>
+      <div class="form-group"><label>Dirección / Zona</label><input type="text" id="cat-cli-dir" class="user-input" placeholder="Zona de entrega"></div>
+      <div class="form-group"><label>Método de Pago</label><select id="cat-cli-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay">Binance Pay</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+    </div>
+    <button class="btn-primary" style="width:100%; padding:14px; font-weight:900; margin-top:10px;" onclick="enviarPedidoWebTienda()">🚀 ENVIAR PEDIDO A WHATSAPP</button>
   </div>
 </div>
 
@@ -881,6 +901,8 @@ function facturarPedidoWeb(idx) {
 
 function renderCatalogoPublico() {
   const grid = document.getElementById('cat-grid-productos');
+  const badgeTasa = document.getElementById('cat-tasa-badge');
+  if (badgeTasa) badgeTasa.textContent = `Tasa USDT: ${tasaUSDT.toFixed(2)} Bs`;
   if (!grid) return;
   const q = (document.getElementById('cat-buscar')?.value || '').toLowerCase();
   const disponibles = inventario.filter(p => (parseInt(p.stock) || 0) > 0 && `${p.marca || ''} ${p.nombre || ''} ${p.notas || ''}`.toLowerCase().includes(q));
@@ -890,16 +912,19 @@ function renderCatalogoPublico() {
     return;
   }
 
+  const tasa = obtenerTasaActiva();
   grid.innerHTML = disponibles.map((p, idx) => `
-    <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:12px; padding:10px; display:flex; flex-direction:column; justify-content:space-between;">
+    <div style="background:var(--bg-card); border:1.5px solid var(--border-color); border-radius:14px; padding:12px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:var(--card-shadow);">
       <div>
-        ${p.imagen ? `<div style="width:100%; height:130px; border-radius:8px; overflow:hidden; margin-bottom:8px; background:#000;"><img src="${p.imagen}" style="width:100%; height:100%; object-fit:cover;"></div>` : ''}
-        <div style="font-weight:900; font-size:12px; margin-bottom:2px;">${obtenerNombreLimpio(p)}</div>
-        <div style="font-size:10px; color:var(--text-muted); margin-bottom:6px;">${p.notas || 'Fragancia exclusiva'}</div>
+        ${p.imagen ? `<div style="width:100%; height:150px; border-radius:10px; overflow:hidden; margin-bottom:10px; background:#000;"><img src="${p.imagen}" style="width:100%; height:100%; object-fit:cover;"></div>` : ''}
+        <div style="font-weight:900; font-size:13px; margin-bottom:2px; color:var(--text-main);">${obtenerNombreLimpio(p)}</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-bottom:8px; font-weight:700;">${p.notas || 'Perfume'}</div>
+        <div style="font-size:10.5px; color:var(--warning); font-weight:800; margin-bottom:4px;">${p.stock || 1} unids. disp. (${p.ml || 100}ml)</div>
       </div>
       <div>
-        <div style="font-weight:900; color:var(--accent); font-size:14px; margin-bottom:8px;">$${(parseFloat(p.precio)||0).toFixed(2)}</div>
-        <button class="btn-primary" style="width:100%; padding:7px; font-size:10px;" onclick="agregarAlCarritoPublico(${idx})">+ AGREGAR</button>
+        <div style="font-weight:900; color:var(--accent); font-size:16px; margin-bottom:2px;">$${(parseFloat(p.precio)||0).toFixed(2)}</div>
+        <div style="font-weight:700; color:var(--text-muted); font-size:10.5px; margin-bottom:8px;">Bs. ${((parseFloat(p.precio)||0)*tasa).toFixed(2)}</div>
+        <button class="btn-primary" style="width:100%; padding:9px; font-size:11px; font-weight:900;" onclick="agregarAlCarritoPublico(${idx})">+ AGREGAR</button>
       </div>
     </div>
   `).join('');
@@ -912,24 +937,37 @@ function agregarAlCarritoPublico(idx) {
   if (existente) existente.cantidad += 1;
   else carritoPublico.push({ nombre: obtenerNombreLimpio(p), precio: parseFloat(p.precio) || 0, cantidad: 1, costo: parseFloat(p.costo) || 0 });
   renderCarritoPublico();
+  reproducirAlertaSonora('exito');
 }
 
 function renderCarritoPublico() {
   const cont = document.getElementById('cat-carrito-items');
   const flotanteRes = document.getElementById('cat-flotante-resumen');
+  const flotanteCant = document.getElementById('cat-flotante-items-cant');
+  const totalModal = document.getElementById('cat-carrito-total');
   if (!cont) return;
+  
   if (carritoPublico.length === 0) {
     cont.innerHTML = 'Tu carrito está vacío.';
-    if (flotanteRes) flotanteRes.textContent = '🛒 Carrito: 0 items ($0.00)';
+    if (flotanteRes) flotanteRes.textContent = 'TOTAL PEDIDO: $0.00';
+    if (flotanteCant) flotanteCant.textContent = '0 artículos seleccionados';
+    if (totalModal) totalModal.textContent = 'Total: $0.00';
     return;
   }
   let sub = 0, cantTotal = 0;
   cont.innerHTML = carritoPublico.map((i, iIdx) => {
     sub += i.precio * i.cantidad;
     cantTotal += i.cantidad;
-    return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;"><span>${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})</span><button class="btn-danger" style="padding:2px 6px; font-size:9px;" onclick="carritoPublico.splice(${iIdx},1);renderCarritoPublico();">✖</button></div>`;
+    return `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; background:var(--bg-input); padding:6px 10px; border-radius:8px;"><span>${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})</span><button class="btn-danger" style="padding:2px 6px; font-size:9px;" onclick="carritoPublico.splice(${iIdx},1);renderCarritoPublico();">✖</button></div>`;
   }).join('');
-  if (flotanteRes) flotanteRes.textContent = `🛒 Carrito: ${cantTotal} items ($${sub.toFixed(2)})`;
+  if (flotanteRes) flotanteRes.textContent = `TOTAL PEDIDO: $${sub.toFixed(2)}`;
+  if (flotanteCant) flotanteCant.textContent = `${cantTotal} artículos seleccionados`;
+  if (totalModal) totalModal.textContent = `Total: $${sub.toFixed(2)}`;
+}
+
+function abrirModalCheckoutCliente() {
+  if (carritoPublico.length === 0) return alert("⚠️ Tu carrito está vacío. Agrega al menos un perfume.");
+  document.getElementById('modal-checkout-cliente').style.display = 'flex';
 }
 
 function enviarPedidoWebTienda() {
@@ -938,7 +976,7 @@ function enviarPedidoWebTienda() {
   const tel = document.getElementById('cat-cli-tel').value.trim();
   const dir = document.getElementById('cat-cli-dir').value.trim();
   const met = document.getElementById('cat-cli-metodo').value;
-  if (!cli || !tel) return alert("Por favor ingresa tu nombre y teléfono.");
+  if (!cli || !tel) return alert("Por favor ingresa tu nombre y teléfono de contacto.");
 
   const itemsTxt = carritoPublico.map(i => `• ${i.cantidad}x ${i.nombre} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n');
   const totalPed = carritoPublico.reduce((a, i) => a + (i.precio * i.cantidad), 0);
@@ -957,6 +995,7 @@ function enviarPedidoWebTienda() {
   const urlWA = `https://wa.me/${numeroWATienda}?text=${encodeURIComponent(textoWA)}`;
   
   alert("✅ ¡Pedido registrado y listo para enviar por WhatsApp!");
+  document.getElementById('modal-checkout-cliente').style.display = 'none';
   window.open(urlWA, '_blank');
   carritoPublico = [];
   renderCarritoPublico();
@@ -1306,7 +1345,6 @@ function renderHistorialVentas() {
 
 function enviarMotoSolo(idx) {
   const v = ventas[idx]; if (!v) return;
-  const tel = (v.telefono || '').replace(/\D/g, '');
   const mensajeMotorizado = `🛵 *SOLICITUD DE DELIVERY - PERFUMA2* 🛵\n\nHola, tienes un servicio asignado:\n\n👤 *Cliente:* ${v.cliente}\n📱 *Teléfono:* ${v.telefono || 'N/A'}\n📦 *Productos:* ${v.productos}\n💵 *Total a cobrar / Cobro:* $${(parseFloat(v.total)||0).toFixed(2)}`;
   window.open(`https://wa.me/?text=${encodeURIComponent(mensajeMotorizado)}`, '_blank');
 }
