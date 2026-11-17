@@ -19,7 +19,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <!-- Íconos (FontAwesome) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <style>
@@ -82,7 +81,7 @@
     .tab-content { display: none; } .tab-content.active { display: block; }
     .badge-alerta { position: absolute; top: -6px; right: -6px; background: var(--danger); color: #fff; font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 50px; display: none; }
 
-    .card-panel { background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--card-shadow); }
+    .card-panel { background: var(--bg-card); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: var(--card-shadow); position: relative; }
     .card-title { font-size: 14px; font-weight: 900; color: var(--text-main); margin: 0 0 10px 0; display: flex; align-items: center; gap: 6px; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
     .form-group { display: flex; flex-direction: column; gap: 4px; }
@@ -128,38 +127,17 @@
     }
 
     /* --- CHAT DE IA (Tarjetas individuales separadas) --- */
-    #chat-messages {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .client-card {
-      background-color: var(--bg-input);
-      border: 1.5px solid var(--border-color);
-      border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+    #chat-messages { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+    .client-card { background-color: var(--bg-input); border: 1.5px solid var(--border-color); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
     .client-header { font-weight: 900; color: var(--accent); font-size: 14px; }
     .client-data { font-size: 12px; color: var(--text-main); }
     .client-debt { font-weight: 900; color: var(--warning); }
-    .btn-whatsapp-ia {
-      margin-top: 4px;
-      background: var(--success);
-      color: #fff;
-      padding: 7px 10px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 11px;
-      font-weight: 900;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
+    .btn-whatsapp-ia { margin-top: 4px; background: var(--success); color: #fff; padding: 7px 10px; border-radius: 8px; text-decoration: none; font-size: 11px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+
+    /* --- Menú Flotante Respaldos Históricos --- */
+    #menu-respaldos-historial { display: none; position: absolute; top: 40px; left: 0; background: var(--bg-card); border: 1.5px solid var(--accent); z-index: 1000; border-radius: 12px; padding: 12px; width: 240px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .historial-item { background: rgba(0,242,214,0.1); border: 1px solid rgba(0,242,214,0.3); padding: 8px; border-radius: 8px; font-size: 11px; margin-bottom: 8px; cursor: pointer; color: var(--text-main); font-weight: 700; transition: 0.2s; }
+    .historial-item:hover { background: rgba(0,242,214,0.2); }
   </style>
 </head>
 <body>
@@ -196,7 +174,6 @@
 
   <div id="cat-grid-productos"></div>
   
-  <!-- CARRITO FLOTANTE INFERIOR -->
   <div id="cat-carrito-flotante" style="position:fixed; bottom:0; left:0; width:100%; background:var(--bg-card); border-top:2.5px solid var(--accent); padding:12px 20px; box-shadow:0 -6px 25px rgba(0,0,0,0.5); z-index:99999; display:flex; justify-content:space-between; align-items:center; max-width:900px; margin-left:50%; transform:translateX(-50%); border-radius:16px 16px 0 0;">
     <div>
       <div style="font-weight:900; font-size:14px; color:var(--text-main);" id="cat-flotante-resumen">TOTAL PEDIDO: $0.00</div>
@@ -269,7 +246,19 @@
       <button class="btn-secondary" id="btn-sonido-toggle" onclick="alternarSonidoAlerta()" style="font-size:9.5px; font-weight:900; border-radius:20px; padding:4px 8px; flex-shrink:0;">🔔 SONIDO: ON</button>
       <div id="version-badge-flotante" onclick="forzarActualizacionApp()" style="padding:4px 8px; font-size:9.5px; flex-shrink:0;">🔔 PERFUMA2</div>
       <div id="reloj-sistema" style="font-size:9.5px; font-weight:800; background:rgba(15,118,110,0.08); padding:4px 8px; border-radius:20px; border:1px solid rgba(15,118,110,0.25); white-space:nowrap; flex-shrink:0;"></div>
-      <button id="btn-sync-manual" class="btn-primary" onclick="guardarCambiosEnNube(true)" style="font-size:9.5px; padding:4px 9px; border-radius:20px; flex-shrink:0; margin-left:auto;">☁️ GUARDAR</button>
+      
+      <div style="position:relative; flex-shrink:0; margin-left:auto;">
+        <button id="btn-respaldo-nube" class="btn-primary" style="background:var(--success); color:#fff; font-size:9.5px; padding:4px 9px; border-radius:20px;">☁️ GUARDAR</button>
+        <!-- Menú de Respaldos de la Máquina del Tiempo (Punto 11) -->
+        <div id="menu-respaldos-historial">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <strong style="color:var(--accent); font-size:12px;">⏳ Máquina del Tiempo</strong>
+            <button class="btn-danger" style="padding:2px 6px; font-size:10px; border-radius:50%;" onclick="document.getElementById('menu-respaldos-historial').style.display='none'">✖</button>
+          </div>
+          <div style="font-size:10px; color:var(--text-muted); margin-bottom:8px;">Toca un respaldo para restaurar datos pasados:</div>
+          <div id="lista-respaldos-recientes"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Fila 2 Controles -->
@@ -304,9 +293,8 @@
   <div id="tab-dashboard" class="tab-content active">
     <div class="card-panel" style="border-color:var(--info); background:rgba(2,132,199,0.04);">
       <h4 style="margin:0 0 4px 0; color:var(--info); font-weight:900; font-size:14px;">🏦 Herramientas de Base de Datos & Cierre</h4>
-      <p style="margin:0 0 10px 0; font-size:11px; color:var(--text-muted); font-weight:700;">Descarga respaldos offline de seguridad, cierre de caja y link del catálogo.</p>
+      <p style="margin:0 0 10px 0; font-size:11px; color:var(--text-muted); font-weight:700;">Descarga respaldos offline de seguridad, cierre de caja y link del catálogo. <em>*Manten pulsado "Guardar" arriba para ver la Máquina del Tiempo.*</em></p>
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="btn-primary" style="background:var(--success); color:#fff; font-size:10.5px; padding:8px 11px;" onclick="guardarPuntoRespaldoNube()">☁️ RESPALDAR NUBE</button>
         <button class="btn-secondary" style="border-color:var(--accent); color:var(--accent); font-size:10.5px; padding:8px 11px;" onclick="descargarRespaldoJSON()">💾 DESCARGAR JSON</button>
         <button class="btn-secondary" style="border-color:var(--warning); color:var(--warning); font-size:10.5px; padding:8px 11px;" onclick="document.getElementById('input-restaurar-json').click()">📂 RESTAURAR JSON</button>
         <input type="file" id="input-restaurar-json" accept=".json" style="display:none;" onchange="restaurarRespaldoJSON(this)">
@@ -333,17 +321,17 @@
       <div class="kpi-card"><div class="kpi-title">CAPITAL EN STOCK (COSTO)</div><div class="kpi-value" id="kpi-capital-stock" style="color:var(--purple);">$0.00</div><div class="kpi-sub" id="kpi-proyeccion-venta">Proyección Venta: $0.00</div></div>
     </div>
 
-    <!-- RANKINGS DE CLIENTES -->
+    <!-- RANKINGS DE CLIENTES (CORRECCIÓN TOP 5) -->
     <div class="card-panel" style="border-color:var(--purple);">
-      <h4 class="card-title" style="color:var(--purple); margin:0 0 10px 0;">🏆 Clientes Destacados</h4>
+      <h4 class="card-title" style="color:var(--purple); margin:0 0 10px 0;">🏆 Clientes Destacados (Top 5)</h4>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
         <div style="background:var(--bg-input); padding:10px; border-radius:10px; border:1px solid var(--border-color);">
-          <div style="font-size:9.5px; font-weight:900; color:var(--text-muted);">MAYOR COMPRA (CANTIDAD)</div>
-          <div id="top-cliente-cant" style="font-size:13px; font-weight:900; color:var(--accent); margin-top:4px;">N/A</div>
+          <div style="font-size:9.5px; font-weight:900; color:var(--text-muted); margin-bottom:4px;">MAYORES COMPRADORES</div>
+          <div id="top-cliente-cant" style="font-size:11px; font-weight:700; color:var(--accent); line-height:1.5;">N/A</div>
         </div>
         <div style="background:var(--bg-input); padding:10px; border-radius:10px; border:1px solid var(--border-color);">
-          <div style="font-size:9.5px; font-weight:900; color:var(--text-muted);">MAYOR COMPRA (COSTO $)</div>
-          <div id="top-cliente-costo" style="font-size:13px; font-weight:900; color:var(--success); margin-top:4px;">N/A</div>
+          <div style="font-size:9.5px; font-weight:900; color:var(--text-muted); margin-bottom:4px;">MAYOR INVERSIÓN ($)</div>
+          <div id="top-cliente-costo" style="font-size:11px; font-weight:700; color:var(--success); line-height:1.5;">N/A</div>
         </div>
       </div>
     </div>
@@ -405,7 +393,7 @@
       <div class="form-grid">
         <div class="form-group"><label>CLIENTE</label><input type="text" id="v-cliente" class="user-input" placeholder="Nombre"></div>
         <div class="form-group"><label>TELÉFONO CLIENTE</label><input type="text" id="v-telefono" class="user-input" placeholder="WhatsApp"></div>
-        <div class="form-group"><label>MEDIO DE PAGO</label><select id="v-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+        <div class="form-group"><label>MEDIO DE PAGO</label><select id="v-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option><option value="Regalo Fidelidad">🎁 Regalo de Fidelidad</option></select></div>
         <div class="form-group"><label>DIRECCIÓN / ZONA</label><input type="text" id="v-direccion" class="user-input" placeholder="Ej: Urb. El Centro"></div>
       </div>
       <div style="margin:10px 0; padding:10px 12px; border-radius:10px; border:1.5px dashed var(--info); background:rgba(2,132,199,0.05);">
@@ -531,7 +519,7 @@
       <div class="form-grid">
         <div class="form-group"><label>CLIENTE</label><input type="text" id="dec-cliente" class="user-input" placeholder="Nombre"></div>
         <div class="form-group"><label>TELÉFONO CLIENTE</label><input type="text" id="dec-telefono" class="user-input" placeholder="WhatsApp"></div>
-        <div class="form-group"><label>MEDIO DE PAGO</label><select id="dec-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option></select></div>
+        <div class="form-group"><label>MEDIO DE PAGO</label><select id="dec-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option><option value="Regalo Fidelidad">🎁 Regalo de Fidelidad</option></select></div>
         <div class="form-group"><label>DIRECCIÓN / ZONA</label><input type="text" id="dec-direccion" class="user-input" placeholder="Opcional"></div>
       </div>
       <div style="margin:10px 0; padding:10px 12px; border-radius:10px; border:1.5px dashed var(--warning); background:rgba(217,119,6,0.06);">
@@ -750,7 +738,7 @@ const firebaseConfig = { databaseURL: "https://perfuma2-1cb0d-default-rtdb.fireb
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let inventario = [], ventas = [], gastos = [], pedidosWeb = [];
+let inventario = [], ventas = [], gastos = [], pedidosWeb = [], historialRespaldosLocal = [];
 let sonidoActivo = safeGetStorage('perfuma2_sonido', 'on') !== 'off';
 let ultimaCantidadPedidos = 0;
 
@@ -859,6 +847,7 @@ function cargarDatosDesdeNube() {
       pedidosWeb = nuevosPedidos;
       ultimaCantidadPedidos = pedidosWeb.length;
     }
+    if (data.historial_respaldos) historialRespaldosLocal = data.historial_respaldos;
     if (data.tasaBCV) tasaBCV = parseFloat(data.tasaBCV);
     if (data.tasaUSDT) tasaUSDT = parseFloat(data.tasaUSDT);
     if (data.tipoTasaActiva) tipoTasaActiva = data.tipoTasaActiva;
@@ -873,7 +862,81 @@ function guardarCambiosEnNube(mostrarAlerta) {
   db.ref('/sistema').update({
     inventario: inventario || [], ventas: ventas || [], gastos: gastos || [], pedidosWeb: pedidosWeb || [],
     tasaBCV, tasaUSDT, tipoTasaActiva, numeroWATienda, ultimaActualizacion: new Date().toISOString()
-  }).then(() => { if (mostrarAlerta) alert("☁️ Guardado en la nube."); });
+  }).then(() => { if (mostrarAlerta) alert("☁️ Guardado en la nube con éxito."); });
+}
+
+// NUEVA FUNCIÓN: Respaldo con Historial Máquina del Tiempo (Punto 11)
+function guardarPuntoRespaldoNube() {
+  guardarCambiosEnNube(false);
+  let snapshot = { 
+    fecha: new Date().toLocaleString('es-VE'),
+    inventario: inventario || [], 
+    ventas: ventas || [], 
+    gastos: gastos || [], 
+    pedidosWeb: pedidosWeb || []
+  };
+  historialRespaldosLocal.unshift(snapshot);
+  if (historialRespaldosLocal.length > 3) historialRespaldosLocal.pop(); // Solo guarda los últimos 3
+  
+  db.ref('/sistema/historial_respaldos').set(historialRespaldosLocal).then(() => {
+    reproducirAlertaSonora("exito");
+    alert("☁️ Respaldo guardado en la nube con éxito.\n(Se actualizó la Máquina del Tiempo).");
+  });
+}
+
+function mostrarHistorialRespaldos() {
+  reproducirAlertaSonora("exito");
+  const menu = document.getElementById('menu-respaldos-historial');
+  const lista = document.getElementById('lista-respaldos-recientes');
+  if (historialRespaldosLocal.length === 0) {
+    lista.innerHTML = '<div style="font-size:11px; color:var(--text-muted); text-align:center;">No hay respaldos previos.</div>';
+  } else {
+    lista.innerHTML = historialRespaldosLocal.map((r, idx) => `
+      <div class="historial-item" onclick="restaurarDesdeHistorial(${idx})">
+        💾 Punto de rescate: <br><span style="font-weight:400;">${r.fecha}</span>
+      </div>
+    `).join('');
+  }
+  menu.style.display = 'block';
+}
+
+function restaurarDesdeHistorial(idx) {
+  if (confirm("⚠️ ¿Estás seguro de restaurar el sistema a este punto en el tiempo? (Los datos actuales se perderán)")) {
+    const data = historialRespaldosLocal[idx];
+    if (data.inventario) inventario = data.inventario;
+    if (data.ventas) ventas = data.ventas;
+    if (data.gastos) gastos = data.gastos;
+    if (data.pedidosWeb) pedidosWeb = data.pedidosWeb;
+    renderTodo();
+    guardarCambiosEnNube(false);
+    document.getElementById('menu-respaldos-historial').style.display = 'none';
+    alert("📂 Respaldo restaurado con éxito desde la Máquina del Tiempo.");
+  }
+}
+
+// Configuración de pulsación larga (Long Press) para el botón Guardar Nube
+function initLongPressBtn() {
+  const btn = document.getElementById('btn-respaldo-nube');
+  if(!btn) return;
+  let pressTimer, isLongPress = false;
+  
+  const start = (e) => {
+    isLongPress = false;
+    pressTimer = setTimeout(() => { isLongPress = true; mostrarHistorialRespaldos(); }, 800); // 0.8 seg de pulsación
+  };
+  const cancel = () => { clearTimeout(pressTimer); };
+  const end = (e) => { 
+     clearTimeout(pressTimer); 
+     if(!isLongPress) { guardarPuntoRespaldoNube(); }
+     if(e.cancelable) e.preventDefault();
+  };
+
+  btn.addEventListener('mousedown', start);
+  btn.addEventListener('touchstart', start, {passive: false});
+  btn.addEventListener('mouseup', end);
+  btn.addEventListener('touchend', end);
+  btn.addEventListener('mouseleave', cancel);
+  btn.addEventListener('touchcancel', cancel);
 }
 
 function alternarTipoTasa(tipo) {
@@ -929,18 +992,21 @@ function renderDashboard() {
   setTxt('kpi-stock-unidades', stockFis); setTxt('kpi-capital-stock', '$' + capCosto.toFixed(2));
   setTxt('kpi-proyeccion-venta', 'Proyección Venta: $' + proy.toFixed(2));
 
+  // TOP 5 RANKING (Punto 9)
   const mapCant = {}, mapCosto = {};
   ventas.forEach(v => {
     const cli = v.cliente || 'General';
     mapCant[cli] = (mapCant[cli] || 0) + 1;
     mapCosto[cli] = (mapCosto[cli] || 0) + (parseFloat(v.total) || 0);
   });
-  let topCantName = 'N/A', maxCant = -1;
-  for (let c in mapCant) { if (mapCant[c] > maxCant) { maxCant = mapCant[c]; topCantName = `${c} (${maxCant} compras)`; } }
-  let topCostoName = 'N/A', maxCosto = -1;
-  for (let c in mapCosto) { if (mapCosto[c] > maxCosto) { maxCosto = mapCosto[c]; topCostoName = `${c} ($${maxCosto.toFixed(2)})`; } }
-  setTxt('top-cliente-cant', topCantName);
-  setTxt('top-cliente-costo', topCostoName);
+  
+  let topCantHTML = Object.keys(mapCant).map(k => ({n: k, c: mapCant[k]})).sort((a,b) => b.c - a.c).slice(0,5)
+    .map((x, i) => `${i+1}. ${x.n} (${x.c})`).join('<br>') || 'N/A';
+  let topCostoHTML = Object.keys(mapCosto).map(k => ({n: k, v: mapCosto[k]})).sort((a,b) => b.v - a.v).slice(0,5)
+    .map((x, i) => `${i+1}. ${x.n} ($${x.v.toFixed(2)})`).join('<br>') || 'N/A';
+    
+  setTxt('top-cliente-cant', ''); document.getElementById('top-cliente-cant').innerHTML = topCantHTML;
+  setTxt('top-cliente-costo', ''); document.getElementById('top-cliente-costo').innerHTML = topCostoHTML;
 }
 
 function renderPedidosWeb() {
@@ -1035,7 +1101,7 @@ function renderCarritoPublico() {
   if (carritoPublico.length === 0) {
     cont.innerHTML = 'Tu carrito está vacío.';
     if (flotanteRes) flotanteRes.textContent = 'TOTAL PEDIDO: $0.00';
-    if (flotanteCant) flotanteCant.textContent = '0 artículos seleccionados';
+    if (flotanteCant) flotanteCant.textContent = '0 artículos selected';
     if (totalModal) totalModal.textContent = 'Total: $0.00';
     return;
   }
@@ -1324,7 +1390,13 @@ function registrarVentaDetalConFacturaWA() {
   
   let abonoUsd = abonoVal;
   if (monedaAbono === 'BS') abonoUsd = abonoVal / tasa;
-  const abonado = plan === 'Contado' ? total : abonoUsd;
+  
+  // Regalo de fidelidad: Costo 0, Abono 0, Deuda 0
+  let abonado = plan === 'Contado' ? total : abonoUsd;
+  if (met === 'Regalo Fidelidad') {
+    abonado = total;
+  }
+  
   const restante = Math.max(0, total - abonado);
 
   carritoDetal.forEach(item => { 
@@ -1332,13 +1404,13 @@ function registrarVentaDetalConFacturaWA() {
     if (p) p.stock = Math.max(0, (parseInt(p.stock) || 0) - item.cantidad); 
   });
 
-  ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'detal', cliente: cli, telefono: tel, metodo: met, productos: carritoDetal.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), total, ganancia: sub - costoT, abonado, restante });
+  ventas.unshift({ fecha: new Date().toLocaleString('es-VE'), tipo: 'detal', cliente: cli, telefono: tel, metodo: met, productos: carritoDetal.map(i => `${i.cantidad}x ${i.nombre}`).join(', '), total: met === 'Regalo Fidelidad' ? 0 : total, ganancia: met === 'Regalo Fidelidad' ? -costoT : (sub - costoT), abonado: met === 'Regalo Fidelidad' ? 0 : abonado, restante });
 
   let textoWhatsApp = `✨ *PERFUMA2 - RESUMEN DE COMPRA* ✨\n\n` +
     carritoDetal.map(i => `◆ ${i.cantidad}x ${obtenerNombreLimpio(i)} ($${(i.precio * i.cantidad).toFixed(2)})`).join('\n') +
     (delivery > 0 ? `\n🛵 *Delivery:* $${delivery.toFixed(2)}` : '') +
     `\n• Método de pago: ${met}` + (dir ? `\n• Dirección: ${dir}` : '') +
-    `\n\nResumen de cuenta:\n💵 Total: $${total.toFixed(2)} (Bs. ${(total * tasa).toFixed(2)})\n✅ Abonado: $${abonado.toFixed(2)} (Bs. ${(abonado * tasa).toFixed(2)})\n⚠️ Saldo Pendiente: $${restante.toFixed(2)} (Bs. ${(restante * tasa).toFixed(2)})\n\n¡Que disfrutes mucho tu fragancia!`;
+    `\n\nResumen de cuenta:\n💵 Total: $${met === 'Regalo Fidelidad' ? '0.00' : total.toFixed(2)} (Bs. ${(met === 'Regalo Fidelidad' ? 0 : (total * tasa)).toFixed(2)})\n✅ Abonado: $${met === 'Regalo Fidelidad' ? '0.00' : abonado.toFixed(2)} (Bs. ${(met === 'Regalo Fidelidad' ? 0 : (abonado * tasa)).toFixed(2)})\n⚠️ Saldo Pendiente: $${restante.toFixed(2)} (Bs. ${(restante * tasa).toFixed(2)})\n\n¡Que disfrutes mucho tu fragancia!`;
 
   navigator.clipboard.writeText(textoWhatsApp).catch(() => {});
 
@@ -1355,10 +1427,10 @@ function registrarVentaDetalConFacturaWA() {
   } else {
     document.getElementById('vc-fila-delivery-v').style.display = 'none';
   }
-  document.getElementById('vc-total').textContent = `$${total.toFixed(2)}`;
-  document.getElementById('vc-total-bs').textContent = `Bs. ${(total * tasa).toFixed(2)}`;
-  document.getElementById('vc-abonado').textContent = `$${abonado.toFixed(2)}`;
-  document.getElementById('vc-abonado-bs').textContent = `Bs. ${(abonado * tasa).toFixed(2)}`;
+  document.getElementById('vc-total').textContent = `$${met === 'Regalo Fidelidad' ? '0.00' : total.toFixed(2)}`;
+  document.getElementById('vc-total-bs').textContent = `Bs. ${(met === 'Regalo Fidelidad' ? 0 : (total * tasa)).toFixed(2)}`;
+  document.getElementById('vc-abonado').textContent = `$${met === 'Regalo Fidelidad' ? '0.00' : abonado.toFixed(2)}`;
+  document.getElementById('vc-abonado-bs').textContent = `Bs. ${(met === 'Regalo Fidelidad' ? 0 : (abonado * tasa)).toFixed(2)}`;
   document.getElementById('vc-pendiente').textContent = `$${restante.toFixed(2)}`;
   document.getElementById('vc-pendiente-bs').textContent = `Bs. ${(restante * tasa).toFixed(2)}`;
   document.getElementById('vc-tasa').textContent = `Tasa aplicada: ${tasa.toFixed(2)} Bs`;
@@ -1585,14 +1657,16 @@ function enviarConsultaIA() {
       if (listaC.length === 0) {
         respuestaHTML = "🤖 No hay clientes registrados en el sistema todavía.";
       } else {
-        respuestaHTML = `🤖 <strong>Listado detallado de Clientes, Compras y Cuotas Pendientes:</strong><div id="chat-messages" style="margin-top:10px;">` + listaC.map(c => {
+        // Integración de Fidelidad (Punto 10) en la IA
+        respuestaHTML = `🤖 <strong>Listado detallado de Clientes y Cuotas Pendientes:</strong><div id="chat-messages" style="margin-top:10px;">` + listaC.map(c => {
           const info = mapaClientes[c];
           const tel = info.telefono.replace(/\D/g, '');
           const linkWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(`Hola ${c}, te escribimos de Perfuma2 para recordarte tu cuota o saldo pendiente de $${info.deuda.toFixed(2)}. ¿Deseas cancelar hoy?`)}` : `#`;
+          const recompensa = info.compras >= 5 ? `<div style="color:#ffb703; font-weight:900; margin-top:2px;">🎁 ¡Cliente Fiel! (Regala un Decant)</div>` : '';
           return `<div class="client-card">
             <div class="client-header">👤 ${c}</div>
-            <div class="client-data">Compras totales: ${info.compras} | <span class="client-debt">Deuda / Cuota Pendiente: $${info.deuda.toFixed(2)}</span></div>
-            ${tel ? `<a href="${linkWA}" target="_blank" class="btn-whatsapp-ia"><i class="fab fa-whatsapp"></i> Cobrar Cuota por WhatsApp</a>` : ''}
+            <div class="client-data">Compras totales: ${info.compras} | <span class="client-debt">Deuda: $${info.deuda.toFixed(2)}</span>${recompensa}</div>
+            ${tel && info.deuda > 0 ? `<a href="${linkWA}" target="_blank" class="btn-whatsapp-ia"><i class="fab fa-whatsapp"></i> Cobrar Cuota por WhatsApp</a>` : ''}
           </div>`;
         }).join('') + `</div>`;
       }
@@ -1645,7 +1719,7 @@ function renderCRM() {
   });
   const lista = Object.values(mapa).filter(c => c.cliente.toLowerCase().includes(q));
   tb.innerHTML = lista.length === 0 ? `<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sin clientes</td></tr>` : lista.map(c => `<tr>
-    <td><strong>${c.cliente}</strong></td>
+    <td><strong>${c.cliente}</strong>${c.compras >= 5 ? ' <span style="font-size:12px;" title="Cliente Fiel">🎁</span>' : ''}</td>
     <td>${c.telefono}</td>
     <td>${c.compras}</td>
     <td>$${c.total.toFixed(2)}</td>
@@ -1674,7 +1748,6 @@ function copiarLinkCatalogo() {
   navigator.clipboard.writeText(u).then(() => alert("🔗 Link copiado:\n" + u));
 }
 function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
-function guardarPuntoRespaldoNube() { guardarCambiosEnNube(true); alert("☁️ Respaldo guardado en la nube con éxito."); }
 
 function descargarRespaldoJSON() {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ inventario, ventas, gastos, pedidosWeb }));
@@ -1736,7 +1809,14 @@ window.onload = function() {
   const savedTheme = safeGetStorage('perfuma2_theme', 'light') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   actualizarReloj();
+  initLongPressBtn(); // Inicializa la máquina del tiempo
   cargarDatosDesdeNube();
+  
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW registrado'))
+      .catch(err => console.log('Error SW:', err));
+  }
 };
 </script>
 </body>
