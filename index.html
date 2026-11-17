@@ -344,7 +344,7 @@
         </div>
       </div>
       <div style="margin-bottom:8px;">
-        <input type="text" id="buscar-inv" class="user-input" placeholder="🔍 Buscar perfume..." style="padding:6px 10px; font-size:12px; height:32px;" oninput="renderInventario()">
+        <input type="text" id="buscar-inv" class="user-input" placeholder="🔍 Buscar perfume (o sus notas)..." style="padding:6px 10px; font-size:12px; height:32px;" oninput="renderInventario()">
       </div>
       <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:5px; margin-bottom:10px; width:100%;">
         <button class="btn-purple" onclick="unificarStockDuplicado()" style="font-size:9.5px; padding:7px 4px; white-space:nowrap;">🧹 UNIFICAR</button>
@@ -367,7 +367,7 @@
     <div class="card-panel">
       <h3 class="card-title">🛒 Registrar Venta Detal</h3>
       <div class="form-grid">
-        <div class="form-group"><label>CLIENTE</label><input type="text" id="v-cliente" class="user-input" placeholder="Nombre"></div>
+        <div class="form-group"><label>CLIENTE</label><input type="text" id="v-cliente" class="user-input" list="lista-clientes-registrados" placeholder="Nombre completo"></div>
         <div class="form-group"><label>TELÉFONO CLIENTE</label><input type="text" id="v-telefono" class="user-input" placeholder="WhatsApp"></div>
         <div class="form-group"><label>MEDIO DE PAGO</label><select id="v-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option><option value="Regalo Fidelidad">🎁 Regalo de Fidelidad</option></select></div>
         <div class="form-group"><label>DIRECCIÓN / ZONA</label><input type="text" id="v-direccion" class="user-input" placeholder="Ej: Urb. El Centro"></div>
@@ -499,7 +499,7 @@
         <h3 class="card-title" style="color:var(--warning); margin:0;">🛒 Carrito de Decants (Muestras)</h3>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label>CLIENTE</label><input type="text" id="dec-cliente" class="user-input" placeholder="Nombre"></div>
+        <div class="form-group"><label>CLIENTE</label><input type="text" id="dec-cliente" class="user-input" list="lista-clientes-registrados" placeholder="Nombre"></div>
         <div class="form-group"><label>TELÉFONO CLIENTE</label><input type="text" id="dec-telefono" class="user-input" placeholder="WhatsApp"></div>
         <div class="form-group"><label>MEDIO DE PAGO</label><select id="dec-metodo" class="user-input"><option value="Pago Móvil">Pago Móvil</option><option value="Zelle">Zelle</option><option value="Binance Pay (USDT)">Binance Pay (USDT)</option><option value="Efectivo ($)">Efectivo ($)</option><option value="Regalo Fidelidad">🎁 Regalo de Fidelidad</option></select></div>
         <div class="form-group"><label>DIRECCIÓN / ZONA</label><input type="text" id="dec-direccion" class="user-input" placeholder="Opcional"></div>
@@ -540,7 +540,7 @@
   <div id="tab-clientes" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">👥 CRM Clientes & Deudas</h3>
-      <input type="text" id="buscar-crm" class="user-input" placeholder="🔍 Buscar cliente..." style="margin-bottom:10px;" oninput="renderCRM()">
+      <input type="text" id="buscar-crm" class="user-input" placeholder="🔍 Buscar cliente por nombre..." style="margin-bottom:10px;" oninput="renderCRM()">
       <div class="table-responsive">
         <table>
           <thead><tr><th>CLIENTE</th><th>TELÉFONO</th><th>COMPRAS</th><th>TOTAL ($)</th><th>DEUDA ($)</th><th style="text-align:center;">ACCIONES</th></tr></thead>
@@ -572,15 +572,21 @@
   <div id="tab-ia" class="tab-content">
     <div class="card-panel">
       <h3 class="card-title">🤖 Asistente IA & Redactor Comercial</h3>
-      <p style="font-size:11.5px; color:var(--text-muted); margin-top:0;">Escribe palabras clave como <strong>"clientes"</strong>, <strong>"deudas"</strong> o pídele generar un cobro: <strong>"Cobrar a Ariana 25"</strong></p>
+      <p style="font-size:11.5px; color:var(--text-muted); margin-top:0;">
+        Pruébame con estos comandos:<br>
+        • <strong>Cobrar a Ariana 25</strong> (Arma la tarjeta)<br>
+        • <strong>Canceló Carlos</strong> (Liquida todas sus deudas a $0)<br>
+        • <strong>¿Cómo va el stock?</strong> (Analiza inventario y capital)<br>
+        • <strong>Ventas de hoy</strong> (Resumen del día)
+      </p>
       
-      <div style="background:var(--bg-input); border:1.5px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:12px; height:180px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;" id="ia-chat-box">
+      <div style="background:var(--bg-input); border:1.5px solid var(--border-color); border-radius:12px; padding:12px; margin-bottom:12px; height:240px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;" id="ia-chat-box">
         <div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:8px 10px; border-radius:10px; font-size:12px;">
-          🤖 <strong>Asistente PERFUMA2:</strong> ¡Hola! Escribe "clientes" para ver el detalle de cuotas, o dame una orden como "Cobrar a Carlos 25" y te armo la tarjeta con su teléfono.
+          🤖 <strong>Asistente PERFUMA2:</strong> ¡Hola, Oyam! Mi cerebro fue actualizado. Ahora entiendo órdenes directas, exijo nombres exactos para no confundir clientes y te doy reportes del negocio. ¡Ponme a prueba!
         </div>
       </div>
       <div style="display:flex; gap:6px; margin-bottom:16px;">
-        <input type="text" id="ia-prompt-input" class="user-input" placeholder="Ej: Cobrar a Ana 15..." style="flex:1;" onkeydown="if(event.key==='Enter') enviarConsultaIA()">
+        <input type="text" id="ia-prompt-input" class="user-input" placeholder="Ej: Canceló Ariana Millán..." style="flex:1;" onkeydown="if(event.key==='Enter') enviarConsultaIA()">
         <button class="btn-primary" onclick="enviarConsultaIA()" style="padding:10px 16px;">💬 ENVIAR</button>
       </div>
     </div>
@@ -873,7 +879,6 @@ function renderPedidosWeb() {
 
 function limpiarPedidosWeb() { if (confirm("¿Borrar todos los pedidos web?")) { pedidosWeb = []; renderTodo(); guardarCambiosEnNube(false); } }
 function eliminarPedidoWeb(idx) { pedidosWeb.splice(idx, 1); renderTodo(); guardarCambiosEnNube(false); }
-
 function facturarPedidoWeb(idx) {
   const p = pedidosWeb[idx]; if (!p) return;
   document.getElementById('v-cliente').value = p.cliente; document.getElementById('v-telefono').value = p.telefono; document.getElementById('v-metodo').value = p.metodo; document.getElementById('v-direccion').value = p.direccion || '';
@@ -907,7 +912,7 @@ function renderCarritoPublico() {
   if (flotanteRes) flotanteRes.textContent = `TOTAL PEDIDO: $${sub.toFixed(2)}`; if (flotanteCant) flotanteCant.textContent = `${cantTotal} artículos seleccionados`; if (totalModal) totalModal.textContent = `Total: $${sub.toFixed(2)}`;
 }
 
-function abrirModalCheckoutCliente() { if (carritoPublico.length === 0) return alert("⚠️ Tu carrito está vacío."); document.getElementById('modal-checkout-cliente').style.display = 'flex'; }
+function abrirModalCheckoutCliente() { if (carritoPublico.length === 0) return alert("⚠️ Tu carrito está vacío. Agrega al menos un perfume."); document.getElementById('modal-checkout-cliente').style.display = 'flex'; }
 function enviarPedidoWebTienda() {
   if (carritoPublico.length === 0) return alert("⚠️ Tu carrito está vacío.");
   const cli = document.getElementById('cat-cli-nombre').value.trim(), tel = document.getElementById('cat-cli-tel').value.trim(), dir = document.getElementById('cat-cli-dir').value.trim(), met = document.getElementById('cat-cli-metodo').value;
@@ -1076,7 +1081,6 @@ function guardarAbonoCuota() {
   v.abonado = (parseFloat(v.abonado) || 0) + abonoUsd; v.restante = Math.max(0, (parseFloat(v.total) || 0) - v.abonado);
   document.getElementById('modal-gestion-cuotas').style.display = 'none'; renderTodo(); guardarCambiosEnNube(false); reproducirAlertaSonora("exito");
   
-  // MINI-RECIBO DE CUOTAS VIA WHATSAPP (Integrado)
   const msgAbono = `✨ *PERFUMA2 - RECIBO DE PAGO* ✨\n\n👤 *Cliente:* ${v.cliente}\n💵 *Monto Abonado:* $${abonoUsd.toFixed(2)} (Bs. ${(abonoUsd * tasa).toFixed(2)})\n⏳ *Saldo Restante:* $${v.restante.toFixed(2)}\n\n_¡Gracias por tu pago!_`;
   if (confirm(`✅ Abono registrado. Saldo: $${v.restante.toFixed(2)}\n\n¿Deseas enviar el mini-recibo al cliente por WhatsApp?`)) {
     const tel = (v.telefono || '').replace(/\D/g, ''); const urlWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(msgAbono)}` : `https://wa.me/?text=${encodeURIComponent(msgAbono)}`; window.open(urlWA, '_blank');
@@ -1111,64 +1115,122 @@ function autocompletarTelefonoIA() {
 
 function actualizarTarjeta3D() { const cli = document.getElementById('ia-cli-nombre')?.value.trim() || 'Cliente General', tipo = document.getElementById('ia-tipo-cobro')?.value || 'Pago', met = document.getElementById('ia-metodo-cobro')?.value || 'todos', monto = parseFloat(document.getElementById('ia-monto-usd')?.value) || 0, nota = document.getElementById('ia-nota')?.value.trim(), tasa = obtenerTasaActiva(); document.getElementById('t3d-cliente').textContent = cli; document.getElementById('t3d-concepto').textContent = '📌 Concepto: ' + (nota || tipo); document.getElementById('t3d-monto-usd').textContent = '$' + monto.toFixed(2); document.getElementById('t3d-monto-bs').textContent = 'Bs. ' + (monto * tasa).toFixed(2); document.getElementById('t3d-tasa').textContent = `Tasa aplicada: ${tasa.toFixed(2)} Bs`; const pmB = document.getElementById('cfg-pm-banco')?.value || 'BDV (0102)', pmC = document.getElementById('cfg-pm-ci')?.value || 'V-24162167', pmT = document.getElementById('cfg-pm-tel')?.value || '04120551688'; let h = ''; if (met === 'todos' || met === 'pagomovil') h += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;"><strong style="color:#00f2d6;">📲 PAGO MÓVIL:</strong><br>• Banco: ${pmB}<br>• Cédula/RIF: ${pmC}<br>• Teléfono: ${pmT}</div>`; if (met === 'todos' || met === 'zelle') h += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;"><strong style="color:#06d6a0;">💵 ZELLE:</strong><br>• Correo: ${document.getElementById('cfg-zelle-correo')?.value || ''}</div>`; if (met === 'todos' || met === 'binance') h += `<div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:8px;"><strong style="color:#ffb703;">🟡 BINANCE PAY:</strong><br>• Pay ID: ${document.getElementById('cfg-binance')?.value || ''}</div>`; document.getElementById('t3d-metodos-lista').innerHTML = h; }
 
+// NUEVO CEREBRO IA: Búsqueda exacta y comandos avanzados
+function buscarClienteExacto(nombreStr) {
+   const str = nombreStr.trim().toLowerCase();
+   const clientes = Object.keys(window.mapaClientesRegistrados || {});
+   let exact = clientes.find(c => c.toLowerCase() === str);
+   if(exact) return exact;
+   let parciales = clientes.filter(c => c.toLowerCase().includes(str));
+   if(parciales.length === 1) return parciales[0];
+   if(parciales.length > 1) return "MULTIPLE_" + parciales.join(', ');
+   return null;
+}
+
 function enviarConsultaIA() {
   const input = document.getElementById('ia-prompt-input'), chatBox = document.getElementById('ia-chat-box');
   if (!input || !input.value.trim()) return;
-  const txt = input.value.trim().toLowerCase();
+  const txt = input.value.trim();
   chatBox.innerHTML += `<div style="background:rgba(255,255,255,0.06); padding:8px 10px; border-radius:10px; font-size:12px; align-self:flex-end; max-width:85%;">👤 <strong>Tú:</strong> ${input.value}</div>`;
   const promptOriginal = input.value; input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
 
   setTimeout(() => {
     let respuestaHTML = '';
-    // IA Cobradora Automática (Integrado)
-    if (txt.startsWith('cobrar a ')) {
-      const match = txt.match(/cobrar a (.*?) (\d+(?:\.\d+)?)/i);
-      if (match) {
-        const nombreCli = match[1].trim();
-        document.getElementById('ia-cli-nombre').value = nombreCli;
-        document.getElementById('ia-monto-usd').value = match[2];
-        
-        // Autocompletar el teléfono buscando al cliente
-        let telEncontrado = '';
-        if (window.mapaClientesRegistrados && window.mapaClientesRegistrados[nombreCli]) {
-           telEncontrado = window.mapaClientesRegistrados[nombreCli].tel;
-        } else {
-           const ventaCli = ventas.find(v => (v.cliente||'').toLowerCase() === nombreCli.toLowerCase() && v.telefono);
-           if(ventaCli) telEncontrado = ventaCli.telefono;
-        }
-        document.getElementById('ia-cli-tel').value = telEncontrado;
-        actualizarTarjeta3D();
+    
+    let matchCobrar = txt.match(/cobrar\s+(?:a\s+)?([a-zA-Z\s]+?)\s+(\d+(?:\.\d+)?)/i);
+    let matchCancelo = txt.match(/cancel[oó]\s+(.+)/i) || txt.match(/pag[oó]\s+(.+)/i) || txt.match(/liquid[oó]\s+(.+)/i);
+    let matchCompro = txt.match(/qu[eé]\s+compr[oó]\s+(.+)/i) || txt.match(/historial\s+de\s+(.+)/i);
 
-        respuestaHTML = `🤖 ¡Listo, Oyam! He configurado la tarjeta 3D para cobrarle <strong>$${match[2]}</strong> a <strong>${nombreCli}</strong>. Revisa la tarjeta de abajo y presiona el botón para enviarla.`;
+    // 1. Comando Cobrar
+    if (matchCobrar) {
+      let nombreBusca = matchCobrar[1].trim();
+      let resultadoCli = buscarClienteExacto(nombreBusca);
+      
+      if (typeof resultadoCli === 'string' && resultadoCli.startsWith("MULTIPLE_")) {
+         respuestaHTML = `🤖 Hay varias personas llamadas <strong>${nombreBusca}</strong> (${resultadoCli.split('_')[1]}). Por favor, escribe el apellido para no equivocar la tarjeta.`;
       } else {
-        respuestaHTML = `🤖 Para armar el cobro automáticamente escribe: "Cobrar a [Nombre] [Monto]". Ejemplo: <em>Cobrar a Ariana 25</em>`;
+         let nombreFinal = resultadoCli || nombreBusca;
+         document.getElementById('ia-cli-nombre').value = nombreFinal;
+         document.getElementById('ia-monto-usd').value = matchCobrar[2];
+         autocompletarTelefonoIA(); actualizarTarjeta3D();
+         respuestaHTML = `🤖 ¡Listo! Tarjeta 3D armada para cobrarle <strong>$${matchCobrar[2]}</strong> a <strong>${nombreFinal}</strong>. Revisa abajo y envíala.`;
       }
     } 
-    else if (txt.includes('cliente') || txt.includes('deuda') || txt.includes('cuota')) {
+    // 2. Comando Cancelar (Liquidar Deuda)
+    else if (matchCancelo) {
+       let nombreBusca = matchCancelo[1].trim();
+       let resultadoCli = buscarClienteExacto(nombreBusca);
+       
+       if (typeof resultadoCli === 'string' && resultadoCli.startsWith("MULTIPLE_")) {
+         respuestaHTML = `🤖 ¡Cuidado, jefe! Hay varias personas llamadas <strong>${nombreBusca}</strong> (${resultadoCli.split('_')[1]}). Necesito el apellido exacto para no cancelar la deuda equivocada.`;
+       } else if (resultadoCli) {
+         let deudaCancelada = 0;
+         ventas.forEach(v => {
+           if((v.cliente||'') === resultadoCli && v.restante > 0) {
+              deudaCancelada += v.restante; v.abonado = v.total; v.restante = 0;
+           }
+         });
+         if(deudaCancelada > 0) {
+           guardarCambiosEnNube(false); renderTodo(); reproducirAlertaSonora("exito");
+           respuestaHTML = `🤖 ¡Deuda liquidada, Oyam! Registré el pago completo de <strong>$${deudaCancelada.toFixed(2)}</strong> para <strong>${resultadoCli}</strong>. Su saldo ahora es $0.00.`;
+         } else { respuestaHTML = `🤖 <strong>${resultadoCli}</strong> no tiene ninguna deuda pendiente registrada.`; }
+       } else { respuestaHTML = `🤖 No encontré a nadie llamado "${nombreBusca}" en los registros.`; }
+    }
+    // 3. Comando Historial de Compras de Cliente
+    else if (matchCompro) {
+       let nombreBusca = matchCompro[1].trim();
+       let resultadoCli = buscarClienteExacto(nombreBusca);
+       if (typeof resultadoCli === 'string' && resultadoCli.startsWith("MULTIPLE_")) {
+         respuestaHTML = `🤖 Especifica el apellido. Encontré a: ${resultadoCli.split('_')[1]}.`;
+       } else if (resultadoCli) {
+         let comprasCli = ventas.filter(v => v.cliente === resultadoCli);
+         respuestaHTML = `🤖 <strong>Historial de ${resultadoCli}:</strong><br>` + comprasCli.map(v => `• ${v.fecha.split(',')[0]}: ${v.productos}`).join('<br>');
+       } else { respuestaHTML = `🤖 No tengo registros de compras para "${nombreBusca}".`; }
+    }
+    // 4. Reporte de Morosos
+    else if (txt.toLowerCase().includes('moroso') || txt.toLowerCase().includes('quien debe') || txt.toLowerCase().includes('quién debe')) {
       const mapaClientes = {};
-      ventas.forEach(v => {
-        const c = v.cliente || 'General';
-        if (!mapaClientes[c]) mapaClientes[c] = { telefono: v.telefono || '', deuda: 0, compras: 0 };
-        mapaClientes[c].compras += 1; mapaClientes[c].deuda += parseFloat(v.restante) || 0;
-      });
+      ventas.forEach(v => { if (v.restante > 0) { const c = v.cliente || 'General'; if (!mapaClientes[c]) mapaClientes[c] = { tel: v.telefono || '', deuda: 0 }; mapaClientes[c].deuda += v.restante; } });
       const listaC = Object.keys(mapaClientes);
-      if (listaC.length === 0) {
-        respuestaHTML = "🤖 No hay clientes registrados en el sistema todavía.";
-      } else {
-        respuestaHTML = `🤖 <strong>Listado detallado de Clientes y Cuotas Pendientes:</strong><div id="chat-messages" style="margin-top:10px;">` + listaC.map(c => {
-          const info = mapaClientes[c];
-          const tel = info.telefono.replace(/\D/g, '');
-          const linkWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(`Hola ${c}, te escribimos de Perfuma2 para recordarte tu cuota o saldo pendiente de $${info.deuda.toFixed(2)}. ¿Deseas cancelar hoy?`)}` : `#`;
-          const recompensa = info.compras >= 5 ? `<div style="color:#ffb703; font-weight:900; margin-top:2px;">🎁 ¡Cliente Fiel! (Regala un Decant)</div>` : '';
-          return `<div class="client-card">
-            <div class="client-header">👤 ${c}</div>
-            <div class="client-data">Compras totales: ${info.compras} | <span class="client-debt">Deuda: $${info.deuda.toFixed(2)}</span>${recompensa}</div>
-            ${tel && info.deuda > 0 ? `<a href="${linkWA}" target="_blank" class="btn-whatsapp-ia"><i class="fab fa-whatsapp"></i> Cobrar Cuota por WhatsApp</a>` : ''}
-          </div>`;
+      if (listaC.length === 0) { respuestaHTML = "🤖 ¡Excelentes noticias! Nadie tiene deudas pendientes ahora mismo."; } else {
+        respuestaHTML = `🤖 <strong>Reporte de Morosos:</strong><div id="chat-messages" style="margin-top:10px;">` + listaC.map(c => {
+          const info = mapaClientes[c], tel = info.tel.replace(/\D/g, ''), linkWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(`Hola ${c}, te escribimos de Perfuma2 para recordarte tu saldo pendiente de $${info.deuda.toFixed(2)}.`)}` : `#`;
+          return `<div class="client-card"><div class="client-header">👤 ${c}</div><div class="client-debt">Debe: $${info.deuda.toFixed(2)}</div>${tel ? `<a href="${linkWA}" target="_blank" class="btn-whatsapp-ia">Cobrar</a>` : ''}</div>`;
+        }).join('') + `</div>`;
+      }
+    }
+    // 5. Inventario Específico (Ej: Perfumes dulces)
+    else if ((txt.toLowerCase().includes('busca') || txt.toLowerCase().includes('tengo')) && (txt.toLowerCase().includes('perfume') || txt.toLowerCase().includes('fragancia'))) {
+       let keyword = txt.toLowerCase().replace('busca', '').replace('perfumes', '').replace('perfume', '').replace('fragancias', '').replace('tengo', '').replace('que', '').replace('qué', '').trim();
+       if(keyword.length > 2) {
+         let hallazgos = inventario.filter(p => p.stock > 0 && (`${p.marca} ${p.nombre} ${p.notas}`).toLowerCase().includes(keyword));
+         if(hallazgos.length > 0) { respuestaHTML = `🤖 <strong>Stock con "${keyword}":</strong><br>` + hallazgos.map(p => `• ${obtenerNombreLimpio(p)} (${p.stock} cajas)`).join('<br>'); }
+         else { respuestaHTML = `🤖 No encontré perfumes con "${keyword}" en stock físico.`; }
+       } else { respuestaHTML = `🤖 Dime qué tipo de perfume buscas (Ej: "Busca perfumes dulces").`; }
+    }
+    // 6. Reportes Generales (Stock y Ventas Hoy)
+    else if (txt.toLowerCase().includes('stock') || txt.toLowerCase().includes('inventario')) {
+       let sellados = inventario.reduce((sum, p) => sum + (parseInt(p.stock)||0), 0), decants = inventario.filter(p => (parseInt(p.mlAbierto)||0) > 0).length, cap = inventario.reduce((sum, p) => sum + ((parseFloat(p.costo)||0) * (parseInt(p.stock)||0)), 0);
+       respuestaHTML = `🤖 <strong>Inventario Actual:</strong><br>📦 ${sellados} perfumes sellados.<br>🧪 ${decants} frascos para decants.<br>💰 Capital invertido: $${cap.toFixed(2)}.`;
+    }
+    else if (txt.toLowerCase().includes('hoy') || txt.toLowerCase().includes('venta')) {
+       let fechaHoy = new Date().toLocaleDateString('es-VE'), vHoy = ventas.filter(v => (v.fecha||'').includes(fechaHoy)), totV = vHoy.reduce((s, v) => s + (parseFloat(v.total)||0), 0), totG = vHoy.reduce((s, v) => s + (parseFloat(v.ganancia)||0), 0);
+       respuestaHTML = `🤖 <strong>Resumen de Hoy:</strong><br>🛒 ${vHoy.length} ventas.<br>💵 Ingreso total: $${totV.toFixed(2)}.<br>📈 Ganancia neta: $${totG.toFixed(2)}.`;
+    }
+    // 7. Comando Clientes (General)
+    else if (txt.toLowerCase().includes('cliente') || txt.toLowerCase().includes('deuda') || txt.toLowerCase().includes('cuota')) {
+      const mapaClientes = {};
+      ventas.forEach(v => { const c = v.cliente || 'General'; if (!mapaClientes[c]) mapaClientes[c] = { telefono: v.telefono || '', deuda: 0, compras: 0 }; mapaClientes[c].compras += 1; mapaClientes[c].deuda += parseFloat(v.restante) || 0; });
+      const listaC = Object.keys(mapaClientes);
+      if (listaC.length === 0) { respuestaHTML = "🤖 No hay clientes registrados."; } else {
+        respuestaHTML = `🤖 <strong>Base de Clientes:</strong><div id="chat-messages" style="margin-top:10px;">` + listaC.map(c => {
+          const info = mapaClientes[c], tel = info.telefono.replace(/\D/g, ''), linkWA = tel ? `https://wa.me/${tel.startsWith('58') ? tel : '58' + tel.replace(/^0/, '')}?text=${encodeURIComponent(`Hola ${c}, te escribimos de Perfuma2 para recordarte tu cuota de $${info.deuda.toFixed(2)}.`)}` : `#`;
+          const recompensa = info.compras >= 5 ? `<div style="color:#ffb703; font-weight:900; margin-top:2px;">🎁 ¡Fiel! (Dar Decant)</div>` : '';
+          return `<div class="client-card"><div class="client-header">👤 ${c}</div><div class="client-data">Compras: ${info.compras} | <span class="client-debt">Deuda: $${info.deuda.toFixed(2)}</span>${recompensa}</div>${tel && info.deuda > 0 ? `<a href="${linkWA}" target="_blank" class="btn-whatsapp-ia">Cobrar Cuota</a>` : ''}</div>`;
         }).join('') + `</div>`;
       }
     } else {
-      respuestaHTML = `🤖 Entendido. Escribe "clientes" para ver las cuotas, o "cobrar a [nombre] [monto]" para generar una tarjeta.`;
+      respuestaHTML = `🤖 Entendido. Prueba decirme:<br>• "Canceló Ana López"<br>• "Morosos"<br>• "¿Qué compró Carlos?"<br>• "Busca perfumes cítricos"`;
     }
     chatBox.innerHTML += `<div style="background:rgba(0,242,214,0.1); border:1px solid var(--accent); padding:10px; border-radius:12px; font-size:12px; margin-top:6px;">${respuestaHTML}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -1207,53 +1269,33 @@ function renderGastos() { const tb = document.getElementById('tbody-gastos'); if
 function copiarLinkCatalogo() {
   const u = window.location.origin + window.location.pathname + '?catalogo=true';
   navigator.clipboard.writeText(u).catch(()=>{});
-  window.open(u, '_blank'); // Abre directamente el enlace en otra pestaña
+  window.open(u, '_blank'); 
 }
-
 function guardarNumeroWA() { numeroWATienda = document.getElementById('config-wa-tienda').value.replace(/\D/g, ''); guardarCambiosEnNube(true); }
 
 function descargarRespaldoJSON() {
-  // Ahora usa un formato Blob, que obliga a Android a descargar el archivo correctamente
   const data = JSON.stringify({ inventario, ventas, gastos, pedidosWeb, historialRespaldosLocal }, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = "respaldo_perfuma2.json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  const a = document.createElement('a'); a.href = url; a.download = "respaldo_perfuma2.json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   alert("✅ Archivo JSON descargado con éxito.");
 }
 
 function restaurarRespaldoJSON(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
+  const file = input.files[0]; if (!file) return; const reader = new FileReader();
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      if (data.inventario) inventario = data.inventario;
-      if (data.ventas) ventas = data.ventas;
-      if (data.gastos) gastos = data.gastos;
-      if (data.pedidosWeb) pedidosWeb = data.pedidosWeb;
-      if (data.historialRespaldosLocal) historialRespaldosLocal = data.historialRespaldosLocal;
-      renderTodo();
-      guardarCambiosEnNube(false);
-      alert("📂 Respaldo restaurado con éxito.");
-    } catch (err) {
-      alert("❌ Archivo JSON inválido.");
-    }
+      if (data.inventario) inventario = data.inventario; if (data.ventas) ventas = data.ventas; if (data.gastos) gastos = data.gastos; if (data.pedidosWeb) pedidosWeb = data.pedidosWeb; if (data.historialRespaldosLocal) historialRespaldosLocal = data.historialRespaldosLocal;
+      renderTodo(); guardarCambiosEnNube(false); alert("📂 Respaldo restaurado con éxito.");
+    } catch (err) { alert("❌ Archivo JSON inválido."); }
   };
   reader.readAsText(file);
 }
 
 function generarCierreCaja() {
-  const tasa = obtenerTasaActiva();
-  const totalV = ventas.reduce((a, v) => a + (parseFloat(v.total) || 0), 0);
-  const totalAb = ventas.reduce((a, v) => a + (parseFloat(v.abonado) || 0), 0);
-  const totalGas = gastos.reduce((a, g) => a + (parseFloat(g.monto) || 0), 0);
+  const tasa = obtenerTasaActiva(), totalV = ventas.reduce((a, v) => a + (parseFloat(v.total) || 0), 0), totalAb = ventas.reduce((a, v) => a + (parseFloat(v.abonado) || 0), 0), totalGas = gastos.reduce((a, g) => a + (parseFloat(g.monto) || 0), 0);
   alert(`📊 REPORTE DE CAJA (HOY)\n\n• Ventas Totales: $${totalV.toFixed(2)} (Bs. ${(totalV * tasa).toFixed(2)})\n• Efectivo/Abonos Ingresados: $${totalAb.toFixed(2)}\n• Gastos Operativos: $${totalGas.toFixed(2)}\n• Utilidad Neta en Caja: $${(totalAb - totalGas).toFixed(2)}`);
 }
 
@@ -1266,25 +1308,14 @@ function guardarCuentasPago() {
 
 function cargarCuentasPagoInpuntu(c) {
   if (!c) return;
-  if (c.pmBanco) document.getElementById('cfg-pm-banco').value = c.pmBanco;
-  if (c.pmCi) document.getElementById('cfg-pm-ci').value = c.pmCi;
-  if (c.pmTel) document.getElementById('cfg-pm-tel').value = c.pmTel;
-  if (c.zelleCorreo) document.getElementById('cfg-zelle-correo').value = c.zelleCorreo;
-  if (c.zelleTitular) document.getElementById('cfg-zelle-titular').value = c.zelleTitular;
-  if (c.binance) document.getElementById('cfg-binance').value = c.binance;
+  if (c.pmBanco) document.getElementById('cfg-pm-banco').value = c.pmBanco; if (c.pmCi) document.getElementById('cfg-pm-ci').value = c.pmCi; if (c.pmTel) document.getElementById('cfg-pm-tel').value = c.pmTel; if (c.zelleCorreo) document.getElementById('cfg-zelle-correo').value = c.zelleCorreo; if (c.zelleTitular) document.getElementById('cfg-zelle-titular').value = c.zelleTitular; if (c.binance) document.getElementById('cfg-binance').value = c.binance;
 }
 
 window.onload = function() {
   const savedTheme = safeGetStorage('perfuma2_theme', 'light') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
-  actualizarReloj();
-  initLongPressBtn();
-  cargarDatosDesdeNube();
-  
-  if ("Notification" in window && Notification.permission !== "granted") {
-    Notification.requestPermission();
-  }
-  
+  actualizarReloj(); initLongPressBtn(); cargarDatosDesdeNube();
+  if ("Notification" in window && Notification.permission !== "granted") { Notification.requestPermission(); }
   if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js').catch(err => console.log(err)); }
 };
 </script>
