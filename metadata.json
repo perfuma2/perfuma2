@@ -1,0 +1,8 @@
+{
+  "name": "PERFUMA2 - Catálogo y Sistema de Gestión",
+  "description": "Catálogo oficial de fragancias y sistema integral de gestión de inventario, ventas al detal y mayor, decants, combos y CRM para PERFUMA2.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
